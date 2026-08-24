@@ -23,12 +23,12 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-// CREATE: Form ပြရန်
+// CREATE: Form 
 exports.renderCreateForm = (req, res) => {
   res.render('products/create', { title: 'Add New Product' });
 };
 
-// CREATE: Product အသစ်သိမ်းရန်
+// CREATE: Product 
 exports.createProduct = async (req, res) => {
   try {
     const { name, price, description, stock } = req.body;
@@ -41,7 +41,7 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// UPDATE: Form ပြရန်
+// UPDATE: Form
 exports.renderEditForm = async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
@@ -53,7 +53,7 @@ exports.renderEditForm = async (req, res) => {
   }
 };
 
-// UPDATE: Product ပြင်ဆင်ရန်
+// UPDATE: Product
 exports.updateProduct = async (req, res) => {
   try {
     const { name, price, description, stock } = req.body;
@@ -68,7 +68,7 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// DELETE: Product ဖျက်ရန်
+// DELETE: Product 
 exports.deleteProduct = async (req, res) => {
   try {
     await Product.destroy({ where: { id: req.params.id } });

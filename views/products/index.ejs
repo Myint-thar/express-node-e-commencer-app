@@ -1,95 +1,216 @@
-<%- include('../partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAMSWORLD - Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>[x-cloak] { display: none !important; }</style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
 
-<!-- Hero Section -->
-<section class="hero">
-  <div class="container hero-content">
-    <div class="hero-text">
-      <div class="welcome-tag">WELCOME TO FAMSWORLD</div>
-      <h1 class="hero-title">QUALITY PRODUCTS.<br><span>TRUSTED BY THOUSANDS.</span></h1>
-      <p style="color: var(--text-muted); margin-bottom: 20px;">Discover a wide range of high-quality products carefully selected for your lifestyle.</p>
-      <button class="hero-btn">SHOP NOW <i class="fa-solid fa-arrow-right"></i></button>
-      <button class="hero-btn-outline">EXPLORE COLLECTION</button>
-    </div>
-    <div class="hero-image">
-      <!-- UI အရုပ်နေရာအတွက် Placeholder -->
-      <i class="fa-solid fa-headphones-simple" style="font-size: 150px; color: var(--dark-blue);"></i>
-    </div>
-  </div>
-</section>
+  <% 
+    // Safe Variable Initialization (ReferenceError မတက်စေရန်)
+    const user = locals.currentUser || null;
+    const wishlist = locals.wishlistItems || [];
+    const cart = locals.cartItems || [];
+    const catList = locals.categories || [];
+    const productList = locals.products || [];
+  %>
 
-<div class="container">
-  <!-- Features Bar -->
-  <div class="features-bar">
-    <div class="feature-item"><i class="fa-solid fa-truck-fast"></i> <div>FREE SHIPPING<br><small style="color:gray;font-weight:normal;">On orders over $50</small></div></div>
-    <div class="feature-item"><i class="fa-solid fa-rotate-left"></i> <div>30 DAYS RETURNS<br><small style="color:gray;font-weight:normal;">No hassle returns</small></div></div>
-    <div class="feature-item"><i class="fa-solid fa-shield-check"></i> <div>SECURE PAYMENT<br><small style="color:gray;font-weight:normal;">100% secure checkout</small></div></div>
-    <div class="feature-item"><i class="fa-solid fa-headset"></i> <div>24/7 SUPPORT<br><small style="color:gray;font-weight:normal;">We're here to help</small></div></div>
-  </div>
-
-  <!-- Shop By Category -->
-  <h2 class="section-title">SHOP BY <span style="border-bottom: 2px solid var(--primary-orange);">CATEGORY</span></h2>
-  <div class="categories">
-    <% const categories = ['Home & Living', 'Electronics', 'Beauty & Care', 'Fitness', 'Fashion', 'Baby & Kids']; %>
-    <% categories.forEach((cat, index) => { %>
-      <div class="cat-item">
-        <div class="cat-circle"><i class="fa-solid fa-image"></i></div>
-        <strong><%= cat %></strong>
-      </div>
-    <% }) %>
-  </div>
-
-  <!-- Dynamic Product Grid (Backend ချိတ်ဆက်ထားသည်) -->
-  <h2 class="section-title">BEST <span style="color: var(--primary-orange);">SELLERS</span></h2>
-  
-  <div class="product-grid">
-    <% if (products.length > 0) { %>
-      <% products.forEach(product => { %>
-        <div class="product-card">
-          <div class="product-badge">BEST SELLER</div>
-          
-          <a href="/products/<%= product.id %>">
-            <div class="product-img">
-               <i class="fa-solid fa-box" style="font-size: 50px;"></i>
-               <!-- ပုံအစစ်ထည့်ရန်ဆိုပါက: <img src="/uploads/<%= product.image %>" width="100%"> -->
-            </div>
-            <div class="product-title"><%= product.name %></div>
-          </a>
-          
-          <div class="stars">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
-            <span style="color: gray; font-size: 10px;">(1.2K)</span>
+  <!-- Main Navbar -->
+  <nav 
+    x-data="{ shopOpen: false, searchOpen: false, profileOpen: false, wishlistOpen: false, cartOpen: false }" 
+    class="bg-white shadow-sm sticky top-0 z-50">
+    
+    <div class="py-4 px-8 flex justify-between items-center border-b relative">
+      <!-- Logo -->
+      <a href="/products" class="text-2xl font-black tracking-wider text-slate-900">
+        <span class="text-orange-500">FAM</span>SWORLD
+      </a>
+      
+      <!-- Nav Links -->
+      <div class="hidden md:flex gap-8 text-xs font-bold tracking-wide items-center">
+        <a href="/products" class="text-orange-500">HOME</a>
+        
+        <!-- Shop Dropdown -->
+        <div class="relative py-2" @mouseenter="shopOpen = true" @mouseleave="shopOpen = false">
+          <button class="hover:text-orange-500 flex items-center gap-1">
+            SHOP <span>▼</span>
+          </button>
+          <div x-show="shopOpen" x-cloak x-transition class="absolute top-full left-0 w-48 bg-white border shadow-lg rounded-sm py-2 z-50">
+            <a href="/products/category/electronics" class="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-50 hover:text-orange-500">Electronics</a>
+            <a href="/products/category/fashion" class="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-50 hover:text-orange-500">Fashion</a>
+            <a href="/products/category/beauty" class="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-50 hover:text-orange-500">Beauty & Care</a>
           </div>
-          
-          <div>
-            <span class="product-price">$<%= parseFloat(product.price).toFixed(2) %></span>
-            <span class="product-old-price">$<%= (parseFloat(product.price) * 1.3).toFixed(2) %></span>
-          </div>
-
-          <!-- Add to Cart Form -->
-          <form action="/cart/add" method="POST">
-            <input type="hidden" name="productId" value="<%= product.id %>">
-            <button type="submit" class="add-to-cart-btn"><i class="fa-solid fa-cart-shopping"></i> ADD TO CART</button>
-          </form>
         </div>
-      <% }) %>
-    <% } else { %>
-      <p style="text-align: center; width: 100%; grid-column: 1 / span 4;">No products available at the moment.</p>
-    <% } %>
-  </div>
 
-  <!-- Special Offer Banner -->
-  <div class="promo-banner">
-    <div style="font-size: 80px; color: var(--primary-orange);"><i class="fa-solid fa-gift"></i></div>
-    <div class="promo-text" style="text-align: center;">
-      <p style="color: var(--primary-orange); font-weight: bold;">SPECIAL OFFER</p>
-      <h2>UP TO <span>40% OFF</span></h2>
-      <p>Limited time offer on selected items.</p>
+        <a href="/products?sort=bestsellers" class="hover:text-orange-500">BEST SELLERS</a>
+        <a href="/products?sort=new" class="hover:text-orange-500">NEW ARRIVALS</a>
+        <a href="/about" class="hover:text-orange-500">ABOUT US</a>
+        <a href="/contact" class="hover:text-orange-500">CONTACT US</a>
+      </div>
+
+      <!-- Action Icons -->
+      <div class="flex items-center gap-6 text-slate-700 text-lg relative">
+        
+        <!-- 1. Hover Search Box -->
+        <div class="relative py-2" @mouseenter="searchOpen = true" @mouseleave="searchOpen = false">
+          <button class="hover:text-orange-500 flex items-center">🔍</button>
+          <div x-show="searchOpen" x-cloak x-transition class="absolute right-0 top-full w-72 bg-white p-3 border shadow-xl rounded-md z-50">
+            <form action="/products/search" method="GET" class="flex items-center border rounded px-2 py-1 bg-gray-50">
+              <input type="text" name="q" placeholder="Search products..." class="w-full text-xs bg-transparent focus:outline-none">
+              <button type="submit" class="text-xs text-orange-500 font-bold px-1">Go</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- 2. Profile Dropdown -->
+        <div class="relative">
+          <button @click="profileOpen = !profileOpen" class="hover:text-orange-500 flex items-center">👤</button>
+
+          <div x-show="profileOpen" @click.outside="profileOpen = false" x-cloak x-transition class="absolute right-0 mt-2 w-52 bg-white border shadow-lg rounded-md py-2 z-50">
+            <% if (user) { %>
+              <div class="px-4 py-2 border-b">
+                <p class="text-xs font-bold text-slate-900"><%= user.name || 'User' %></p>
+                <p class="text-[10px] text-gray-400"><%= user.email %></p>
+              </div>
+              <a href="/users/profile" class="block px-4 py-2 text-xs hover:bg-gray-100">My Profile</a>
+              <a href="/users/orders" class="block px-4 py-2 text-xs hover:bg-gray-100">My Orders</a>
+              <hr class="my-1">
+              <a href="/users/logout" class="block px-4 py-2 text-xs text-red-500 hover:bg-red-50">Logout</a>
+            <% } else { %>
+              <div class="p-3 text-center">
+                <p class="text-xs text-gray-500 mb-2">Welcome to FAMSWORLD</p>
+                <a href="/users/login" class="block w-full bg-orange-500 text-white font-bold text-xs py-1.5 rounded mb-1 hover:bg-orange-600">Login</a>
+                <a href="/users/register" class="block w-full border text-slate-800 font-bold text-xs py-1.5 rounded hover:bg-gray-50">Register</a>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- 3. Heart Wishlist Drawer -->
+        <div class="relative">
+          <button @click="wishlistOpen = !wishlistOpen" class="hover:text-orange-500 relative flex items-center">
+            ❤️
+            <span class="absolute -top-2 -right-2 bg-orange-500 text-white text-[9px] rounded-full h-4 w-4 flex items-center justify-center font-bold">
+              <%= wishlist.length %>
+            </span>
+          </button>
+
+          <div x-show="wishlistOpen" @click.outside="wishlistOpen = false" x-cloak x-transition class="absolute right-0 mt-2 w-72 bg-white border shadow-xl rounded-md p-4 z-50">
+            <h4 class="font-bold text-xs text-slate-900 border-b pb-2 mb-3">Saved Favorites</h4>
+            <% if (wishlist.length > 0) { %>
+              <div class="space-y-3 max-h-48 overflow-y-auto">
+                <% wishlist.forEach(item => { %>
+                  <div class="flex items-center gap-3 border-b pb-2">
+                    <img src="<%= item.image %>" class="w-10 h-10 object-cover rounded">
+                    <div class="flex-1">
+                      <p class="text-xs font-bold text-slate-800 line-clamp-1"><%= item.title %></p>
+                      <p class="text-xs text-orange-500 font-bold">$<%= item.price %></p>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <p class="text-xs text-gray-400 text-center py-4">No favorite items saved.</p>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- 4. Cart Noti Drawer -->
+        <div class="relative">
+          <button @click="cartOpen = !cartOpen" class="hover:text-orange-500 relative flex items-center">
+            🛒
+            <span class="absolute -top-2 -right-2 bg-orange-500 text-white text-[9px] rounded-full h-4 w-4 flex items-center justify-center font-bold">
+              <%= cart.length %>
+            </span>
+          </button>
+
+          <div x-show="cartOpen" @click.outside="cartOpen = false" x-cloak x-transition class="absolute right-0 mt-2 w-80 bg-white border shadow-xl rounded-md p-4 z-50">
+            <h4 class="font-bold text-xs text-slate-900 border-b pb-2 mb-3">Cart Notifications</h4>
+            <% if (cart.length > 0) { %>
+              <div class="space-y-3">
+                <% cart.forEach(item => { %>
+                  <div class="flex items-center justify-between border-b pb-2">
+                    <div class="flex items-center gap-3">
+                      <img src="<%= item.image %>" class="w-10 h-10 object-cover rounded">
+                      <div>
+                        <p class="text-xs font-bold text-slate-800"><%= item.title %></p>
+                        <p class="text-xs text-gray-500">Qty: <%= item.qty %> x $<%= item.price %></p>
+                      </div>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+              <a href="/cart/checkout" class="block text-center mt-3 bg-orange-500 text-white font-bold text-xs py-2 rounded hover:bg-orange-600">Proceed to Checkout</a>
+            <% } else { %>
+              <p class="text-xs text-gray-400 text-center py-4">Cart is empty.</p>
+            <% } %>
+          </div>
+        </div>
+
+      </div>
     </div>
-    <div>
-      <button class="hero-btn">SHOP THE SALE <i class="fa-solid fa-arrow-right"></i></button>
+  </nav>
+
+  <!-- Dynamic Product Grid Section -->
+  <main class="max-w-7xl mx-auto py-12 px-8">
+    
+    <!-- Category Loop -->
+    <div class="mb-12">
+      <h2 class="text-center font-bold text-lg mb-6 border-b-2 border-orange-500 w-max mx-auto pb-1">SHOP BY CATEGORY</h2>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <% if (catList.length > 0) { %>
+          <% catList.forEach(cat => { %>
+            <div class="bg-white p-4 border rounded text-center hover:shadow-md cursor-pointer transition">
+              <img src="<%= cat.image %>" class="w-16 h-16 rounded-full mx-auto object-cover mb-2">
+              <span class="text-xs font-bold text-gray-700"><%= cat.name %></span>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="col-span-full text-center text-xs text-gray-400">No categories found.</p>
+        <% } %>
+      </div>
     </div>
-  </div>
 
-</div> <!-- Container End -->
+    <!-- Best Sellers Loop -->
+    <h2 class="font-bold text-lg mb-6 border-b-2 border-orange-500 w-max pb-1">BEST SELLERS</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <% if (productList.length > 0) { %>
+        <% productList.forEach(product => { %>
+          <div class="bg-white border rounded p-4 flex flex-col justify-between hover:shadow-md relative transition">
+            <% if (product.badge) { %>
+              <span class="absolute top-2 left-2 bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-sm"><%= product.badge %></span>
+            <% } %>
 
-<%- include('../partials/footer') %>
+            <div class="h-44 flex items-center justify-center my-2">
+              <img src="<%= product.image %>" alt="<%= product.title || product.name %>" class="max-h-full object-contain">
+            </div>
+
+            <div>
+              <h3 class="font-bold text-xs text-slate-800 line-clamp-1"><%= product.title || product.name %></h3>
+              <div class="flex items-baseline gap-2 mt-2">
+                <span class="text-orange-500 font-bold text-sm">$<%= product.price %></span>
+                <% if (product.oldPrice) { %>
+                  <span class="text-gray-400 line-through text-xs">$<%= product.oldPrice %></span>
+                <% } %>
+              </div>
+            </div>
+
+            <form action="/cart/add/<%= product.id || product._id %>" method="POST" class="mt-4">
+              <button type="submit" class="w-full bg-orange-500 text-white font-bold py-2 rounded-sm text-xs hover:bg-orange-600 transition">
+                🛒 ADD TO CART
+              </button>
+            </form>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p class="col-span-full text-center text-xs text-gray-400 py-8">No products available.</p>
+      <% } %>
+    </div>
+  </main>
+
+</body>
+</html>
