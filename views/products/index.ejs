@@ -1,21 +1,95 @@
 <%- include('../partials/header') %>
 
-<div class="container">
-  <h2>Product List</h2>
-  <a href="/products/create">+ Add Product</a>
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container hero-content">
+    <div class="hero-text">
+      <div class="welcome-tag">WELCOME TO FAMSWORLD</div>
+      <h1 class="hero-title">QUALITY PRODUCTS.<br><span>TRUSTED BY THOUSANDS.</span></h1>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">Discover a wide range of high-quality products carefully selected for your lifestyle.</p>
+      <button class="hero-btn">SHOP NOW <i class="fa-solid fa-arrow-right"></i></button>
+      <button class="hero-btn-outline">EXPLORE COLLECTION</button>
+    </div>
+    <div class="hero-image">
+      <!-- UI အရုပ်နေရာအတွက် Placeholder -->
+      <i class="fa-solid fa-headphones-simple" style="font-size: 150px; color: var(--dark-blue);"></i>
+    </div>
+  </div>
+</section>
 
-  <div class="products-grid">
-    <% products.forEach(product => { %>
-      <div class="card">
-        <img src="/uploads/<%= product.image %>" width="150" alt="<%= product.name %>">
-        <h3><%= product.name %></h3>
-        <p>Price: $<%= product.price %></p>
-        <a href="/products/<%= product.id %>">Detail</a>
-        <a href="/products/<%= product.id %>/edit">Edit</a>
-        <form action="/products/<%= product.id %>/delete" method="POST" style="display:inline;">
-          <button type="submit">Delete</button>
-        </form>
+<div class="container">
+  <!-- Features Bar -->
+  <div class="features-bar">
+    <div class="feature-item"><i class="fa-solid fa-truck-fast"></i> <div>FREE SHIPPING<br><small style="color:gray;font-weight:normal;">On orders over $50</small></div></div>
+    <div class="feature-item"><i class="fa-solid fa-rotate-left"></i> <div>30 DAYS RETURNS<br><small style="color:gray;font-weight:normal;">No hassle returns</small></div></div>
+    <div class="feature-item"><i class="fa-solid fa-shield-check"></i> <div>SECURE PAYMENT<br><small style="color:gray;font-weight:normal;">100% secure checkout</small></div></div>
+    <div class="feature-item"><i class="fa-solid fa-headset"></i> <div>24/7 SUPPORT<br><small style="color:gray;font-weight:normal;">We're here to help</small></div></div>
+  </div>
+
+  <!-- Shop By Category -->
+  <h2 class="section-title">SHOP BY <span style="border-bottom: 2px solid var(--primary-orange);">CATEGORY</span></h2>
+  <div class="categories">
+    <% const categories = ['Home & Living', 'Electronics', 'Beauty & Care', 'Fitness', 'Fashion', 'Baby & Kids']; %>
+    <% categories.forEach((cat, index) => { %>
+      <div class="cat-item">
+        <div class="cat-circle"><i class="fa-solid fa-image"></i></div>
+        <strong><%= cat %></strong>
       </div>
     <% }) %>
   </div>
-</div>
+
+  <!-- Dynamic Product Grid (Backend ချိတ်ဆက်ထားသည်) -->
+  <h2 class="section-title">BEST <span style="color: var(--primary-orange);">SELLERS</span></h2>
+  
+  <div class="product-grid">
+    <% if (products.length > 0) { %>
+      <% products.forEach(product => { %>
+        <div class="product-card">
+          <div class="product-badge">BEST SELLER</div>
+          
+          <a href="/products/<%= product.id %>">
+            <div class="product-img">
+               <i class="fa-solid fa-box" style="font-size: 50px;"></i>
+               <!-- ပုံအစစ်ထည့်ရန်ဆိုပါက: <img src="/uploads/<%= product.image %>" width="100%"> -->
+            </div>
+            <div class="product-title"><%= product.name %></div>
+          </a>
+          
+          <div class="stars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+            <span style="color: gray; font-size: 10px;">(1.2K)</span>
+          </div>
+          
+          <div>
+            <span class="product-price">$<%= parseFloat(product.price).toFixed(2) %></span>
+            <span class="product-old-price">$<%= (parseFloat(product.price) * 1.3).toFixed(2) %></span>
+          </div>
+
+          <!-- Add to Cart Form -->
+          <form action="/cart/add" method="POST">
+            <input type="hidden" name="productId" value="<%= product.id %>">
+            <button type="submit" class="add-to-cart-btn"><i class="fa-solid fa-cart-shopping"></i> ADD TO CART</button>
+          </form>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p style="text-align: center; width: 100%; grid-column: 1 / span 4;">No products available at the moment.</p>
+    <% } %>
+  </div>
+
+  <!-- Special Offer Banner -->
+  <div class="promo-banner">
+    <div style="font-size: 80px; color: var(--primary-orange);"><i class="fa-solid fa-gift"></i></div>
+    <div class="promo-text" style="text-align: center;">
+      <p style="color: var(--primary-orange); font-weight: bold;">SPECIAL OFFER</p>
+      <h2>UP TO <span>40% OFF</span></h2>
+      <p>Limited time offer on selected items.</p>
+    </div>
+    <div>
+      <button class="hero-btn">SHOP THE SALE <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+</div> <!-- Container End -->
+
+<%- include('../partials/footer') %>

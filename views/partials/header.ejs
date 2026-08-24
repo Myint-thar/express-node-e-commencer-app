@@ -3,12 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= typeof title !== 'undefined' ? title : 'E-Comic App' %></title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .container { max-width: 1200px; margin: 0 auto; }
-    .products-grid { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
-    .card { border: 1px solid #ccc; padding: 15px; border-radius: 8px; width: 200px; }
-  </style>
+  <title><%= locals.title || 'FAMSWORLD - Quality Products' %></title>
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="container">
+      <div><i class="fa-solid fa-truck"></i> Free Worldwide Shipping on Orders Over $50</div>
+      <div><i class="fa-solid fa-shield-halved"></i> 30-Day Money Back Guarantee</div>
+      <div><i class="fa-solid fa-headset"></i> 24/7 Customer Support</div>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="/" class="logo">
+        <i class="fa-brands fa-foursquare" style="color:var(--dark-blue); font-size: 28px;"></i> FAMS<span>WORLD</span>
+      </a>
+      
+      <ul class="nav-links">
+        <li><a href="/">HOME</a></li>
+        <li><a href="/products">SHOP <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i></a></li>
+        <li><a href="#">BEST SELLERS</a></li>
+        <li><a href="#">NEW ARRIVALS</a></li>
+        <li><a href="#">ABOUT US</a></li>
+        <li><a href="#">CONTACT US</a></li>
+      </ul>
+
+      <div class="nav-icons">
+        <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
+        <% if (locals.currentUser) { %>
+          <a href="/orders"><i class="fa-solid fa-user-check"></i></a>
+        <% } else { %>
+          <a href="/auth/login"><i class="fa-regular fa-user"></i></a>
+        <% } %>
+        <a href="#"><i class="fa-regular fa-heart"></i></a>
+        <a href="/cart" class="cart-icon">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="cart-badge"><%= (locals.session && locals.session.cart) ? locals.session.cart.length : 0 %></span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
