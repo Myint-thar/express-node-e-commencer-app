@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - FAMSWORLD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>[x-cloak] { display: none !important; }</style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+  <!-- Navbar Component Include -->
+  <%- include('partials/navbar') %>
+
+  <!-- Header -->
+  <div class="bg-slate-900 text-white py-12 text-center">
+    <h1 class="text-3xl font-black">GET IN <span class="text-orange-500">TOUCH</span></h1>
+    <p class="text-gray-400 text-xs mt-2">We are here to help 24/7. Send us a message!</p>
+  </div>
+
+  <main class="max-w-5xl mx-auto py-12 px-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Contact Info Cards -->
+      <div class="space-y-4">
+        <div class="bg-white p-5 rounded border shadow-sm">
+          <span class="text-xl">📍</span>
+          <h4 class="font-bold text-sm text-slate-800 mt-2">Our Address</h4>
+          <p class="text-xs text-gray-500 mt-1">No. 123, Main Street, Yangon, Myanmar</p>
+        </div>
+
+        <div class="bg-white p-5 rounded border shadow-sm">
+          <span class="text-xl">📞</span>
+          <h4 class="font-bold text-sm text-slate-800 mt-2">Phone & WhatsApp</h4>
+          <p class="text-xs text-gray-500 mt-1">+95 9 123 456 789</p>
+        </div>
+
+        <div class="bg-white p-5 rounded border shadow-sm">
+          <span class="text-xl">✉️</span>
+          <h4 class="font-bold text-sm text-slate-800 mt-2">Email Support</h4>
+          <p class="text-xs text-gray-500 mt-1">support@famsworld.com</p>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="md:col-span-2 bg-white p-8 rounded border shadow-sm">
+        <h3 class="font-bold text-lg text-slate-900 mb-6">Send Us A Message</h3>
+        <form action="/contact/send" method="POST" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Your Name</label>
+              <input type="text" name="name" required class="w-full border px-3 py-2 text-xs rounded focus:outline-none focus:border-orange-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Your Email</label>
+              <input type="email" name="email" required class="w-full border px-3 py-2 text-xs rounded focus:outline-none focus:border-orange-500">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Subject</label>
+            <input type="text" name="subject" required class="w-full border px-3 py-2 text-xs rounded focus:outline-none focus:border-orange-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Message</label>
+            <textarea name="message" rows="5" required class="w-full border px-3 py-2 text-xs rounded focus:outline-none focus:border-orange-500"></textarea>
+          </div>
+          <button type="submit" class="bg-orange-500 text-white font-bold text-xs px-6 py-2.5 rounded hover:bg-orange-600 transition">
+            Send Message
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer Component Include -->
+  <%- include('partials/footer') %>
+
+</body>
+</html>

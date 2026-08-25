@@ -19,7 +19,23 @@ app.use((req, res, next) => {
 const homeRoute = require('./routes/homeroute');
 const productRoute = require('./routes/productroute');
 
-app.use('/', homeRoute);           // Home Route ကို / တွင် ထားရှိပါသည်
+// About Us Route
+app.get('/about', (req, res) => {
+  res.render('about', { 
+    wishlistItems: req.session?.wishlist || [], 
+    cartItems: req.session?.cart || [] 
+  });
+});
+
+// Contact Us Route
+app.get('/contact', (req, res) => {
+  res.render('contact', { 
+    wishlistItems: req.session?.wishlist || [], 
+    cartItems: req.session?.cart || [] 
+  });
+});
+
+app.use('/', homeRoute);           // Home Route 
 app.use('/products', productRoute);
 
 const PORT = process.env.PORT || 3000;
