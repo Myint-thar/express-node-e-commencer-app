@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// 1. Home / All Products Route
 router.get('/', async (req, res) => {
   const categories = getCategoriesData();
   const products = getProductsData();
@@ -15,12 +14,9 @@ router.get('/', async (req, res) => {
   });
 });
 
-// 2. Category Route (Electronics, Fashion, Beauty & Care)
 router.get('/category/:name', async (req, res) => {
-  const categoryName = req.params.name; // 'electronics', 'fashion', 'beauty'
+  const categoryName = req.params.name;
   const categories = getCategoriesData();
-  
-  // Database သုံးပါက: const products = await Product.find({ category: categoryName });
   const products = getProductsData().filter(p => p.category.toLowerCase() === categoryName.toLowerCase());
 
   res.render('products/index', { 
@@ -32,10 +28,8 @@ router.get('/category/:name', async (req, res) => {
   });
 });
 
-// 3. Best Sellers Route
 router.get('/best-sellers', async (req, res) => {
   const categories = getCategoriesData();
-  // Best seller ရွေးထုတ်ခြင်း
   const products = getProductsData().filter(p => p.badge === 'BEST SELLER');
 
   res.render('products/index', { 
@@ -47,10 +41,8 @@ router.get('/best-sellers', async (req, res) => {
   });
 });
 
-// 4. New Arrivals Route
 router.get('/new-arrivals', async (req, res) => {
   const categories = getCategoriesData();
-  // New arrivals ရွေးထုတ်ခြင်း
   const products = getProductsData().filter(p => p.badge === 'NEW');
 
   res.render('products/index', { 
@@ -62,7 +54,6 @@ router.get('/new-arrivals', async (req, res) => {
   });
 });
 
-// Helper Dummy Data Functions (Database ချိတ်ပါက DB Query ဖြင့် အစားထိုးနိုင်သည်)
 function getCategoriesData() {
   return [
     { name: 'Home & Living', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200' },

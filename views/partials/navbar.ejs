@@ -98,4 +98,61 @@
       </div>
     </div>
   </div>
+  <div x-show="wishlistOpen" @click.outside="wishlistOpen = false" x-cloak x-transition class="absolute right-0 mt-2 w-80 bg-white border shadow-xl rounded-md p-4 z-50">
+  <h4 class="font-bold text-xs text-slate-900 border-b pb-2 mb-3 flex justify-between items-center">
+    <span>Saved Favorites</span>
+    <span class="text-orange-500"><%= typeof wishlistItems !== 'undefined' ? wishlistItems.length : 0 %> Items</span>
+  </h4>
+
+  <div class="max-h-60 overflow-y-auto space-y-3">
+    <% if (typeof wishlistItems !== 'undefined' && wishlistItems.length > 0) { %>
+      <% wishlistItems.forEach(item => { %>
+        <div class="flex items-center justify-between gap-3 border-b pb-2">
+          <img src="<%= item.image %>" class="w-10 h-10 object-contain rounded border">
+          <div class="flex-1 text-left">
+            <p class="text-xs font-bold text-slate-800 line-clamp-1"><%= item.title %></p>
+            <p class="text-[11px] text-orange-500 font-bold">$<%= item.price %></p>
+          </div>
+
+          <form action="/wishlist/remove/<%= item.id || item._id %>" method="POST">
+            <button type="submit" class="text-red-500 hover:text-red-700 font-bold text-xs bg-red-50 hover:bg-red-100 px-2 py-1 rounded transition">
+              ✕
+            </button>
+          </form>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p class="text-xs text-gray-400 text-center py-4">Saved Favorites ထဲတွင် မည်သည့်ပစ္စည်းမှ မရှိသေးပါ။</p>
+    <% } %>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const msg = urlParams.get('msg');
+
+  if (msg) {
+    let textMsg = "လုပ်ဆောင်ချက် အောင်မြင်ပါသည်!";
+
+    if (msg === 'cart_added') textMsg = "Cart ထဲသို့ အောင်မြင်စွာ ထည့်ပြီးပါပြီ။";
+    if (msg === 'cart_removed') textMsg = "Cart ထဲမှ အောင်မြင်စွာ ဖျက်လိုက်ပါပြီ။";
+    if (msg === 'wishlist_added') textMsg = "Favorites ထဲသို့ အောင်မြင်စွာ သိမ်းဆည်းလိုက်ပါပြီ။";
+    if (msg === 'wishlist_removed') textMsg = "Favorites ထဲမှ အောင်မြင်စွာ ဖျက်လိုက်ပါပြီ။";
+
+    Swal.fire({
+      title: 'မင်းအောင်မြင်ပါတယ်!',
+      text: textMsg,
+      icon: 'success',
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+    // URL မှ ?msg= Parameter ကို ပြန်ရှင်းပေးခြင်း
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+</script>
+
+
+  
 </nav>
