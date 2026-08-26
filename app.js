@@ -1,5 +1,5 @@
 const express = require('express');
-const session = require('express-session'); 
+const session = require('express-session');
 const path = require('path');
 const app = express();
 
@@ -35,14 +35,13 @@ app.get('/about', (req, res) => res.render('about'));
 app.get('/contact', (req, res) => res.render('contact'));
 
 // -------------------------------------------------------------
-// CART & WISHLIST HANDLERS (Duplicate Routes ရှင်းလင်းပြီး)
+// CART & WISHLIST HANDLERS
 // -------------------------------------------------------------
 
-// 1. Add to Cart
 app.post('/cart/add/:id', (req, res) => {
   if (!req.session.cart) req.session.cart = [];
   const pId = String(req.params.id);
-  
+
   const existingItem = req.session.cart.find(item => String(item.id || item._id) === pId);
   if (existingItem) {
     existingItem.qty = (existingItem.qty || 1) + 1;
@@ -62,7 +61,6 @@ app.post('/cart/add/:id', (req, res) => {
   res.redirect(redirectUrl);
 });
 
-// 2. Remove from Cart
 app.post('/cart/remove/:id', (req, res) => {
   if (req.session.cart) {
     const removeId = String(req.params.id);
@@ -74,7 +72,6 @@ app.post('/cart/remove/:id', (req, res) => {
   res.redirect(redirectUrl);
 });
 
-// 3. Add to Wishlist
 app.post('/wishlist/add/:id', (req, res) => {
   if (!req.session.wishlist) req.session.wishlist = [];
   const pId = String(req.params.id);
@@ -95,7 +92,6 @@ app.post('/wishlist/add/:id', (req, res) => {
   res.redirect(redirectUrl);
 });
 
-// 4. Remove from Wishlist
 app.post('/wishlist/remove/:id', (req, res) => {
   if (req.session.wishlist) {
     const removeId = String(req.params.id);
@@ -105,6 +101,89 @@ app.post('/wishlist/remove/:id', (req, res) => {
   const referer = req.get('referer') || '/products';
   const redirectUrl = referer.includes('?') ? `${referer}&msg=wishlist_removed` : `${referer}?msg=wishlist_removed`;
   res.redirect(redirectUrl);
+});
+
+// -------------------------------------------------------------
+// CATEGORY ROUTES
+// -------------------------------------------------------------
+
+// 1. Electronics Route (Dynamic Route အထက်တွင် သီးသန့်ထားပါ)
+app.get('/products/category/electronics', (req, res) => {
+  const electronicsTitles = [
+    "Wireless Over-Ear Headphones", "Smart Watch Series X", "Gaming Mouse RGB",
+    "Mechanical Keyboard", "Bluetooth Portable Speaker", "4K Ultra HD Monitor",
+    "Noise Canceling Earbuds", "Wireless Charging Pad", "USB-C Multiport Hub",
+    "HD Web Camera 1080p", "Smart Fitness Tracker", "Mini Drone 4K"
+  ];
+
+  const electronicsList = Array.from({ length: 120 }, (_, i) => {
+    const itemTitle = electronicsTitles[i % electronicsTitles.length];
+    const modelNum = Math.floor(i / electronicsTitles.length) + 1;
+    return {
+      _id: `el-${i + 1}`,
+      title: `${itemTitle} Gen ${modelNum}`,
+      category: "Electronics",
+      price: (29.99 + ((i * 7) % 200)).toFixed(2),
+      oldPrice: i % 2 === 0 ? (59.99 + ((i * 5) % 250)).toFixed(2) : null,
+      image: `https://picsum.photos/seed/tech${i + 200}/300/300`,
+      badge: i % 5 === 0 ? "SALE" : (i % 8 === 0 ? "BEST" : null),
+      color: i % 2 === 0 ? "Black" : "Silver",
+      description: `High performance ${itemTitle} with latest features.`
+    };
+  });
+
+  return res.render('electronics', {
+    products: electronicsList,
+    wishlistItems: req.session?.wishlist || [],
+    cartItems: req.session?.cart || []
+  });
+});
+
+// 2. Dynamic Category Route (Comics & Manga နှင့် အခြား ကဏ္ဍများအတွက်)
+app.get('/products/category/:category', (req, res) => {
+  const categoryParam = req.params.category.toLowerCase();
+
+  if (categoryParam.includes('comic') || categoryParam.includes('manga')) {
+    const mangaTitles = [
+      "One Piece", "Naruto Shippuden", "Attack on Titan", "Jujutsu Kaisen",
+      "Demon Slayer", "Chainsaw Man", "Bleach", "Dragon Ball Super",
+      "My Hero Academia", "Spy x Family", "Tokyo Ghoul", "Berserk",
+      "Death Note", "Hunter x Hunter", "Solo Leveling", "Vinland Saga"
+    ];
+
+    const comicsList = Array.from({ length: 130 }, (_, i) => {
+      const titleName = mangaTitles[i % mangaTitles.length];
+      const volNum = Math.floor(i / mangaTitles.length) + 1;
+      return {
+        _id: `cm-${i + 1}`,
+        title: `${titleName} Vol. ${volNum}`,
+        category: "Comics & Manga",
+        price: (8.99 + (i % 12)).toFixed(2),
+        oldPrice: i % 3 === 0 ? (14.99 + (i % 5)).toFixed(2) : null,
+        image: `https://picsum.photos/seed/manga${i + 100}/300/420`,
+        badge: i % 7 === 0 ? "HOT" : (i % 4 === 0 ? "NEW" : null),
+        color: "Paperback",
+        description: `${titleName} Volume ${volNum} comic book.`
+      };
+    });
+
+    return res.render('comics&manga', {
+      products: comicsList,
+      wishlistItems: req.session?.wishlist || [],
+      cartItems: req.session?.cart || []
+    });
+  }
+
+  // Safe filter check (p.category undefined မဖြစ်စေရန်)
+  const filteredProducts = (req.products || []).filter(p =>
+    p && p.category && p.category.toLowerCase() === categoryParam
+  );
+
+  res.render('products/index', {
+    products: filteredProducts,
+    wishlistItems: req.session?.wishlist || [],
+    cartItems: req.session?.cart || []
+  });
 });
 
 // Register Routes
