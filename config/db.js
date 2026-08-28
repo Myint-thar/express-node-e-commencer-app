@@ -1,25 +1,15 @@
 const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASS,
+  process.env.DB_NAME || 'ecommerce_db',
+  process.env.DB_USER || 'root',
+  process.env.DB_PASSWORD || '',
   {
-    host: process.env.DB_HOST,
+    host: process.env.DB_HOST || 'localhost',
     dialect: 'mysql',
-    logging: false
+    logging: false 
   }
 );
 
-const connectDB = async () => {
-  try {
-    await sequelize.authenticate();
-    await sequelize.sync(); // Table မရှိသေးပါက auto ဖန်တီးပေးမည်
-    console.log('MySQL Database Connected Successfully via Sequelize');
-  } catch (err) {
-    console.error('MySQL Connection Error:', err.message);
-    process.exit(1);
-  }
-};
-
-module.exports = { sequelize, connectDB };
+module.exports = sequelize;

@@ -46,7 +46,7 @@
         <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl flex items-center gap-3 shadow-lg">
           <span class="text-xs text-slate-400 font-bold uppercase">Total Gadgets</span>
           <span class="bg-orange-500 text-white text-xs font-black px-2.5 py-1 rounded-md">
-            <%= products.length %>+ Items
+            <%= (products || []).length %>+ Items
           </span>
         </div>
       </div>
@@ -58,7 +58,7 @@
       <!-- Filter Bar & Search -->
       <div class="flex flex-wrap justify-between items-center pb-6 border-b border-slate-200 mb-8 gap-4">
         <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          <button @click="filterColor = 'all'" :class="filterColor === 'all' ? 'bg-orange-500 text-white' : 'bg-white text-slate-700 border hover:bg-slate-100'" class="px-4 py-1.5 rounded-full text-xs font-bold transition">All Devices (<%= products.length %>)</button>
+          <button @click="filterColor = 'all'" :class="filterColor === 'all' ? 'bg-orange-500 text-white' : 'bg-white text-slate-700 border hover:bg-slate-100'" class="px-4 py-1.5 rounded-full text-xs font-bold transition">All Devices (<%= (products || []).length %>)</button>
           <button @click="filterColor = 'Black'" :class="filterColor === 'Black' ? 'bg-orange-500 text-white' : 'bg-white text-slate-700 border hover:bg-slate-100'" class="px-4 py-1.5 rounded-full text-xs font-bold transition">Black Series</button>
           <button @click="filterColor = 'Silver'" :class="filterColor === 'Silver' ? 'bg-orange-500 text-white' : 'bg-white text-slate-700 border hover:bg-slate-100'" class="px-4 py-1.5 rounded-full text-xs font-bold transition">Silver Series</button>
         </div>
@@ -71,7 +71,7 @@
 
       <!-- Electronics Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6">
-        <template x-for="(product, idx) in filteredProducts" :key="product._id">
+        <template x-for="(product, idx) in filteredProducts" :key="product.id || product._id || idx">
           
           <div @click="openModal(idx)" class="bg-white border border-slate-200 rounded-xl p-4 flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer relative group">
             
@@ -79,7 +79,7 @@
               <span x-show="product.badge" x-text="product.badge" class="bg-slate-900 text-orange-400 border border-orange-500/30 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider"></span>
               <span x-show="!product.badge"></span>
 
-              <form :action="'/wishlist/add/' + product._id" method="POST" @click.stop>
+              <form :action="'/wishlist/add/' + (product.id || product._id)" method="POST" @click.stop>
                 <input type="hidden" name="title" :value="product.title">
                 <input type="hidden" name="price" :value="product.price">
                 <input type="hidden" name="image" :value="product.image">
@@ -88,13 +88,13 @@
             </div>
 
             <div class="h-44 flex items-center justify-center my-3 overflow-hidden bg-slate-50 rounded-lg p-2">
-              <img :src="product.image" :alt="product.title" class="max-h-full object-contain group-hover:scale-105 transition duration-300">
+              <img :src="product.image || '/images/default.jpg'" :alt="product.title" class="max-h-full object-contain group-hover:scale-105 transition duration-300">
             </div>
 
             <div>
               <div class="flex items-center justify-between text-[9px] text-slate-400 font-bold uppercase mb-1">
-                <span x-text="product.category"></span>
-                <span class="text-slate-500 font-semibold" x-text="product.color"></span>
+                <span x-text="product.category || 'Electronics'"></span>
+                <span class="text-slate-500 font-semibold" x-text="product.color || ''"></span>
               </div>
               <h3 class="font-bold text-xs text-slate-900 line-clamp-1" x-text="product.title"></h3>
               
@@ -120,12 +120,12 @@
         <button @click="closeModal()" class="absolute top-3 right-3 z-10 w-8 h-8 bg-slate-100 hover:bg-red-100 text-slate-600 hover:text-red-500 rounded-full flex items-center justify-center font-bold text-xs">✕</button>
 
         <div class="w-full md:w-1/2 bg-slate-100 flex items-center justify-center p-6">
-          <img :src="currentProduct.image" :alt="currentProduct.title" class="max-h-72 object-contain drop-shadow-lg">
+          <img :src="currentProduct.image || '/images/default.jpg'" :alt="currentProduct.title" class="max-h-72 object-contain drop-shadow-lg">
         </div>
 
         <div class="w-full md:w-1/2 p-6 flex flex-col justify-between">
           <div>
-            <span class="text-[9px] bg-slate-900 text-orange-400 px-2.5 py-1 rounded-md font-bold uppercase tracking-wider" x-text="currentProduct.category"></span>
+            <span class="text-[9px] bg-slate-900 text-orange-400 px-2.5 py-1 rounded-md font-bold uppercase tracking-wider" x-text="currentProduct.category || 'Electronics'"></span>
             <h2 class="text-xl font-black text-slate-900 mt-3" x-text="currentProduct.title"></h2>
             
             <div class="flex items-end gap-3 my-3">
@@ -133,8 +133,8 @@
               <span class="text-xs text-slate-400 line-through mb-1" x-show="currentProduct.oldPrice" x-text="'$' + currentProduct.oldPrice"></span>
             </div>
 
-            <p class="text-xs text-slate-600 leading-relaxed mb-4" x-text="currentProduct.description"></p>
-            <div class="text-xs text-slate-500 font-semibold mb-4">Color Option: <span class="text-slate-900 font-bold" x-text="currentProduct.color"></span></div>
+            <p class="text-xs text-slate-600 leading-relaxed mb-4" x-text="currentProduct.description || 'No description available.'"></p>
+            <div class="text-xs text-slate-500 font-semibold mb-4">Color Option: <span class="text-slate-900 font-bold" x-text="currentProduct.color || 'Standard'"></span></div>
           </div>
 
           <!-- Buy Now Action Button -->
@@ -230,7 +230,7 @@
         get filteredProducts() {
           return this.products.filter(p => {
             const matchesColor = this.filterColor === 'all' || p.color === this.filterColor;
-            const matchesSearch = p.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+            const matchesSearch = p.title ? p.title.toLowerCase().includes(this.searchQuery.toLowerCase()) : true;
             return matchesColor && matchesSearch;
           });
         },

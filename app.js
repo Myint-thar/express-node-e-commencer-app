@@ -1,24 +1,36 @@
+require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const { Op } = require('sequelize');
+
+// Database & Model Imports
+const sequelize = require('./config/db');
+const Product = require('./schema/products');
+
 const app = express();
 
-// View Engine & Static Setup
+// DATABASE SYNC & CONNECTION
+sequelize.sync()
+  .then(() => console.log('MySQL Database Connected & Synced with Sequelize!'))
+  .catch((err) => console.error('Database Sync Error:', err));
+
+// VIEW ENGINE & STATIC SETUP
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Session Setup
+// SESSION SETUP
 app.use(session({
-  secret: 'famsworld_secret_key',
+  secret: process.env.SESSION_SECRET || 'famsworld_secret_key',
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
-// Global Middlewares (res.locals Setup)
+// GLOBAL MIDDLEWARES (res.locals Setup)
 app.use((req, res, next) => {
   res.locals.currentUser = req.session ? req.session.user : null;
   res.locals.user = req.session ? req.session.user : null;
@@ -27,18 +39,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes Import
-const homeRoute = require('./routes/homeroute');
-const productRoute = require('./routes/productroute');
-
-// Static Pages
+// STATIC PAGES
 app.get('/about', (req, res) => res.render('about'));
 app.get('/contact', (req, res) => res.render('contact'));
+app.get('/faq', (req, res) => res.render('faq'));
 
-// -------------------------------------------------------------
 // CART & WISHLIST HANDLERS
-// -------------------------------------------------------------
-
 app.post('/cart/add/:id', (req, res) => {
   if (!req.session.cart) req.session.cart = [];
   const pId = String(req.params.id);
@@ -104,123 +110,86 @@ app.post('/wishlist/remove/:id', (req, res) => {
   res.redirect(redirectUrl);
 });
 
-// -------------------------------------------------------------
-// CATEGORY ROUTES
-// -------------------------------------------------------------
+// CATEGORY ROUTES (CONNECTED TO MYSQL DATABASE)
 
-app.get('/products/category/electronics', (req, res) => {
-  const electronicsTitles = [
-    "Wireless Over-Ear Headphones", "Smart Watch Series X", "Gaming Mouse RGB",
-    "Mechanical Keyboard", "Bluetooth Portable Speaker", "4K Ultra HD Monitor",
-    "Noise Canceling Earbuds", "Wireless Charging Pad", "USB-C Multiport Hub",
-    "HD Web Camera 1080p", "Smart Fitness Tracker", "Mini Drone 4K"
-  ];
+// 1. Electronics Category Page (သန့်ရှင်းပြီးသား Route တစ်ခုတည်း)
+app.get('/products/category/electronics', async (req, res) => {
+  try {
+    let electronics = await Product.findAll({
+      where: {
+        category: {
+          [Op.or]: ['Electronics', 'electronics', 'Tech', 'Gadgets']
+        }
+      }
+    });
 
-  const electronicsList = Array.from({ length: 120 }, (_, i) => {
-    const itemTitle = electronicsTitles[i % electronicsTitles.length];
-    const modelNum = Math.floor(i / electronicsTitles.length) + 1;
-    return {
-      id: `el-${i + 1}`,
-      _id: `el-${i + 1}`,
-      title: `${itemTitle} Gen ${modelNum}`,
-      category: "Electronics",
-      price: (29.99 + ((i * 7) % 200)).toFixed(2),
-      oldPrice: i % 2 === 0 ? (59.99 + ((i * 5) % 250)).toFixed(2) : null,
-      image: `https://picsum.photos/seed/tech${i + 200}/300/300`,
-      badge: i % 5 === 0 ? "SALE" : (i % 8 === 0 ? "BEST" : null),
-      color: i % 2 === 0 ? "Black" : "Silver",
-      description: `High performance ${itemTitle} with latest features.`
-    };
-  });
+    if (electronics.length === 0) electronics = await Product.findAll();
 
-  return res.render('electronics', {
-    products: electronicsList,
-    wishlistItems: req.session?.wishlist || [],
-    cartItems: req.session?.cart || []
-  });
+    res.render('electronics', {
+      products: electronics,
+      electronics: electronics,
+      wishlistItems: req.session?.wishlist || [],
+      cartItems: req.session?.cart || []
+    });
+  } catch (error) {
+    console.error('Error fetching electronics:', error);
+    res.status(500).send('Server Error');
+  }
 });
 
-app.get('/products/category/comics-manga', (req, res) => {
-  const mangaTitles = [
-    "One Piece", "Naruto Shippuden", "Attack on Titan", "Jujutsu Kaisen",
-    "Demon Slayer", "Chainsaw Man", "Bleach", "Dragon Ball Super",
-    "My Hero Academia", "Spy x Family", "Tokyo Ghoul", "Berserk"
-  ];
+// 2. Comics & Manga Category Page
+app.get('/products/category/comics-manga', async (req, res) => {
+  try {
+    let comics = await Product.findAll({
+      where: {
+        category: {
+          [Op.or]: ['Comics & Manga', 'Manga', 'Comics']
+        }
+      }
+    });
 
-  const authors = [
-    "Eiichiro Oda", "Masashi Kishimoto", "Hajime Isayama", "Gege Akutami",
-    "Koyoharu Gotouge", "Tatsuki Fujimoto", "Tite Kubo", "Akira Toriyama",
-    "Kohei Horikoshi", "Tatsuya Endo", "Sui Ishida", "Kentaro Miura"
-  ];
+    if (comics.length === 0) comics = await Product.findAll();
 
-  const comicsList = Array.from({ length: 120 }, (_, i) => {
-    const titleIndex = i % mangaTitles.length;
-    const titleName = mangaTitles[titleIndex];
-    const authorName = authors[titleIndex];
-    const volNum = Math.floor(i / mangaTitles.length) + 1;
-    const itemId = `cm-${i + 1}`;
-    const imgUrl = `https://picsum.photos/seed/manga${i + 100}/300/420`;
-
-    return {
-      id: itemId,
-      _id: itemId,
-      title: `${titleName} Vol. ${volNum}`,
-      author: authorName,
-      genre: "Action/Manga",
-      category: "Comics & Manga",
-      price: (8.99 + (i % 12)).toFixed(2),
-      oldPrice: i % 3 === 0 ? (14.99 + (i % 5)).toFixed(2) : null,
-      cover: imgUrl,
-      image: imgUrl,
-      badge: i % 7 === 0 ? "HOT" : (i % 4 === 0 ? "NEW" : null),
-      color: "Paperback",
-      description: `${titleName} Volume ${volNum} comic book.`
-    };
-  });
-
-  res.render('comics&manga', {
-    mangaItems: comicsList,
-    products: comicsList,
-    wishlistItems: req.session?.wishlist || [],
-    cartItems: req.session?.cart || []
-  });
+    res.render('comics&manga', {
+      mangaItems: comics,
+      products: comics,
+      comics: comics,
+      wishlistItems: req.session?.wishlist || [],
+      cartItems: req.session?.cart || []
+    });
+  } catch (error) {
+    console.error('Error fetching comics:', error);
+    res.status(500).send('Server Error');
+  }
 });
 
-app.get('/products/category/:category', (req, res) => {
-  const categoryParam = req.params.category.toLowerCase();
+// ELECTRONICS DETAIL ROUTE
+app.get('/electronics/detail/:id', async (req, res) => {
+  try {
+    const item = await Product.findByPk(req.params.id);
+    if (!item) return res.status(404).send('Product Not Found');
 
-  const filteredProducts = (req.products || []).filter(p =>
-    p && p.category && p.category.toLowerCase() === categoryParam
-  );
-
-  res.render('products/index', {
-    products: filteredProducts,
-    electronics: [],
-    comics: [],
-    wishlistItems: req.session?.wishlist || [],
-    cartItems: req.session?.cart || []
-  });
+    res.render('electronics-detail', { 
+      product: item,
+      wishlistItems: req.session?.wishlist || [],
+      cartItems: req.session?.cart || []
+    });
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
 });
 
-// -------------------------------------------------------------
 // PROMOTION & USER AUTH ROUTES
-// -------------------------------------------------------------
-
-app.get('/promotion', (req, res) => {
-  const promoItems = Array.from({ length: 15 }, (_, i) => ({
-    _id: `promo-${i + 1}`,
-    title: i % 2 === 0 ? `Gaming Headset Pro Gen ${i + 1}` : `One Piece Special Edition Vol. ${i + 1}`,
-    category: i % 2 === 0 ? "Electronics" : "Manga",
-    price: (19.99 + (i * 5)).toFixed(2),
-    oldPrice: (39.99 + (i * 8)).toFixed(2),
-    image: `https://picsum.photos/seed/promo${i + 50}/300/300`,
-    badge: `${20 + (i * 3)}% OFF`
-  }));
-
-  res.render('promotion', {
-    promoItems,
-    user: req.session?.user || null
-  });
+app.get('/promotion', async (req, res) => {
+  try {
+    const promoItems = await Product.findAll({ limit: 15 });
+    res.render('promotion', {
+      promoItems,
+      user: req.session?.user || null
+    });
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
 });
 
 app.get('/login', (req, res) => {
@@ -248,138 +217,100 @@ app.post('/contact/send', (req, res) => {
   res.redirect('/?msg=contact_sent');
 });
 
-// -------------------------------------------------------------
+// MANGA DETAIL, READER & E-SLIP ROUTES
+app.get('/manga/detail/:id', async (req, res) => {
+  try {
+    const mangaId = req.params.id;
+    const manga = await Product.findByPk(mangaId) || {
+      id: mangaId,
+      title: `Manga Volume (${mangaId})`,
+      author: "Eiichiro Oda",
+      genre: "Action / Adventure / Fantasy",
+      price: "9.99",
+      cover: `https://picsum.photos/seed/manga${mangaId}/400/600`,
+      description: "An epic adventure manga following the journey of brave heroes across strange lands."
+    };
+    res.render('manga-detail', { manga });
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+});
+
+app.get('/manga/read/:id', async (req, res) => {
+  try {
+    const mangaId = req.params.id;
+    const pages = [
+      `https://picsum.photos/seed/manga-p1-${mangaId}/700/1000`,
+      `https://picsum.photos/seed/manga-p2-${mangaId}/700/1000`,
+      `https://picsum.photos/seed/manga-p3-${mangaId}/700/1000`
+    ];
+
+    const dbManga = await Product.findByPk(mangaId);
+
+    const manga = {
+      id: mangaId,
+      title: dbManga ? dbManga.title : `Manga Volume (${mangaId})`,
+      category: "Comics & Manga",
+      price: dbManga ? dbManga.price : "9.99",
+      image: pages[0],
+      description: "Enjoy reading high quality manga and comics."
+    };
+
+    res.render('manga-read', { 
+      manga,
+      mangaId, 
+      title: `${manga.title} - Chapter 1`, 
+      pages 
+    });
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+});
+
+app.get('/eslip/:id', async (req, res) => {
+  try {
+    const mangaId = req.params.id;
+    const dbManga = await Product.findByPk(mangaId);
+
+    const slipData = {
+      slipNo: "FAM-" + Math.floor(100000 + Math.random() * 900000),
+      mangaTitle: dbManga ? dbManga.title : `Manga Volume (${mangaId})`,
+      price: dbManga ? dbManga.price : "9.99",
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      paymentMethod: "KPay / WavePay",
+      status: "PAID / SUCCESSFUL"
+    };
+    res.render('eslip', { slip: slipData });
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+});
+
 // MAIN HOME ROUTE
-// -------------------------------------------------------------
+app.get('/', async (req, res) => {
+  try {
+    const electronics = await Product.findAll({
+      where: { category: 'Electronics' },
+      limit: 10
+    });
 
-app.get('/', (req, res) => {
-  const electronics = Array.from({ length: 10 }, (_, i) => ({
-    _id: `el-home-${i + 1}`,
-    title: `Smart Tech Device Gen ${i + 1}`,
-    category: "Electronics",
-    price: (29.99 + (i * 12)).toFixed(2),
-    image: `https://picsum.photos/seed/tech${i + 100}/300/300`,
-    badge: i % 2 === 0 ? "SALE" : "HOT"
-  }));
+    const comics = await Product.findAll({
+      where: { category: 'Comics & Manga' },
+      limit: 10
+    });
 
-  const comics = Array.from({ length: 10 }, (_, i) => ({
-    _id: `cm-home-${i + 1}`,
-    title: i % 2 === 0 ? `One Piece Vol. ${i + 1}` : `Attack on Titan Vol. ${i + 1}`,
-    category: "Manga",
-    price: (8.99 + (i * 2)).toFixed(2),
-    image: `https://picsum.photos/seed/manga${i + 100}/300/300`,
-    badge: "POPULAR"
-  }));
-
-  res.render('products/index', {
-    electronics,
-    comics,
-    wishlistItems: req.session?.wishlist || [],
-    cartItems: req.session?.cart || []
-  });
+    res.render('products/index', {
+      electronics,
+      comics,
+      wishlistItems: req.session?.wishlist || [],
+      cartItems: req.session?.cart || []
+    });
+  } catch (error) {
+    console.error('Home Page Database Error:', error);
+    res.status(500).send('Server Error');
+  }
 });
-
-// -------------------------------------------------------------
-// MANGA DETAIL, READER & E-SLIP ROUTES (NOW UN-NESTED)
-// -------------------------------------------------------------
-
-app.get('/manga/detail/:id', (req, res) => {
-  const mangaId = req.params.id;
-  const manga = {
-    id: mangaId,
-    title: `Manga Volume (${mangaId})`,
-    author: "Eiichiro Oda",
-    genre: "Action / Adventure / Fantasy",
-    price: "9.99",
-    cover: `https://picsum.photos/seed/manga${mangaId}/400/600`,
-    description: "An epic adventure manga following the journey of brave heroes across strange lands."
-  };
-  res.render('manga-detail', { manga });
-});
-
-app.get('/manga/read/:id', (req, res) => {
-  const mangaId = req.params.id;
-  const pages = [
-    `https://picsum.photos/seed/manga-p1-${mangaId}/700/1000`,
-    `https://picsum.photos/seed/manga-p2-${mangaId}/700/1000`,
-    `https://picsum.photos/seed/manga-p3-${mangaId}/700/1000`
-  ];
-  const manga = {
-    id: mangaId,
-    title: `Manga Volume (${mangaId})`,
-    category: "Comics & Manga",
-    price: "9.99",
-    image: pages[0],
-    description: "Enjoy reading high quality manga and comics."
-  };
-
-  res.render('manga-read', { 
-    manga,
-    mangaId, 
-    title: `Manga Volume (${mangaId}) - Chapter 1`, 
-    pages 
-  });
-});
-
-app.get('/eslip/:id', (req, res) => {
-  const mangaId = req.params.id;
-  const slipData = {
-    slipNo: "FAM-" + Math.floor(100000 + Math.random() * 900000),
-    mangaTitle: `Manga Volume (${mangaId})`,
-    price: "9.99",
-    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
-    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    paymentMethod: "KPay / WavePay",
-    status: "PAID / SUCCESSFUL"
-  };
-  res.render('eslip', { slip: slipData });
-
-  // Manga Reader Route
-app.get('/manga/read/:id', (req, res) => {
-  const mangaId = req.params.id;
-  // Sample Pages with high quality manga panels
-  const pages = [
-    `https://picsum.photos/seed/manga-panel-1-${mangaId}/800/1200`,
-    `https://picsum.photos/seed/manga-panel-2-${mangaId}/800/1200`,
-    `https://picsum.photos/seed/manga-panel-3-${mangaId}/800/1200`
-  ];
-  
-  res.render('manga-read', { 
-    mangaId, 
-    title: `Manga Volume (${mangaId}) - Chapter 1`, 
-    pages 
-  });
-});
-
-// E-Slip Route
-app.get('/eslip/:id', (req, res) => {
-  const mangaId = req.params.id;
-  const slipData = {
-    slipNo: "FAM-" + Math.floor(100000 + Math.random() * 900000),
-    mangaTitle: `Manga Volume (${mangaId})`,
-    price: "9.99",
-    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
-    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    paymentMethod: "KPay / WavePay",
-    status: "PAID / SUCCESSFUL"
-  };
-  res.render('eslip', { slip: slipData });
-});
-// app.js
-
-// Static Pages Routes
-app.get('/about', (req, res) => res.render('about'));
-app.get('/contact', (req, res) => res.render('contact'));
-app.get('/faq', (req, res) => res.render('faq')); 
-
-app.use('/', homeRoute);
-app.use('/products', productRoute);
-
-});
-
-// Register Extra Routes
-app.use('/', homeRoute);
-app.use('/products', productRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
