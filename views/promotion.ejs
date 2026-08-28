@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promotions & Special Deals - FAMSWORLD</title>
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    [x-cloak] { display: none !important; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    @media print {
+      body * { visibility: hidden; }
+      #e-slip-card, #e-slip-card * { visibility: visible; }
+      #e-slip-card { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- Backend Data Injection Block -->
+  <script id="promo-data" type="application/json">
+    <%- JSON.stringify(promoItems || []) %>
+  </script>
+  <script>
+    window.SERVER_PROMO = JSON.parse(document.getElementById('promo-data').textContent);
+  </script>
+
+  <div x-data="promoApp()" class="flex-grow flex flex-col">
+
+    <!-- Navigation Bar Component -->
+    <%- include('partials/navbar') %>
+
+    <!-- Promotional Hero Banner -->
+    <div class="bg-slate-950 text-white py-12 px-6 border-b border-orange-500/30 relative overflow-hidden">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+        <div>
+          <div class="flex items-center gap-3">
+            <span class="text-3xl animate-bounce">🔥</span>
+            <h1 class="text-3xl sm:text-4xl font-black text-orange-500 tracking-wider uppercase">SPECIAL PROMOTIONS</h1>
+          </div>
+          <p class="text-xs text-slate-300 mt-2 max-w-xl leading-relaxed">
+            Exclusive limited-time discount deals on Manga volumes, Tech gadgets, and bundles. Order now to get instant digital receipt confirmation!
+          </p>
+        </div>
+        
+        <div class="bg-red-900/60 border border-red-700/50 px-5 py-3 rounded-2xl flex items-center gap-3 backdrop-blur shadow-lg">
+          <span class="text-2xl">🏷️</span>
+          <div>
+            <div class="text-xs font-black text-white uppercase tracking-wider">EXCLUSIVE OFFERS</div>
+            <div class="text-[10px] text-red-200">SAVE UP TO 50% OFF TODAY</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto py-10 px-6 flex-grow w-full">
+
+      <!-- Search & Category Filter Section -->
+      <div class="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4 mb-8 pb-6 border-b border-slate-200">
+        
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 lg:pb-0">
+          <button 
+            @click="selectedCategory = 'ALL'"
+            :class="selectedCategory === 'ALL' ? 'bg-orange-500 text-white font-black' : 'bg-white text-slate-600 hover:bg-slate-100 font-bold'"
+            class="px-4 py-2 rounded-xl text-xs transition border border-slate-200 whitespace-nowrap uppercase tracking-wider"
+          >
+            All Deals
+          </button>
+          <button 
+            @click="selectedCategory = 'Manga'"
+            :class="selectedCategory === 'Manga' ? 'bg-orange-500 text-white font-black' : 'bg-white text-slate-600 hover:bg-slate-100 font-bold'"
+            class="px-4 py-2 rounded-xl text-xs transition border border-slate-200 whitespace-nowrap uppercase tracking-wider"
+          >
+            📚 Manga
+          </button>
+          <button 
+            @click="selectedCategory = 'Tech'"
+            :class="selectedCategory === 'Tech' ? 'bg-orange-500 text-white font-black' : 'bg-white text-slate-600 hover:bg-slate-100 font-bold'"
+            class="px-4 py-2 rounded-xl text-xs transition border border-slate-200 whitespace-nowrap uppercase tracking-wider"
+          >
+            ⚡ Tech & Electronics
+          </button>
+        </div>
+
+        <!-- Live Search Box -->
+        <div class="relative w-full lg:w-80">
+          <input
+            type="text"
+            x-model="searchQuery"
+            placeholder="Search promotion title or badge..."
+            class="w-full bg-white border border-slate-300 rounded-xl py-2.5 pl-10 pr-10 text-xs font-semibold focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-sm transition"
+          >
+          <span class="absolute left-3 top-2.5 text-slate-400 text-sm">🔍</span>
+          <button
+            x-show="searchQuery.length > 0"
+            @click="searchQuery = ''"
+            class="absolute right-3 top-2.5 text-slate-400 hover:text-red-500 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-full w-5 h-5 flex items-center justify-center transition"
+          >✕</button>
+        </div>
+
+      </div>
+
+      <!-- Search Counter Banner -->
+      <div class="mb-6 text-xs font-bold text-slate-500 flex justify-between items-center" x-show="searchQuery || selectedCategory !== 'ALL'" x-cloak>
+        <span>Active Filters: <span class="text-orange-500" x-text="searchQuery ? 'Search: ' + searchQuery : selectedCategory"></span></span>
+        <span x-text="filteredPromos.length + ' offer(s) available'"></span>
+      </div>
+
+      <!-- Promo Products Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5" x-show="filteredPromos.length > 0">
+        <template x-for="(item, idx) in filteredPromos" :key="item._id || idx">
+          
+          <div 
+            @click="openModal(item)" 
+            class="bg-white border border-slate-200 rounded-2xl p-3 flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition duration-300 relative group cursor-pointer"
+          >
+            <!-- Badge -->
+            <span 
+              class="absolute top-3 left-3 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow z-10 uppercase tracking-wider" 
+              x-text="item.badge || 'PROMO'"
+            ></span>
+
+            <!-- Image Container -->
+            <div class="h-44 flex items-center justify-center my-2 bg-slate-50 rounded-xl p-2 overflow-hidden relative">
+              <img :src="item.image" :alt="item.title" class="max-h-full object-contain group-hover:scale-105 transition duration-300">
+            </div>
+
+            <!-- Content Details -->
+            <div>
+              <span class="text-[8px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded uppercase tracking-wider" x-text="item.category"></span>
+              <h3 class="font-bold text-xs text-slate-900 line-clamp-1 mt-1.5" x-text="item.title"></h3>
+              
+              <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-orange-500 font-black text-sm" x-text="'$' + item.price"></span>
+                <span class="text-slate-400 line-through text-[11px]" x-show="item.oldPrice" x-text="'$' + item.oldPrice"></span>
+              </div>
+            </div>
+
+            <!-- Modal Trigger Button -->
+            <button 
+              @click.stop="openModal(item)" 
+              class="mt-3 w-full bg-slate-900 group-hover:bg-orange-500 text-white font-black py-2 rounded-lg text-[10px] transition uppercase tracking-wider flex items-center justify-center gap-1 shadow"
+            >
+              <span>🔥 VIEW DETAILS</span>
+            </button>
+          </div>
+
+        </template>
+      </div>
+
+      <!-- No Promo Results Found State -->
+      <div x-show="filteredPromos.length === 0" x-cloak class="text-center py-16 bg-white rounded-2xl border border-slate-200 my-6 shadow-sm">
+        <span class="text-4xl block mb-2">🎁</span>
+        <h3 class="text-sm font-bold text-slate-800">No Promotions Match Your Search</h3>
+        <p class="text-xs text-slate-400 mt-1">Try clearing your search query or changing category filters.</p>
+        <button 
+          @click="searchQuery = ''; selectedCategory = 'ALL'" 
+          class="mt-4 bg-orange-500 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-orange-600 transition uppercase tracking-wider"
+        >
+          Reset All Filters
+        </button>
+      </div>
+
+    </main>
+
+    <!-- ================= 1. PROMOTION DETAILS CARD MODAL ================= -->
+    <div 
+      x-show="isModalOpen" 
+      x-cloak 
+      class="fixed inset-0 bg-slate-950/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm" 
+      @click.self="closeModal()"
+    >
+      <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col md:flex-row relative overflow-hidden border border-slate-200" x-transition>
+        
+        <!-- Close Button -->
+        <button 
+          @click="closeModal()" 
+          class="absolute top-3 right-3 z-20 w-8 h-8 bg-slate-100 hover:bg-red-100 text-slate-600 hover:text-red-500 rounded-full flex items-center justify-center font-bold text-xs transition"
+        >✕</button>
+
+        <!-- Product Image Side -->
+        <div class="w-full md:w-1/2 bg-slate-100 flex items-center justify-center p-6 relative">
+          <span class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow uppercase tracking-wider" x-text="selectedItem.badge || 'SPECIAL OFFER'"></span>
+          <img :src="selectedItem.image" :alt="selectedItem.title" class="max-h-64 object-contain drop-shadow-lg">
+        </div>
+
+        <!-- Product Details Side -->
+        <div class="w-full md:w-1/2 p-6 flex flex-col justify-between">
+          <div>
+            <span class="text-[9px] bg-orange-100 text-orange-600 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider" x-text="selectedItem.category"></span>
+            <h2 class="text-lg font-black text-slate-900 mt-2 leading-snug" x-text="selectedItem.title"></h2>
+            
+            <div class="flex items-end gap-3 my-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <span class="text-2xl font-black text-orange-500" x-text="'$' + selectedItem.price"></span>
+              <span class="text-xs text-slate-400 line-through mb-1" x-show="selectedItem.oldPrice" x-text="'$' + selectedItem.oldPrice"></span>
+              <span class="text-[10px] bg-red-100 text-red-600 font-black px-2 py-0.5 rounded uppercase mb-1">PROMO PRICE</span>
+            </div>
+
+            <div class="space-y-2 text-xs text-slate-600 mb-4">
+              <div class="flex items-center gap-2">
+                <span class="text-emerald-500 font-bold">✓</span>
+                <span>Original Authentic Item Guaranteed</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-emerald-500 font-bold">✓</span>
+                <span>Instant Digital E-Receipt Included</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-emerald-500 font-bold">✓</span>
+                <span>Fast Customer Support Assistance</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Purchase Action Button -->
+          <button 
+            @click="processBuyNow()" 
+            class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3 rounded-xl transition text-xs shadow-lg uppercase tracking-wider flex items-center justify-center gap-2"
+          >
+            <span>⚡ BUY NOW AT PROMO PRICE</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= 2. DIGITAL E-SLIP RECEIPT MODAL ================= -->
+    <div 
+      x-show="isSlipOpen" 
+      x-cloak 
+      class="fixed inset-0 bg-slate-950/85 z-[110] flex items-center justify-center p-4 backdrop-blur-sm" 
+      @click.self="closeSlip()"
+    >
+      <div id="e-slip-card" class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border-t-8 border-orange-500 relative overflow-hidden" x-transition>
+        
+        <!-- Header -->
+        <div class="text-center pb-4 border-b border-dashed border-slate-300">
+          <div class="flex items-center justify-center gap-1 text-xl font-black text-slate-900 tracking-wider">
+            <span class="text-orange-500">FAM</span>SWORLD
+          </div>
+          <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-0.5">OFFICIAL PROMOTION E-RECEIPT</p>
+        </div>
+
+        <!-- Success Alert -->
+        <div class="my-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center gap-3">
+          <span class="text-emerald-500 text-2xl">🎉</span>
+          <div>
+            <h4 class="text-xs font-bold text-emerald-800">PURCHASE SUCCESSFUL!</h4>
+            <p class="text-[10px] text-emerald-600">You have successfully claimed this promotion deal.</p>
+          </div>
+        </div>
+
+        <!-- Order Information List -->
+        <div class="space-y-2 text-xs text-slate-700 py-3 border-b border-dashed border-slate-300">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Order Ref:</span>
+            <span class="font-mono font-bold text-slate-900" x-text="slipData.orderId"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Date & Time:</span>
+            <span class="font-semibold" x-text="slipData.date"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Item Purchased:</span>
+            <span class="font-bold text-slate-900" x-text="slipData.title"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Applied Deal:</span>
+            <span class="font-bold text-red-600" x-text="slipData.badge"></span>
+          </div>
+        </div>
+
+        <!-- Price Breakdown -->
+        <div class="py-3 border-b border-dashed border-slate-300 space-y-1.5">
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-500">Original Price</span>
+            <span class="line-through text-slate-400" x-text="'$' + (slipData.oldPrice || slipData.price)"></span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-500">Discounted Price</span>
+            <span class="text-emerald-600 font-bold" x-text="'$' + slipData.price"></span>
+          </div>
+          <div class="flex justify-between text-sm font-black text-slate-900 pt-2 border-t">
+            <span>TOTAL AMOUNT PAID</span>
+            <span class="text-orange-500" x-text="'$' + slipData.price"></span>
+          </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="mt-6 flex gap-3 no-print">
+          <button 
+            @click="printSlip()" 
+            class="flex-1 bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-slate-800 transition uppercase tracking-wider flex items-center justify-center gap-1"
+          >
+            <span>🖨️ PRINT SLIP</span>
+          </button>
+          <button 
+            @click="closeSlip()" 
+            class="flex-1 bg-orange-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-orange-600 transition uppercase tracking-wider"
+          >
+            DONE
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-950 text-slate-500 text-xs py-6 text-center border-t border-slate-800 mt-auto">
+    <div class="max-w-7xl mx-auto px-6">
+      <p>© 2026 FAMSWORLD Digital Store. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Alpine.js Application Logic -->
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('promoApp', () => ({
+        promoItems: window.SERVER_PROMO || [],
+        searchQuery: '',
+        selectedCategory: 'ALL',
+        isModalOpen: false,
+        isSlipOpen: false,
+        selectedItem: {},
+        slipData: {},
+
+        // Dynamic Filtering
+        get filteredPromos() {
+          return this.promoItems.filter(item => {
+            const matchesSearch = !this.searchQuery.trim() || 
+              item.title.toLowerCase().includes(this.searchQuery.toLowerCase().trim()) ||
+              (item.badge && item.badge.toLowerCase().includes(this.searchQuery.toLowerCase().trim()));
+            
+            const matchesCategory = this.selectedCategory === 'ALL' || 
+              (item.category && item.category.toLowerCase() === this.selectedCategory.toLowerCase());
+
+            return matchesSearch && matchesCategory;
+          });
+        },
+
+        openModal(item) {
+          this.selectedItem = item;
+          this.isModalOpen = true;
+        },
+        closeModal() {
+          this.isModalOpen = false;
+        },
+        processBuyNow() {
+          const item = this.selectedItem;
+          const now = new Date();
+          
+          this.slipData = {
+            orderId: 'PRM-' + Math.floor(100000 + Math.random() * 900000),
+            date: now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            title: item.title,
+            price: item.price,
+            oldPrice: item.oldPrice,
+            badge: item.badge || 'SPECIAL DEAL'
+          };
+
+          this.isModalOpen = false;
+          this.isSlipOpen = true;
+        },
+        closeSlip() {
+          this.isSlipOpen = false;
+        },
+        printSlip() {
+          window.print();
+        }
+      }));
+    });
+  </script>
+</body>
+</html>

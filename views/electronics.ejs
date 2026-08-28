@@ -10,6 +10,12 @@
   <style>
     [x-cloak] { display: none !important; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
+    @media print {
+      body * { visibility: hidden; }
+      #e-slip-card, #e-slip-card * { visibility: visible; }
+      #e-slip-card { position: absolute; left: 0; top: 0; width: 100%; }
+      .no-print { display: none !important; }
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
@@ -27,17 +33,16 @@
     <%- include('partials/navbar') %>
 
     <!-- Electronics Banner Header -->
-    <div class="bg-slate-950 text-white py-12 px-8 border-b border-orange-500/40">
+    <div class="bg-slate-950 text-white py-10 px-8 border-b border-orange-500/40">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div class="flex items-center gap-3">
             <span class="text-3xl">🔌</span>
             <h1 class="text-3xl font-black tracking-wider text-orange-500">ELECTRONICS & TECH</h1>
           </div>
-          <p class="text-xs text-slate-400 mt-2">Discover high-performance gadgets, audio gear, and smart devices.</p>
+          <p class="text-xs text-slate-400 mt-1">Discover high-performance gadgets, audio gear, and smart devices.</p>
         </div>
         
-        <!-- Total Items Counter -->
         <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl flex items-center gap-3 shadow-lg">
           <span class="text-xs text-slate-400 font-bold uppercase">Total Gadgets</span>
           <span class="bg-orange-500 text-white text-xs font-black px-2.5 py-1 rounded-md">
@@ -58,14 +63,13 @@
           <button @click="filterColor = 'Silver'" :class="filterColor === 'Silver' ? 'bg-orange-500 text-white' : 'bg-white text-slate-700 border hover:bg-slate-100'" class="px-4 py-1.5 rounded-full text-xs font-bold transition">Silver Series</button>
         </div>
         
-        <!-- Search Box -->
         <div class="relative w-full md:w-72">
           <input type="text" x-model="searchQuery" placeholder="Search gadgets..." class="w-full bg-white border border-slate-300 rounded-lg py-1.5 px-3 pl-8 text-xs focus:outline-none focus:border-orange-500">
           <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
         </div>
       </div>
 
-      <!-- Electronics Cards (120 Cards) -->
+      <!-- Electronics Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6">
         <template x-for="(product, idx) in filteredProducts" :key="product._id">
           
@@ -100,14 +104,9 @@
               </div>
             </div>
 
-            <form :action="'/cart/add/' + product._id" method="POST" class="mt-4" @click.stop>
-              <input type="hidden" name="title" :value="product.title">
-              <input type="hidden" name="price" :value="product.price">
-              <input type="hidden" name="image" :value="product.image">
-              <button type="submit" class="w-full bg-slate-900 text-white font-bold py-2 rounded-lg text-xs hover:bg-orange-500 transition duration-200">
-                ⚡ ADD TO CART
-              </button>
-            </form>
+            <button @click.stop="openModal(idx)" class="mt-4 w-full bg-slate-900 text-white font-bold py-2 rounded-lg text-xs hover:bg-orange-500 transition duration-200">
+              ⚡ VIEW DETAILS & BUY
+            </button>
           </div>
 
         </template>
@@ -115,7 +114,7 @@
 
     </main>
 
-    <!-- Details Modal -->
+    <!-- 1. Electronics Details Modal -->
     <div x-show="isModalOpen" x-cloak class="fixed inset-0 bg-slate-950/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm" @click.self="closeModal()">
       <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col md:flex-row relative overflow-hidden" x-transition>
         <button @click="closeModal()" class="absolute top-3 right-3 z-10 w-8 h-8 bg-slate-100 hover:bg-red-100 text-slate-600 hover:text-red-500 rounded-full flex items-center justify-center font-bold text-xs">✕</button>
@@ -138,15 +137,80 @@
             <div class="text-xs text-slate-500 font-semibold mb-4">Color Option: <span class="text-slate-900 font-bold" x-text="currentProduct.color"></span></div>
           </div>
 
-          <form :action="'/cart/add/' + currentProduct._id" method="POST">
-             <input type="hidden" name="title" :value="currentProduct.title">
-             <input type="hidden" name="price" :value="currentProduct.price">
-             <input type="hidden" name="image" :value="currentProduct.image">
-             <button type="submit" class="w-full bg-orange-500 text-white font-bold py-3 rounded-lg hover:bg-orange-600 transition text-xs shadow-lg">
-               BUY THIS ITEM NOW
-             </button>
-          </form>
+          <!-- Buy Now Action Button -->
+          <button @click="processBuyNow()" class="w-full bg-orange-500 text-white font-black py-3 rounded-lg hover:bg-orange-600 transition text-xs shadow-lg uppercase tracking-wider">
+            ⚡ BUY THIS ITEM NOW
+          </button>
         </div>
+      </div>
+    </div>
+
+    <!-- 2. Electronics Digital E-Slip Modal -->
+    <div x-show="isSlipOpen" x-cloak class="fixed inset-0 bg-slate-950/85 z-[110] flex items-center justify-center p-4 backdrop-blur-sm" @click.self="closeSlip()">
+      <div id="e-slip-card" class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border-t-8 border-orange-500 relative overflow-hidden" x-transition>
+        
+        <div class="text-center pb-4 border-b border-dashed border-slate-300">
+          <div class="flex items-center justify-center gap-1 text-lg font-black text-slate-900 tracking-wider">
+            <span class="text-orange-500">FAM</span>SWORLD
+          </div>
+          <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-0.5">OFFICIAL E-RECEIPT / E-SLIP</p>
+        </div>
+
+        <div class="my-4 bg-emerald-50 border border-emerald-200 rounded-lg p-3 flex items-center gap-3">
+          <span class="text-emerald-500 text-xl">✅</span>
+          <div>
+            <h4 class="text-xs font-bold text-emerald-800">ELECTRONICS ORDER SUCCESSFUL!</h4>
+            <p class="text-[10px] text-emerald-600">Your gadget purchase has been confirmed.</p>
+          </div>
+        </div>
+
+        <div class="space-y-2 text-xs text-slate-700 py-2 border-b border-dashed border-slate-300">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Order ID:</span>
+            <span class="font-mono font-bold text-slate-900" x-text="slipData.orderId"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Date & Time:</span>
+            <span class="font-semibold" x-text="slipData.date"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Product Name:</span>
+            <span class="font-bold text-slate-900" x-text="slipData.title"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Color/Variant:</span>
+            <span class="font-bold text-slate-800" x-text="slipData.color"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Status:</span>
+            <span class="bg-slate-900 text-white text-[9px] font-bold px-2 py-0.5 rounded">PAID & READY</span>
+          </div>
+        </div>
+
+        <div class="py-3 border-b border-dashed border-slate-300 space-y-1">
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-500">Item Price</span>
+            <span class="font-bold" x-text="'$' + slipData.price"></span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-500">Warranty & Support</span>
+            <span class="text-emerald-600 font-bold">1 YEAR FREE</span>
+          </div>
+          <div class="flex justify-between text-sm font-black text-slate-900 pt-2 border-t">
+            <span>TOTAL AMOUNT PAID</span>
+            <span class="text-orange-500" x-text="'$' + slipData.price"></span>
+          </div>
+        </div>
+
+        <div class="mt-5 flex gap-2 no-print">
+          <button @click="printSlip()" class="flex-1 bg-slate-900 text-white font-bold py-2 rounded-lg text-xs hover:bg-slate-800 transition">
+            🖨️ PRINT SLIP
+          </button>
+          <button @click="closeSlip()" class="flex-1 bg-orange-500 text-white font-bold py-2 rounded-lg text-xs hover:bg-orange-600 transition">
+            DONE
+          </button>
+        </div>
+
       </div>
     </div>
 
@@ -159,7 +223,9 @@
         filterColor: 'all',
         searchQuery: '',
         isModalOpen: false,
+        isSlipOpen: false,
         currentIndex: 0,
+        slipData: {},
 
         get filteredProducts() {
           return this.products.filter(p => {
@@ -174,6 +240,27 @@
         },
         closeModal() {
           this.isModalOpen = false;
+        },
+        processBuyNow() {
+          const product = this.currentProduct;
+          const now = new Date();
+          
+          this.slipData = {
+            orderId: 'EL-ORD-' + Math.floor(100000 + Math.random() * 900000),
+            date: now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            title: product.title,
+            color: product.color || 'Standard',
+            price: product.price
+          };
+
+          this.isModalOpen = false;
+          this.isSlipOpen = true;
+        },
+        closeSlip() {
+          this.isSlipOpen = false;
+        },
+        printSlip() {
+          window.print();
         },
         get currentProduct() {
           return this.filteredProducts[this.currentIndex] || {};

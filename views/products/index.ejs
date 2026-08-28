@@ -3,316 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FAMSWORLD - Store</title>
+  <title>Shop All Categories - FAMSWORLD</title>
+  <link rel="icon" type="image/png" href="/images/logo.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
     [x-cloak] { display: none !important; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
-  <!-- VS Code Error မတက်စေရန် JSON Script ဖြင့် ပြင်ထားပါသည် -->
-  <script id="products-data" type="application/json">
-    <%- JSON.stringify(products || []) %>
-  </script>
-  <script>
-    window.SERVER_PRODUCTS = JSON.parse(document.getElementById('products-data').textContent);
-  </script>
+  <!-- Navbar Component -->
+ <%- include('../partials/navbar') %>
 
-  <% 
-    const wishlist = locals.wishlistItems || [];
-    const cart = locals.cartItems || [];
-    const productList = locals.products || [];
-  %>
-
-  <div x-data="galleryApp()">
-    
-    <!-- Single Navbar (တစ်ထပ်တည်း သန့်သန့်ရှင်းရှင်း ထားရှိပေးထားသည်) -->
-    <nav x-data="{ wishlistOpen: false, cartOpen: false }" class="bg-white shadow-sm sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto py-4 px-8 flex justify-between items-center border-b relative">
-        
-        <!-- Logo (ပထမ Home Page သို့ ပြန်သွားရန် href="/" ထားသည်) -->
-        <a href="/" class="text-2xl font-black tracking-wider text-slate-900">
-          <span class="text-orange-500">FAM</span>SWORLD
-        </a>
-        
-        <div class="hidden md:flex gap-8 text-xs font-bold tracking-wide items-center">
-          <!-- HOME (ပထမ Home Page သို့ ပြန်သွားရန် href="/" ထားသည်) -->
-          <a href="/" class="hover:text-orange-500">HOME</a>
-          
-          <!-- SHOP ALL (ဒုတိယ Products Page သို့ သွားရန် href="/products" ထားသည်) -->
-          <a href="/products" class="text-orange-500">SHOP ALL</a>
-          
-          <a href="/products/category/electronics" class="hover:text-orange-500">ELECTRONICS</a>
-          <a href="/products/best-sellers" class="hover:text-orange-500">BEST SELLERS</a>
-          <a href="/products/new-arrivals" class="hover:text-orange-500">NEW ARRIVALS</a>
-          <a href="/about" class="hover:text-orange-500">ABOUT US</a>
-          <a href="/contact" class="hover:text-orange-500">CONTACT US</a>
-        </div>
-
-        <!-- Right Icons Container -->
-        <div class="flex items-center gap-6 text-slate-700 text-lg">
-          
-          <!-- Wishlist Dropdown Button -->
-          <div class="relative">
-            <button @click="wishlistOpen = !wishlistOpen; cartOpen = false" class="hover:text-orange-500 relative flex items-center p-1 focus:outline-none">
-              ❤️
-              <span class="absolute -top-1 -right-2 bg-orange-500 text-white text-[9px] rounded-full h-4 w-4 flex items-center justify-center font-bold">
-                <%= wishlist.length %>
-              </span>
-            </button>
-
-            <!-- Wishlist Dropdown Box -->
-            <div x-show="wishlistOpen" 
-                 @click.outside="wishlistOpen = false" 
-                 x-cloak 
-                 class="absolute right-0 mt-3 w-80 bg-white border border-gray-200 shadow-2xl rounded-lg p-4 z-50">
-              
-              <div class="flex justify-between items-center border-b pb-2 mb-3">
-                <h4 class="font-bold text-xs text-slate-900">Saved Favorites</h4>
-                <span class="text-[10px] bg-orange-100 text-orange-600 font-bold px-2 py-0.5 rounded-full"><%= wishlist.length %> Items</span>
-              </div>
-
-              <% if (wishlist.length > 0) { %>
-                <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
-                  <% wishlist.forEach(item => { %>
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                      <div class="flex items-center gap-3">
-                        <img src="<%= item.image %>" class="w-10 h-10 object-cover rounded border">
-                        <div>
-                          <p class="text-xs font-bold text-slate-800 line-clamp-1"><%= item.title %></p>
-                          <p class="text-xs text-orange-500 font-bold">$<%= item.price %></p>
-                        </div>
-                      </div>
-                      <form action="/wishlist/remove/<%= item.id || item._id %>" method="POST">
-                        <button type="submit" class="text-gray-400 hover:text-red-500 text-xs font-bold p-1">✕</button>
-                      </form>
-                    </div>
-                  <% }) %>
-                </div>
-              <% } else { %>
-                <p class="text-xs text-gray-400 text-center py-6">Saved Favorites ထဲတွင် မည်သည့်ပစ္စည်းမှ မရှိသေးပါ။</p>
-              <% } %>
-            </div>
-          </div>
-
-          <!-- Cart Dropdown Button -->
-          <div class="relative">
-            <button @click="cartOpen = !cartOpen; wishlistOpen = false" class="hover:text-orange-500 relative flex items-center p-1 focus:outline-none">
-              🛒
-              <span class="absolute -top-1 -right-2 bg-orange-500 text-white text-[9px] rounded-full h-4 w-4 flex items-center justify-center font-bold">
-                <%= cart.length %>
-              </span>
-            </button>
-
-            <!-- Cart Dropdown Box -->
-            <div x-show="cartOpen" 
-                 @click.outside="cartOpen = false" 
-                 x-cloak 
-                 class="absolute right-0 mt-3 w-80 bg-white border border-gray-200 shadow-2xl rounded-lg p-4 z-50">
-              
-              <div class="flex justify-between items-center border-b pb-2 mb-3">
-                <h4 class="font-bold text-xs text-slate-900">Shopping Cart</h4>
-                <span class="text-[10px] bg-orange-100 text-orange-600 font-bold px-2 py-0.5 rounded-full"><%= cart.length %> Items</span>
-              </div>
-
-              <% if (cart.length > 0) { %>
-                <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
-                  <% cart.forEach(item => { %>
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                      <div class="flex items-center gap-3">
-                        <img src="<%= item.image %>" class="w-10 h-10 object-cover rounded border">
-                        <div>
-                          <p class="text-xs font-bold text-slate-800 line-clamp-1"><%= item.title %></p>
-                          <p class="text-xs text-gray-500">Qty: <%= item.qty %> x $<%= item.price %></p>
-                        </div>
-                      </div>
-                      <form action="/cart/remove/<%= item.id || item._id %>" method="POST">
-                        <button type="submit" class="text-gray-400 hover:text-red-500 text-xs font-bold p-1">✕</button>
-                      </form>
-                    </div>
-                  <% }) %>
-                </div>
-              <% } else { %>
-                <p class="text-xs text-gray-400 text-center py-6">Shopping Cart ထဲတွင် မည်သည့်ပစ္စည်းမှ မရှိသေးပါ။</p>
-              <% } %>
-            </div>
-          </div>
-
-        </div>
+  <!-- Shop All Banner -->
+  <div class="bg-slate-950 text-white py-10 px-8 border-b border-orange-500/30">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <h1 class="text-3xl font-black tracking-wider text-orange-500">EXPLORE ALL CATEGORIES</h1>
+        <p class="text-xs text-slate-400 mt-1">Discover top Electronics devices and Manga & Comics collections.</p>
       </div>
-    </nav>
+    </div>
+  </div>
 
-    <!-- Product Grid Section -->
-    <main class="max-w-7xl mx-auto py-12 px-8">
-      <h2 class="font-bold text-lg mb-6 border-b-2 border-orange-500 w-max pb-1">PRODUCTS</h2>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        <% if (productList.length > 0) { %>
-          <% productList.forEach((product, idx) => { %>
+  <main class="max-w-7xl mx-auto py-10 px-6 space-y-16">
+
+    <!-- ================= SECTION 1: ELECTRONICS (10 Cards) ================= -->
+    <section>
+      <!-- Section Title & View All Link -->
+      <div class="flex justify-between items-end pb-4 mb-6 border-b border-slate-200">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">⚡</span>
+            <h2 class="text-xl font-black text-slate-900 tracking-wide">ELECTRONICS & TECH</h2>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">Top 10 Featured Smart Gadgets & Audio Gear</p>
+        </div>
+        <a href="/products/category/electronics" class="text-xs font-bold text-orange-500 hover:text-orange-600 flex items-center gap-1 transition">
+          VIEW ALL ELECTRONICS (120+) ➡
+        </a>
+      </div>
+
+      <!-- Electronics Grid (10 Cards) -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5">
+        <% (locals.electronics || []).slice(0, 10).forEach(function(product) { %>
+          <div class="bg-white border border-slate-200 rounded-xl p-3 flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition duration-300 relative group">
             
-            <div @click="openModal(<%= idx %>)" class="bg-white border rounded p-4 flex flex-col justify-between hover:shadow-lg relative transition cursor-pointer group">
-              
-              <div class="flex justify-between items-start z-10">
-                <% if (product.badge) { %>
-                  <span class="bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-sm"><%= product.badge %></span>
-                <% } else { %> <div></div> <% } %>
+            <div class="flex justify-between items-start">
+              <% if(product.badge) { %>
+                <span class="bg-slate-900 text-orange-400 border border-orange-500/30 text-[8px] font-black px-1.5 py-0.5 rounded uppercase"><%= product.badge %></span>
+              <% } else { %> <span></span> <% } %>
 
-                <form action="/wishlist/add/<%= product._id || product.id %>" method="POST" @click.stop>
-                  <input type="hidden" name="title" value="<%= product.title %>">
-                  <input type="hidden" name="price" value="<%= product.price %>">
-                  <input type="hidden" name="image" value="<%= product.image %>">
-                  <button type="submit" class="text-gray-400 hover:text-red-500">❤️</button>
-                </form>
-              </div>
-
-              <div class="h-44 flex items-center justify-center my-2 overflow-hidden">
-                <img src="<%= product.image %>" alt="<%= product.title %>" class="max-h-full object-contain group-hover:scale-105 transition duration-300">
-              </div>
-
-              <div>
-                <p class="text-[9px] text-gray-400 font-bold uppercase"><%= product.category %> • <%= product.color %></p>
-                <h3 class="font-bold text-xs text-slate-800 line-clamp-1 mt-1"><%= product.title %></h3>
-                <div class="flex items-baseline gap-2 mt-2">
-                  <span class="text-orange-500 font-bold text-sm">$<%= product.price %></span>
-                  <% if (product.oldPrice) { %>
-                    <span class="text-gray-400 line-through text-xs">$<%= product.oldPrice %></span>
-                  <% } %>
-                </div>
-              </div>
-
-              <form action="/cart/add/<%= product._id || product.id %>" method="POST" class="mt-4" @click.stop>
+              <form action="/wishlist/add/<%= product._id %>" method="POST">
                 <input type="hidden" name="title" value="<%= product.title %>">
                 <input type="hidden" name="price" value="<%= product.price %>">
                 <input type="hidden" name="image" value="<%= product.image %>">
-                <button type="submit" class="w-full bg-orange-500 text-white font-bold py-2 rounded-sm text-xs hover:bg-orange-600 transition">
-                  🛒 ADD TO CART
-                </button>
+                <button type="submit" class="text-slate-300 hover:text-red-500 transition text-sm">❤️</button>
               </form>
             </div>
 
-          <% }) %>
-        <% } else { %>
-          <p class="col-span-full text-center text-xs text-gray-400 py-8">No products available.</p>
-        <% } %>
-      </div>
-    </main>
-
-    <!-- Details Modal -->
-    <div x-show="isModalOpen" x-cloak class="fixed inset-0 bg-slate-900/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm" @click.self="closeModal()">
-      <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col md:flex-row relative overflow-hidden" x-transition>
-        
-        <button @click="closeModal()" class="absolute top-4 right-4 z-10 w-8 h-8 bg-gray-100 hover:bg-red-100 text-gray-600 hover:text-red-500 rounded-full flex items-center justify-center font-bold">✕</button>
-
-        <button @click="prev()" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-orange-500 hover:text-white w-10 h-10 flex items-center justify-center rounded-full shadow z-10 font-bold transition">❮</button>
-        <button @click="next()" class="absolute right-2 md:right-[50%] top-1/2 -translate-y-1/2 bg-white/90 hover:bg-orange-500 hover:text-white w-10 h-10 flex items-center justify-center rounded-full shadow z-10 font-bold transition">❯</button>
-
-        <div class="w-full md:w-1/2 bg-gray-50 flex items-center justify-center p-8 min-h-[300px]">
-          <img :src="currentProduct.image" :alt="currentProduct.title" class="max-h-64 md:max-h-96 object-contain drop-shadow-md">
-        </div>
-
-        <div class="w-full md:w-1/2 p-6 md:p-8 overflow-y-auto no-scrollbar flex flex-col">
-          <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-1 rounded w-max font-bold mb-3 uppercase" x-text="currentProduct.category"></span>
-          <h2 class="text-xl font-black text-slate-900 leading-tight mb-2" x-text="currentProduct.title"></h2>
-          
-          <div class="flex items-end gap-3 mb-4">
-            <span class="text-2xl font-bold text-orange-500" x-text="'$' + currentProduct.price"></span>
-            <span class="text-sm text-gray-400 line-through mb-1" x-show="currentProduct.oldPrice" x-text="'$' + currentProduct.oldPrice"></span>
-          </div>
-
-          <p class="text-xs text-gray-600 leading-relaxed mb-4" x-text="currentProduct.description || 'No detailed description available.'"></p>
-
-          <div class="mb-6">
-            <span class="text-xs font-bold text-slate-800">Color: </span>
-            <span class="text-xs font-semibold text-gray-600" x-text="currentProduct.color"></span>
-          </div>
-
-          <form :action="'/cart/add/' + currentProduct._id" method="POST" class="mb-6 mt-auto">
-             <input type="hidden" name="title" :value="currentProduct.title">
-             <input type="hidden" name="price" :value="currentProduct.price">
-             <input type="hidden" name="image" :value="currentProduct.image">
-             <button type="submit" class="w-full bg-slate-900 text-white font-bold py-3 rounded hover:bg-orange-500 transition text-xs">ADD TO CART</button>
-          </form>
-
-          <div x-show="similarItems.length > 0">
-            <h4 class="font-bold text-xs text-slate-900 border-t pt-3 mb-3" x-text="`Same Color (${currentProduct.color}) Items`"></h4>
-            <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-              <template x-for="item in similarItems" :key="item._id">
-                <div @click="jumpToProduct(item._id)" class="min-w-[80px] bg-white border rounded p-2 cursor-pointer hover:border-orange-500 transition flex flex-col items-center">
-                  <img :src="item.image" class="w-10 h-10 object-contain mb-1">
-                  <span class="text-[9px] text-center font-bold text-slate-700 line-clamp-1 w-full" x-text="item.title"></span>
-                  <span class="text-[9px] text-orange-500 font-bold" x-text="'$' + item.price"></span>
-                </div>
-              </template>
+            <div class="h-36 flex items-center justify-center my-2 bg-slate-50 rounded-lg p-2 overflow-hidden">
+              <img src="<%= product.image %>" alt="<%= product.title %>" class="max-h-full object-contain group-hover:scale-105 transition duration-300">
             </div>
+
+            <div>
+              <span class="text-[8px] text-slate-400 font-bold uppercase"><%= product.category %></span>
+              <h3 class="font-bold text-xs text-slate-900 line-clamp-1"><%= product.title %></h3>
+              <div class="text-orange-500 font-black text-xs mt-1">$<%= product.price %></div>
+            </div>
+
+            <form action="/cart/add/<%= product._id %>" method="POST" class="mt-3">
+              <input type="hidden" name="title" value="<%= product.title %>">
+              <input type="hidden" name="price" value="<%= product.price %>">
+              <input type="hidden" name="image" value="<%= product.image %>">
+              <button type="submit" class="w-full bg-slate-900 text-white font-bold py-1.5 rounded-lg text-[10px] hover:bg-orange-500 transition">
+                ⚡ ADD TO CART
+              </button>
+            </form>
           </div>
-
-        </div>
+        <% }); %>
       </div>
-    </div>
+    </section>
 
-  </div>
 
+    <!-- ================= SECTION 2: COMICS & MANGA (10 Cards) ================= -->
+    <section>
+      <!-- Section Title & View All Link -->
+      <div class="flex justify-between items-end pb-4 mb-6 border-b border-slate-200">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">📚</span>
+            <h2 class="text-xl font-black text-slate-900 tracking-wide">COMICS & MANGA</h2>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">Top 10 Manga Volumes & Graphic Novels</p>
+        </div>
+        <a href="/products/category/comics-manga" class="text-xs font-bold text-orange-500 hover:text-orange-600 flex items-center gap-1 transition">
+          VIEW ALL MANGA (120+) ➡
+        </a>
+      </div>
+
+      <!-- Comics Grid (10 Cards) -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5">
+        <% (locals.comics || []).slice(0, 10).forEach(function(product) { %>
+          <div class="bg-white border border-slate-200 rounded-xl p-3 flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition duration-300 relative group">
+            
+            <div class="flex justify-between items-start">
+              <% if(product.badge) { %>
+                <span class="bg-orange-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase"><%= product.badge %></span>
+              <% } else { %> <span></span> <% } %>
+
+              <form action="/wishlist/add/<%= product._id %>" method="POST">
+                <input type="hidden" name="title" value="<%= product.title %>">
+                <input type="hidden" name="price" value="<%= product.price %>">
+                <input type="hidden" name="image" value="<%= product.image %>">
+                <button type="submit" class="text-slate-300 hover:text-red-500 transition text-sm">❤️</button>
+              </form>
+            </div>
+
+            <div class="h-36 flex items-center justify-center my-2 bg-slate-50 rounded-lg p-2 overflow-hidden">
+              <img src="<%= product.image %>" alt="<%= product.title %>" class="max-h-full object-cover group-hover:scale-105 transition duration-300">
+            </div>
+
+            <div>
+              <span class="text-[8px] text-orange-600 font-bold uppercase"><%= product.category %></span>
+              <h3 class="font-bold text-xs text-slate-900 line-clamp-1"><%= product.title %></h3>
+              <div class="text-orange-500 font-black text-xs mt-1">$<%= product.price %></div>
+            </div>
+
+            <a href="/products/category/comics-manga" class="mt-3 block text-center bg-slate-900 text-white font-bold py-1.5 rounded-lg text-[10px] hover:bg-orange-500 transition">
+              📖 READ & BUY
+            </a>
+          </div>
+        <% }); %>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SweetAlert2 English Popup Script -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const msg = urlParams.get('msg');
-
     if (msg) {
-      let textMsg = "လုပ်ဆောင်ချက် အောင်မြင်ပါသည်!";
-      if (msg === 'cart_added') textMsg = "Cart ထဲသို့ အောင်မြင်စွာ ထည့်ပြီးပါပြီ။";
-      if (msg === 'cart_removed') textMsg = "Cart ထဲမှ အောင်မြင်စွာ ဖျက်လိုက်ပါပြီ။";
-      if (msg === 'wishlist_added') textMsg = "Favorites ထဲသို့ အောင်မြင်စွာ သိမ်းဆည်းလိုက်ပါပြီ။";
-      if (msg === 'wishlist_removed') textMsg = "Favorites ထဲမှ အောင်မြင်စွာ ဖျက်လိုက်ပါပြီ။";
-
+      let titleText = "Success!";
+      let bodyText = "Action completed successfully!";
+      if (msg === 'cart_added') { titleText = "Added to Cart!"; bodyText = "Item has been added to cart."; }
+      if (msg === 'wishlist_added') { titleText = "Added to Wishlist!"; bodyText = "Item saved to favorites."; }
+      
       Swal.fire({
-        title: 'အောင်မြင်ပါသည်!',
-        text: textMsg,
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false
+        title: titleText, text: bodyText, icon: 'success', timer: 2000, showConfirmButton: false
       });
-
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-
-    document.addEventListener('alpine:init', () => {
-      Alpine.data('galleryApp', () => ({
-        products: window.SERVER_PRODUCTS || [],
-        isModalOpen: false,
-        currentIndex: 0,
-        
-        openModal(idx) {
-          this.currentIndex = idx;
-          this.isModalOpen = true;
-          document.body.style.overflow = 'hidden';
-        },
-        closeModal() {
-          this.isModalOpen = false;
-          document.body.style.overflow = '';
-        },
-        next() {
-          this.currentIndex = (this.currentIndex + 1) % this.products.length;
-        },
-        prev() {
-          this.currentIndex = (this.currentIndex - 1 + this.products.length) % this.products.length;
-        },
-        jumpToProduct(id) {
-          const idx = this.products.findIndex(p => (p._id || p.id) === id);
-          if (idx !== -1) this.currentIndex = idx;
-        },
-        get currentProduct() {
-          return this.products[this.currentIndex] || {};
-        },
-        get similarItems() {
-          if (!this.currentProduct.color) return [];
-          return this.products.filter(p => p.color === this.currentProduct.color && (p._id || p.id) !== (this.currentProduct._id || this.currentProduct.id));
-        }
-      }));
-    });
   </script>
+
 </body>
 </html>

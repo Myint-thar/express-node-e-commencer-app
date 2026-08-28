@@ -107,7 +107,7 @@ app.post('/wishlist/remove/:id', (req, res) => {
 // CATEGORY ROUTES
 // -------------------------------------------------------------
 
-// 1. Electronics Route (Dynamic Route အထက်တွင် သီးသန့်ထားပါ)
+// 1. Electronics Route
 app.get('/products/category/electronics', (req, res) => {
   const electronicsTitles = [
     "Wireless Over-Ear Headphones", "Smart Watch Series X", "Gaming Mouse RGB",
@@ -139,54 +139,124 @@ app.get('/products/category/electronics', (req, res) => {
   });
 });
 
-// 2. Dynamic Category Route (Comics & Manga နှင့် အခြား ကဏ္ဍများအတွက်)
+// 2. Manga Route
+app.get('/products/category/comics-manga', (req, res) => {
+  const mangaTitles = [
+    "One Piece", "Naruto Shippuden", "Attack on Titan", "Jujutsu Kaisen",
+    "Demon Slayer", "Chainsaw Man", "Bleach", "Dragon Ball Super",
+    "My Hero Academia", "Spy x Family", "Tokyo Ghoul", "Berserk"
+  ];
+
+  const comicsList = Array.from({ length: 120 }, (_, i) => {
+    const titleName = mangaTitles[i % mangaTitles.length];
+    const volNum = Math.floor(i / mangaTitles.length) + 1;
+    return {
+      _id: `cm-${i + 1}`,
+      title: `${titleName} Vol. ${volNum}`,
+      category: "Comics & Manga",
+      price: (8.99 + (i % 12)).toFixed(2),
+      oldPrice: i % 3 === 0 ? (14.99 + (i % 5)).toFixed(2) : null,
+      image: `https://picsum.photos/seed/manga${i + 100}/300/420`,
+      badge: i % 7 === 0 ? "HOT" : (i % 4 === 0 ? "NEW" : null),
+      color: "Paperback",
+      description: `${titleName} Volume ${volNum} comic book.`
+    };
+  });
+
+  res.render('comics&manga', {
+    mangaItems: comicsList,
+    products: comicsList,
+    wishlistItems: req.session?.wishlist || [],
+    cartItems: req.session?.cart || []
+  });
+});
+
+// 3. Dynamic Category Route
 app.get('/products/category/:category', (req, res) => {
   const categoryParam = req.params.category.toLowerCase();
 
-  if (categoryParam.includes('comic') || categoryParam.includes('manga')) {
-    const mangaTitles = [
-      "One Piece", "Naruto Shippuden", "Attack on Titan", "Jujutsu Kaisen",
-      "Demon Slayer", "Chainsaw Man", "Bleach", "Dragon Ball Super",
-      "My Hero Academia", "Spy x Family", "Tokyo Ghoul", "Berserk",
-      "Death Note", "Hunter x Hunter", "Solo Leveling", "Vinland Saga"
-    ];
-
-    const comicsList = Array.from({ length: 130 }, (_, i) => {
-      const titleName = mangaTitles[i % mangaTitles.length];
-      const volNum = Math.floor(i / mangaTitles.length) + 1;
-      return {
-        _id: `cm-${i + 1}`,
-        title: `${titleName} Vol. ${volNum}`,
-        category: "Comics & Manga",
-        price: (8.99 + (i % 12)).toFixed(2),
-        oldPrice: i % 3 === 0 ? (14.99 + (i % 5)).toFixed(2) : null,
-        image: `https://picsum.photos/seed/manga${i + 100}/300/420`,
-        badge: i % 7 === 0 ? "HOT" : (i % 4 === 0 ? "NEW" : null),
-        color: "Paperback",
-        description: `${titleName} Volume ${volNum} comic book.`
-      };
-    });
-
-    return res.render('comics&manga', {
-      products: comicsList,
-      wishlistItems: req.session?.wishlist || [],
-      cartItems: req.session?.cart || []
-    });
-  }
-
-  // Safe filter check (p.category undefined မဖြစ်စေရန်)
   const filteredProducts = (req.products || []).filter(p =>
     p && p.category && p.category.toLowerCase() === categoryParam
   );
 
   res.render('products/index', {
     products: filteredProducts,
+    electronics: [],
+    comics: [],
     wishlistItems: req.session?.wishlist || [],
     cartItems: req.session?.cart || []
   });
 });
 
-// Register Routes
+// -------------------------------------------------------------
+// PROMOTION & USER ROUTES
+// -------------------------------------------------------------
+
+app.get('/promotion', (req, res) => {
+  const promoItems = Array.from({ length: 15 }, (_, i) => ({
+    _id: `promo-${i + 1}`,
+    title: i % 2 === 0 ? `Gaming Headset Pro Gen ${i + 1}` : `One Piece Special Edition Vol. ${i + 1}`,
+    category: i % 2 === 0 ? "Electronics" : "Manga",
+    price: (19.99 + (i * 5)).toFixed(2),
+    oldPrice: (39.99 + (i * 8)).toFixed(2),
+    image: `https://picsum.photos/seed/promo${i + 50}/300/300`,
+    badge: `${20 + (i * 3)}% OFF`
+  }));
+
+  res.render('promotion', {
+    promoItems,
+    user: req.session?.user || null
+  });
+});
+
+app.get('/login', (req, res) => {
+  req.session.user = { name: 'Admin' };
+  res.redirect('back');
+});
+
+app.get('/logout', (req, res) => {
+  req.session.user = null;
+  res.redirect('back');
+});
+
+app.post('/contact/send', (req, res) => {
+  const { name, contact, message } = req.body;
+  console.log(`New Message from ${name} (${contact}): ${message}`);
+  res.redirect('/?msg=contact_sent');
+});
+
+// -------------------------------------------------------------
+// MAIN HOME ROUTE
+// -------------------------------------------------------------
+
+app.get('/', (req, res) => {
+  const electronics = Array.from({ length: 10 }, (_, i) => ({
+    _id: `el-home-${i + 1}`,
+    title: `Smart Tech Device Gen ${i + 1}`,
+    category: "Electronics",
+    price: (29.99 + (i * 12)).toFixed(2),
+    image: `https://picsum.photos/seed/tech${i + 100}/300/300`,
+    badge: i % 2 === 0 ? "SALE" : "HOT"
+  }));
+
+  const comics = Array.from({ length: 10 }, (_, i) => ({
+    _id: `cm-home-${i + 1}`,
+    title: i % 2 === 0 ? `One Piece Vol. ${i + 1}` : `Attack on Titan Vol. ${i + 1}`,
+    category: "Manga",
+    price: (8.99 + (i * 2)).toFixed(2),
+    image: `https://picsum.photos/seed/manga${i + 100}/300/300`,
+    badge: "POPULAR"
+  }));
+
+  res.render('products/index', {
+    electronics,
+    comics,
+    wishlistItems: req.session?.wishlist || [],
+    cartItems: req.session?.cart || []
+  });
+});
+
+// Register Extra Routes
 app.use('/', homeRoute);
 app.use('/products', productRoute);
 

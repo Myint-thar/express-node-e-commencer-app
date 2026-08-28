@@ -1,114 +1,37 @@
-<!-- views/partials/navbar.ejs -->
-<nav x-data="{ wishlistOpen: false, cartOpen: false }" class="bg-white shadow-sm sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto py-4 px-8 flex justify-between items-center border-b relative">
+<nav class="bg-slate-950 text-white border-b border-slate-800 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
     
-    <!-- Logo (Main Landing Home Page သို့ သွားမည်) -->
-    <a href="/" class="text-2xl font-black tracking-wider text-slate-900">
-      <span class="text-orange-500">FAM</span>SWORLD
+    <!-- Logo & Brand -->
+    <a href="/products/category/comics-manga" class="flex items-center gap-2 font-black text-xl tracking-wider">
+      <span class="bg-orange-500 text-white px-2 py-0.5 rounded text-sm">FAM</span>
+      <span class="text-white">SWORLD</span>
     </a>
-    
-    <!-- Menu Links -->
-    <div class="hidden md:flex gap-8 text-xs font-bold tracking-wide items-center">
-      <a href="/" class="hover:text-orange-500">HOME</a>
-      <a href="/products" class="hover:text-orange-500">SHOP ALL</a>
-      <a href="/products/category/electronics" class="hover:text-orange-500">ELECTRONICS</a>
-      <a href="/products/best-sellers" class="hover:text-orange-500">BEST SELLERS</a>
-      <a href="/products/new-arrivals" class="hover:text-orange-500">NEW ARRIVALS</a>
-      <a href="/about" class="hover:text-orange-500">ABOUT US</a>
-      <a href="/contact" class="hover:text-orange-500">CONTACT US</a>
+
+    <!-- Navigation Links -->
+    <div class="hidden md:flex items-center gap-6 text-xs font-bold tracking-wide">
+      <!-- Shop All -> Comics Manga သို့ ချိတ်ဆက်ထားသည် -->
+      <a href="/products/category/comics-manga" class="hover:text-orange-500 transition">Comics & Manga</a>
+      <a href="/products/category/electronics" class="hover:text-orange-500 transition">ELECTRONICS</a>
+      <a href="/promotion" class="text-orange-400 hover:text-orange-500 font-black transition flex items-center gap-1">
+        🔥 PROMOTION
+      </a>
     </div>
 
-    <!-- Right Icons (Wishlist & Cart) -->
-    <div class="flex items-center gap-6 text-slate-700 text-lg">
-      
-      <!-- Wishlist Dropdown -->
-      <div class="relative">
-        <button @click="wishlistOpen = !wishlistOpen; cartOpen = false" class="hover:text-orange-500 relative flex items-center p-1 focus:outline-none">
-          ❤️
-          <span class="absolute -top-1 -right-2 bg-orange-500 text-white text-[9px] rounded-full h-4 w-4 flex items-center justify-center font-bold">
-            <%= (locals.wishlistItems || []).length %>
-          </span>
-        </button>
+    <!-- Right Side: Wishlist, Cart & Auth (Login/Logout) -->
+    <div class="flex items-center gap-4 text-xs font-bold">
+      <a href="/wishlist" class="hover:text-orange-500 transition">❤️ Favorites</a>
+      <a href="/cart" class="hover:text-orange-500 transition">🛒 Cart</a>
 
-        <div x-show="wishlistOpen" 
-             @click.outside="wishlistOpen = false" 
-             x-cloak 
-             class="absolute right-0 mt-3 w-80 bg-white border border-gray-200 shadow-2xl rounded-lg p-4 z-50 text-left">
-          
-          <div class="flex justify-between items-center border-b pb-2 mb-3">
-            <h4 class="font-bold text-xs text-slate-900">Saved Favorites</h4>
-            <span class="text-[10px] bg-orange-100 text-orange-600 font-bold px-2 py-0.5 rounded-full">
-              <%= (locals.wishlistItems || []).length %> Items
-            </span>
-          </div>
-
-          <% if (locals.wishlistItems && locals.wishlistItems.length > 0) { %>
-            <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
-              <% locals.wishlistItems.forEach(item => { %>
-                <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                  <div class="flex items-center gap-3">
-                    <img src="<%= item.image %>" class="w-10 h-10 object-cover rounded border">
-                    <div>
-                      <p class="text-xs font-bold text-slate-800 line-clamp-1"><%= item.title %></p>
-                      <p class="text-xs text-orange-500 font-bold">$<%= item.price %></p>
-                    </div>
-                  </div>
-                  <form action="/wishlist/remove/<%= item.id || item._id %>" method="POST">
-                    <button type="submit" class="text-gray-400 hover:text-red-500 text-xs font-bold p-1">✕</button>
-                  </form>
-                </div>
-              <% }) %>
-            </div>
-          <% } else { %>
-            <p class="text-xs text-gray-400 text-center py-6">Favorites ထဲတွင် ပစ္စည်းမရှိသေးပါ။</p>
-          <% } %>
-        </div>
+      <!-- Auth Section (Login / Logout) -->
+      <div class="border-l border-slate-700 pl-4 flex items-center gap-3">
+        <% if (typeof user !== 'undefined' && user) { %>
+          <span class="text-slate-400">Hi, <strong class="text-orange-400"><%= user.name || 'User' %></strong></span>
+          <a href="/logout" class="bg-slate-800 hover:bg-red-600 text-white px-3 py-1.5 rounded-md transition text-[11px]">Logout</a>
+        <% } else { %>
+          <a href="/login" class="bg-orange-500 hover:bg-orange-600 text-white px-3.5 py-1.5 rounded-md transition text-[11px] font-black">LOGIN</a>
+        <% } %>
       </div>
-
-      <!-- Cart Dropdown -->
-      <div class="relative">
-        <button @click="cartOpen = !cartOpen; wishlistOpen = false" class="hover:text-orange-500 relative flex items-center p-1 focus:outline-none">
-          🛒
-          <span class="absolute -top-1 -right-2 bg-orange-500 text-white text-[9px] rounded-full h-4 w-4 flex items-center justify-center font-bold">
-            <%= (locals.cartItems || []).length %>
-          </span>
-        </button>
-
-        <div x-show="cartOpen" 
-             @click.outside="cartOpen = false" 
-             x-cloak 
-             class="absolute right-0 mt-3 w-80 bg-white border border-gray-200 shadow-2xl rounded-lg p-4 z-50 text-left">
-          
-          <div class="flex justify-between items-center border-b pb-2 mb-3">
-            <h4 class="font-bold text-xs text-slate-900">Shopping Cart</h4>
-            <span class="text-[10px] bg-orange-100 text-orange-600 font-bold px-2 py-0.5 rounded-full">
-              <%= (locals.cartItems || []).length %> Items
-            </span>
-          </div>
-
-          <% if (locals.cartItems && locals.cartItems.length > 0) { %>
-            <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
-              <% locals.cartItems.forEach(item => { %>
-                <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                  <div class="flex items-center gap-3">
-                    <img src="<%= item.image %>" class="w-10 h-10 object-cover rounded border">
-                    <div>
-                      <p class="text-xs font-bold text-slate-800 line-clamp-1"><%= item.title %></p>
-                      <p class="text-xs text-gray-500">Qty: <%= item.qty %> x $<%= item.price %></p>
-                    </div>
-                  </div>
-                  <form action="/cart/remove/<%= item.id || item._id %>" method="POST">
-                    <button type="submit" class="text-gray-400 hover:text-red-500 text-xs font-bold p-1">✕</button>
-                  </form>
-                </div>
-              <% }) %>
-            </div>
-          <% } else { %>
-            <p class="text-xs text-gray-400 text-center py-6">Cart ထဲတွင် ပစ္စည်းမရှိသေးပါ။</p>
-          <% } %>
-        </div>
-      </div>
-
     </div>
+
   </div>
 </nav>
