@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Slip - <%= locals.slip ? slip.slipNo : 'Receipt' %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden">
+    
+    <!-- Top Success Indicator -->
+    <div class="text-center mb-6">
+      <div class="w-12 h-12 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-2 text-xl border border-green-500/30">
+        ✓
+      </div>
+      <h2 class="text-sm font-black text-white uppercase tracking-wider">ELECTRONIC RECEIPT</h2>
+      <p class="text-[10px] text-slate-400">FAMSWORLD OFFICIAL STORE</p>
+    </div>
+
+    <% if (locals.slip) { %>
+      <!-- Slip Details Box -->
+      <div class="bg-slate-950 rounded-xl p-4 border border-slate-800 text-xs space-y-3 font-mono">
+        <div class="flex justify-between border-b border-slate-800/80 pb-2">
+          <span class="text-slate-500">SLIP NO:</span>
+          <span class="text-orange-400 font-bold"><%= slip.slipNo %></span>
+        </div>
+
+        <div class="flex justify-between border-b border-slate-800/80 pb-2">
+          <span class="text-slate-500">ITEM:</span>
+          <span class="text-white font-bold text-right truncate max-w-[150px]"><%= slip.mangaTitle %></span>
+        </div>
+
+        <div class="flex justify-between border-b border-slate-800/80 pb-2">
+          <span class="text-slate-500">DATE/TIME:</span>
+          <span class="text-slate-300"><%= slip.date %> (<%= slip.time %>)</span>
+        </div>
+
+        <div class="flex justify-between border-b border-slate-800/80 pb-2">
+          <span class="text-slate-500">PAYMENT:</span>
+          <span class="text-slate-300"><%= slip.paymentMethod %></span>
+        </div>
+
+        <div class="flex justify-between pt-1">
+          <span class="text-slate-500 font-bold">TOTAL AMOUNT:</span>
+          <span class="text-green-400 font-extrabold text-sm">$<%= slip.price %></span>
+        </div>
+      </div>
+
+      <!-- Status Badge -->
+      <div class="mt-4 text-center">
+        <span class="bg-green-500/10 text-green-400 border border-green-500/30 text-[10px] font-black px-3 py-1 rounded-full uppercase">
+          STATUS: <%= slip.status %>
+        </span>
+      </div>
+    <% } else { %>
+      <div class="text-center py-6 text-slate-400 text-xs">
+        No receipt data available.
+      </div>
+    <% } %>
+
+    <!-- Print & Back Buttons -->
+    <div class="mt-6 flex gap-3">
+      <button onclick="window.print()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs py-2.5 rounded-xl border border-slate-700 transition">
+        🖨️ Print Slip
+      </button>
+      <a href="/products/category/comics-manga" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-black text-xs py-2.5 rounded-xl text-center uppercase transition flex items-center justify-center">
+        Done
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>

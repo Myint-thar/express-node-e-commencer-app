@@ -1,8 +1,7 @@
-const Product = require('../models/product'); // သင့် Product Model ကို ခေါ်ယူပါ
+const Product = require('../models/product'); 
 
 exports.getHomePage = async (req, res) => {
   try {
-    // Database မှ ဒေတာများ ယူခြင်း (သို့မဟုတ် Dummy Data များဖြင့် စမ်းသပ်နိုင်သည်)
     const products = await Product.findAll ? await Product.findAll({ limit: 8 }) : [];
     
     // E-commerce Categories

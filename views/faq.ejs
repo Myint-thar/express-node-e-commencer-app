@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frequently Asked Questions - FAMSWORLD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="bg-slate-900 border-b border-slate-800 py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+    <a href="/" class="text-orange-500 hover:text-orange-400 font-bold text-xs flex items-center gap-1 transition">
+      ← BACK TO HOME
+    </a>
+    <h1 class="text-sm font-black text-white tracking-widest uppercase">FAQ & HELP CENTER</h1>
+    <div class="w-16"></div>
+  </header>
+
+  <!-- Content Area -->
+  <main class="max-w-3xl mx-auto p-6 md:p-10 flex-grow w-full">
+    <div class="text-center mb-8 space-y-2">
+      <span class="text-xs bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-1 rounded-full font-bold uppercase">
+        Help Center
+      </span>
+      <h2 class="text-2xl md:text-3xl font-black text-white">Frequently Asked Questions</h2>
+      <p class="text-xs text-slate-400">FAMSWORLD အသုံးပြုရာတွင် သိရှိလိုသည်များကို အောက်တွင် ဖတ်ရှုနိုင်ပါသည်။</p>
+    </div>
+
+    <!-- FAQ Accordion List -->
+    <div class="space-y-4">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+        <h3 class="text-sm font-bold text-orange-400 mb-2">Q: Manga များကို Digital စာဖတ်စနစ်ဖြင့် မည်သို့ ဖတ်ရှုရမလဲ။</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Comics & Manga Category ထဲမှ သင်ဖတ်ရှုလိုသော စာအုပ်ကို ရွေးချယ်ပြီး Read / Reader Mode ကို နှိပ်၍ တိုက်ရိုက် ဖတ်ရှုနိုင်ပါသည်။
+        </p>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+        <h3 class="text-sm font-bold text-orange-400 mb-2">Q: ငွေပေးချေမှုစနစ်များကို မည်သို့ အသုံးပြုနိုင်သနည်း။</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          KPay, WavePay စသည့် မြန်မာနိုင်ငံတွင်း Mobile Mobile Wallet များဖြင့် လွယ်ကူစွာ ငွေပေးချေနိုင်ပြီး ငွေပေးချေမှု အောင်မြင်ပါက E-Slip ကို ထုတ်ယူနိုင်ပါသည်။
+        </p>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+        <h3 class="text-sm font-bold text-orange-400 mb-2">Q: ဝယ်ယူထားသော ပစ္စည်းများအတွက် Receipt / Slip ပြန်လည်ကြည့်ရှုနိုင်သလား။</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          အော်ဒါတင်ပြီးပါက အီလက်ထရောနစ် ပြေစာ (E-Slip) ထုတ်ပေးမည်ဖြစ်ပြီး ၎င်းကို Print ထုတ်ယူခြင်း သို့မဟုတ် Save ပြုလုပ်ထားနိုင်ပါသည်။
+        </p>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+        <h3 class="text-sm font-bold text-orange-400 mb-2">Q: အခြား မေးမြန်းလိုသည်များ ရှိပါက မည်သို့ ဆက်သွယ်ရမလဲ။</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          ကျွန်ုပ်တို့၏ <a href="/contact" class="text-orange-400 underline">Contact Page</a> မှတစ်ဆင့် Message ပေးပို့၍ မေးမြန်းနိုင်ပါသည်။
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+    &copy; <%= new Date().getFullYear() %> FAMSWORLD. All rights reserved.
+  </footer>
+
+</body>
+</html>

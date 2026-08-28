@@ -1,36 +1,29 @@
-<nav class="bg-slate-950 text-white border-b border-slate-800 sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-    
-    <!-- Logo & Brand -->
-    <a href="/products/category/comics-manga" class="flex items-center gap-2 font-black text-xl tracking-wider">
-      <span class="bg-orange-500 text-white px-2 py-0.5 rounded text-sm">FAM</span>
-      <span class="text-white">SWORLD</span>
+<nav class="bg-slate-900 border-b border-slate-800 py-3.5 px-6 sticky top-0 z-50 shadow-md">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+
+    <!-- Brand Logo -->
+    <a href="/" class="flex items-center gap-2 font-black text-xl tracking-wider text-white hover:opacity-90 transition">
+      <span class="bg-orange-500 text-white px-2.5 py-1 rounded-lg text-sm font-extrabold shadow-sm">FAM</span>
+      <span>SWORLD</span>
     </a>
 
-    <!-- Navigation Links -->
-    <div class="hidden md:flex items-center gap-6 text-xs font-bold tracking-wide">
-      <!-- Shop All -> Comics Manga သို့ ချိတ်ဆက်ထားသည် -->
-      <a href="/products/category/comics-manga" class="hover:text-orange-500 transition">Comics & Manga</a>
-      <a href="/products/category/electronics" class="hover:text-orange-500 transition">ELECTRONICS</a>
-      <a href="/promotion" class="text-orange-400 hover:text-orange-500 font-black transition flex items-center gap-1">
-        🔥 PROMOTION
+    <!-- Navigation Links (HOME, COMICS & MANGA, ELECTRONICS) -->
+    <div class="flex items-center gap-6 text-xs font-bold uppercase tracking-wider">
+      <a href="/" class="text-slate-300 hover:text-orange-400 transition flex items-center gap-1">
+        <span>🏠</span> HOME
       </a>
-    </div>
 
-    <!-- Right Side: Wishlist, Cart & Auth (Login/Logout) -->
-    <div class="flex items-center gap-4 text-xs font-bold">
-      <a href="/wishlist" class="hover:text-orange-500 transition">❤️ Favorites</a>
-      <a href="/cart" class="hover:text-orange-500 transition">🛒 Cart</a>
+      <a href="/products/category/comics-manga" class="text-slate-300 hover:text-orange-400 transition flex items-center gap-1">
+        <span>📚</span> COMICS & MANGA
+      </a>
 
-      <!-- Auth Section (Login / Logout) -->
-      <div class="border-l border-slate-700 pl-4 flex items-center gap-3">
-        <% if (typeof user !== 'undefined' && user) { %>
-          <span class="text-slate-400">Hi, <strong class="text-orange-400"><%= user.name || 'User' %></strong></span>
-          <a href="/logout" class="bg-slate-800 hover:bg-red-600 text-white px-3 py-1.5 rounded-md transition text-[11px]">Logout</a>
-        <% } else { %>
-          <a href="/login" class="bg-orange-500 hover:bg-orange-600 text-white px-3.5 py-1.5 rounded-md transition text-[11px] font-black">LOGIN</a>
-        <% } %>
-      </div>
+      <a href="/products/category/electronics" class="text-slate-300 hover:text-orange-400 transition flex items-center gap-1">
+        <span>🔌</span> ELECTRONICS
+      </a>
+
+      <a href="/promotion" class="text-slate-300 hover:text-orange-400 transition flex items-center gap-1">
+        <span>🔥</span> PROMOTIONS
+      </a>
     </div>
 
   </div>

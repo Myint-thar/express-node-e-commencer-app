@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - FAMSWORLD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="bg-slate-900 border-b border-slate-800 py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+    <a href="/" class="text-orange-500 hover:text-orange-400 font-bold text-xs flex items-center gap-1 transition">
+      ← BACK TO HOME
+    </a>
+    <h1 class="text-sm font-black text-white tracking-widest uppercase">ABOUT FAMSWORLD</h1>
+    <div class="w-16"></div>
+  </header>
+
+  <!-- Content Area -->
+  <main class="max-w-4xl mx-auto p-6 md:p-12 flex-grow flex flex-col justify-center">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-10 shadow-2xl space-y-6">
+      
+      <div class="text-center space-y-2">
+        <span class="text-xs bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-1 rounded-full font-bold uppercase">
+          Welcome to FAMSWORLD
+        </span>
+        <h2 class="text-2xl md:text-3xl font-black text-white">Your Ultimate Digital Hub</h2>
+      </div>
+
+      <p class="text-slate-300 text-sm md:text-base leading-relaxed text-justify">
+        FAMSWORLD သည်။ အရည်အသွေးမြင့် Comics၊ Manga များနှင့် ခေတ်မီ Electronics ပစ္စည်းများကို တစ်နေရာတည်းတွင် စိတ်တိုင်းကျ ဝယ်ယူဖတ်ရှုနိုင်ရန် ဖန်တီးထားသော E-Commerce Platform တစ်ခု ဖြစ်ပါသည်။
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+          <h3 class="text-orange-400 font-bold text-sm mb-1">📚 High Quality Manga</h3>
+          <p class="text-slate-400 text-xs">လူကြိုက်များသော Manga များနှင့် Comic စာအုပ်များကို Digital Reader Mode ဖြင့် အဆင်ပြေချောမွေ့စွာ ဖတ်ရှုနိုင်ပါသည်။</p>
+        </div>
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+          <h3 class="text-orange-400 font-bold text-sm mb-1">⚡ Smart Tech Gadgets</h3>
+          <p class="text-slate-400 text-xs">နောက်ဆုံးပေါ် Electronics ပစ္စည်းများကို သက်သာသော ဈေးနှုန်းများဖြင့် စိတ်ချယုံကြည်စွာ မှာယူနိုင်ပါသည်။</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+    &copy; <%= new Date().getFullYear() %> FAMSWORLD. All rights reserved.
+  </footer>
+
+</body>
+</html>

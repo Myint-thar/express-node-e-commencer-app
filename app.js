@@ -21,6 +21,7 @@ app.use(session({
 // Global Middlewares (res.locals Setup)
 app.use((req, res, next) => {
   res.locals.currentUser = req.session ? req.session.user : null;
+  res.locals.user = req.session ? req.session.user : null;
   res.locals.wishlistItems = (req.session && req.session.wishlist) ? req.session.wishlist : [];
   res.locals.cartItems = (req.session && req.session.cart) ? req.session.cart : [];
   next();
@@ -107,7 +108,6 @@ app.post('/wishlist/remove/:id', (req, res) => {
 // CATEGORY ROUTES
 // -------------------------------------------------------------
 
-// 1. Electronics Route
 app.get('/products/category/electronics', (req, res) => {
   const electronicsTitles = [
     "Wireless Over-Ear Headphones", "Smart Watch Series X", "Gaming Mouse RGB",
@@ -120,6 +120,7 @@ app.get('/products/category/electronics', (req, res) => {
     const itemTitle = electronicsTitles[i % electronicsTitles.length];
     const modelNum = Math.floor(i / electronicsTitles.length) + 1;
     return {
+      id: `el-${i + 1}`,
       _id: `el-${i + 1}`,
       title: `${itemTitle} Gen ${modelNum}`,
       category: "Electronics",
@@ -139,7 +140,6 @@ app.get('/products/category/electronics', (req, res) => {
   });
 });
 
-// 2. Manga Route
 app.get('/products/category/comics-manga', (req, res) => {
   const mangaTitles = [
     "One Piece", "Naruto Shippuden", "Attack on Titan", "Jujutsu Kaisen",
@@ -147,16 +147,31 @@ app.get('/products/category/comics-manga', (req, res) => {
     "My Hero Academia", "Spy x Family", "Tokyo Ghoul", "Berserk"
   ];
 
+  const authors = [
+    "Eiichiro Oda", "Masashi Kishimoto", "Hajime Isayama", "Gege Akutami",
+    "Koyoharu Gotouge", "Tatsuki Fujimoto", "Tite Kubo", "Akira Toriyama",
+    "Kohei Horikoshi", "Tatsuya Endo", "Sui Ishida", "Kentaro Miura"
+  ];
+
   const comicsList = Array.from({ length: 120 }, (_, i) => {
-    const titleName = mangaTitles[i % mangaTitles.length];
+    const titleIndex = i % mangaTitles.length;
+    const titleName = mangaTitles[titleIndex];
+    const authorName = authors[titleIndex];
     const volNum = Math.floor(i / mangaTitles.length) + 1;
+    const itemId = `cm-${i + 1}`;
+    const imgUrl = `https://picsum.photos/seed/manga${i + 100}/300/420`;
+
     return {
-      _id: `cm-${i + 1}`,
+      id: itemId,
+      _id: itemId,
       title: `${titleName} Vol. ${volNum}`,
+      author: authorName,
+      genre: "Action/Manga",
       category: "Comics & Manga",
       price: (8.99 + (i % 12)).toFixed(2),
       oldPrice: i % 3 === 0 ? (14.99 + (i % 5)).toFixed(2) : null,
-      image: `https://picsum.photos/seed/manga${i + 100}/300/420`,
+      cover: imgUrl,
+      image: imgUrl,
       badge: i % 7 === 0 ? "HOT" : (i % 4 === 0 ? "NEW" : null),
       color: "Paperback",
       description: `${titleName} Volume ${volNum} comic book.`
@@ -171,7 +186,6 @@ app.get('/products/category/comics-manga', (req, res) => {
   });
 });
 
-// 3. Dynamic Category Route
 app.get('/products/category/:category', (req, res) => {
   const categoryParam = req.params.category.toLowerCase();
 
@@ -189,7 +203,7 @@ app.get('/products/category/:category', (req, res) => {
 });
 
 // -------------------------------------------------------------
-// PROMOTION & USER ROUTES
+// PROMOTION & USER AUTH ROUTES
 // -------------------------------------------------------------
 
 app.get('/promotion', (req, res) => {
@@ -210,13 +224,22 @@ app.get('/promotion', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  req.session.user = { name: 'Admin' };
-  res.redirect('back');
+  res.render('login', { error: null });
+});
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  if (email === "admin@gmail.com" && password === "123456") {
+    req.session.user = { name: "Admin", email };
+    return res.redirect('/');
+  }
+  res.render('login', { error: 'Invalid Email or Password!' });
 });
 
 app.get('/logout', (req, res) => {
-  req.session.user = null;
-  res.redirect('back');
+  req.session.destroy(() => {
+    res.redirect('/');
+  });
 });
 
 app.post('/contact/send', (req, res) => {
@@ -254,6 +277,104 @@ app.get('/', (req, res) => {
     wishlistItems: req.session?.wishlist || [],
     cartItems: req.session?.cart || []
   });
+});
+
+// -------------------------------------------------------------
+// MANGA DETAIL, READER & E-SLIP ROUTES (NOW UN-NESTED)
+// -------------------------------------------------------------
+
+app.get('/manga/detail/:id', (req, res) => {
+  const mangaId = req.params.id;
+  const manga = {
+    id: mangaId,
+    title: `Manga Volume (${mangaId})`,
+    author: "Eiichiro Oda",
+    genre: "Action / Adventure / Fantasy",
+    price: "9.99",
+    cover: `https://picsum.photos/seed/manga${mangaId}/400/600`,
+    description: "An epic adventure manga following the journey of brave heroes across strange lands."
+  };
+  res.render('manga-detail', { manga });
+});
+
+app.get('/manga/read/:id', (req, res) => {
+  const mangaId = req.params.id;
+  const pages = [
+    `https://picsum.photos/seed/manga-p1-${mangaId}/700/1000`,
+    `https://picsum.photos/seed/manga-p2-${mangaId}/700/1000`,
+    `https://picsum.photos/seed/manga-p3-${mangaId}/700/1000`
+  ];
+  const manga = {
+    id: mangaId,
+    title: `Manga Volume (${mangaId})`,
+    category: "Comics & Manga",
+    price: "9.99",
+    image: pages[0],
+    description: "Enjoy reading high quality manga and comics."
+  };
+
+  res.render('manga-read', { 
+    manga,
+    mangaId, 
+    title: `Manga Volume (${mangaId}) - Chapter 1`, 
+    pages 
+  });
+});
+
+app.get('/eslip/:id', (req, res) => {
+  const mangaId = req.params.id;
+  const slipData = {
+    slipNo: "FAM-" + Math.floor(100000 + Math.random() * 900000),
+    mangaTitle: `Manga Volume (${mangaId})`,
+    price: "9.99",
+    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    paymentMethod: "KPay / WavePay",
+    status: "PAID / SUCCESSFUL"
+  };
+  res.render('eslip', { slip: slipData });
+
+  // Manga Reader Route
+app.get('/manga/read/:id', (req, res) => {
+  const mangaId = req.params.id;
+  // Sample Pages with high quality manga panels
+  const pages = [
+    `https://picsum.photos/seed/manga-panel-1-${mangaId}/800/1200`,
+    `https://picsum.photos/seed/manga-panel-2-${mangaId}/800/1200`,
+    `https://picsum.photos/seed/manga-panel-3-${mangaId}/800/1200`
+  ];
+  
+  res.render('manga-read', { 
+    mangaId, 
+    title: `Manga Volume (${mangaId}) - Chapter 1`, 
+    pages 
+  });
+});
+
+// E-Slip Route
+app.get('/eslip/:id', (req, res) => {
+  const mangaId = req.params.id;
+  const slipData = {
+    slipNo: "FAM-" + Math.floor(100000 + Math.random() * 900000),
+    mangaTitle: `Manga Volume (${mangaId})`,
+    price: "9.99",
+    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    paymentMethod: "KPay / WavePay",
+    status: "PAID / SUCCESSFUL"
+  };
+  res.render('eslip', { slip: slipData });
+});
+// app.js
+
+// Static Pages Routes
+app.get('/about', (req, res) => res.render('about'));
+app.get('/contact', (req, res) => res.render('contact'));
+app.get('/faq', (req, res) => res.render('faq')); 
+
+app.use('/', homeRoute);
+app.use('/products', productRoute);
+
 });
 
 // Register Extra Routes

@@ -1,6 +1,6 @@
 const Product = require('../models/product');
 
-// READ: Product အားလုံးပြရန်
+// READ: Product 
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll({ order: [['createdAt', 'DESC']] });
@@ -11,7 +11,7 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-// READ: Detail တစ်ခုချင်းစီပြရန်
+// READ: Detail
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
