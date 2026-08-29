@@ -3,267 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Electronics & Gadgets - FAMSWORLD</title>
+  <title>Electronics & Tech - FAMSWORLD</title>
   <link rel="icon" type="image/png" href="/images/logo.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <style>
-    [x-cloak] { display: none !important; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    @media print {
-      body * { visibility: hidden; }
-      #e-slip-card, #e-slip-card * { visibility: visible; }
-      #e-slip-card { position: absolute; left: 0; top: 0; width: 100%; }
-      .no-print { display: none !important; }
-    }
-  </style>
+  <style>[x-cloak] { display: none !important; }</style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
 
-  <script id="products-data" type="application/json">
-    <%- JSON.stringify(products || []) %>
+  <!-- Backend Data Injection (Variable Name များစွာအတွက် Fallback ရေးထားပါသည်) -->
+  <script id="electronics-data" type="application/json">
+    <%- JSON.stringify(locals.electronicsItems || locals.electronics || locals.products || []) %>
   </script>
   <script>
-    window.SERVER_PRODUCTS = JSON.parse(document.getElementById('products-data').textContent);
+    window.SERVER_ELECTRONICS = JSON.parse(document.getElementById('electronics-data').textContent);
   </script>
 
-  <div x-data="electronicsApp()" class="flex-grow">
-    
-    <!-- Navbar Component -->
+  <div x-data="electronicsApp()" class="flex-grow flex flex-col">
+
     <%- include('partials/navbar') %>
 
-    <!-- Electronics Banner Header -->
-    <div class="bg-slate-950 text-white py-10 px-8 border-b border-orange-500/40">
-      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <div class="flex items-center gap-3">
-            <span class="text-3xl">🔌</span>
-            <h1 class="text-3xl font-black tracking-wider text-orange-500">ELECTRONICS & TECH</h1>
-          </div>
-          <p class="text-xs text-slate-400 mt-1">Discover high-performance gadgets, audio gear, and smart devices.</p>
-        </div>
-        
-        <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl flex items-center gap-3 shadow-lg">
-          <span class="text-xs text-slate-400 font-bold uppercase">Total Gadgets</span>
-          <span class="bg-orange-500 text-white text-xs font-black px-2.5 py-1 rounded-md">
-            <%= (products || []).length %>+ Items
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Content Grid -->
-    <main class="max-w-7xl mx-auto py-10 px-6">
+    <main class="max-w-7xl mx-auto py-10 px-6 flex-grow w-full">
       
-      <!-- Filter Bar & Search -->
-      <div class="flex flex-wrap justify-between items-center pb-6 border-b border-slate-200 mb-8 gap-4">
-        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          <button @click="filterColor = 'all'" :class="filterColor === 'all' ? 'bg-orange-500 text-white' : 'bg-white text-slate-700 border hover:bg-slate-100'" class="px-4 py-1.5 rounded-full text-xs font-bold transition">All Devices (<%= (products || []).length %>)</button>
-          <button @click="filterColor = 'Black'" :class="filterColor === 'Black' ? 'bg-orange-500 text-white' : 'bg-white text-slate-700 border hover:bg-slate-100'" class="px-4 py-1.5 rounded-full text-xs font-bold transition">Black Series</button>
-          <button @click="filterColor = 'Silver'" :class="filterColor === 'Silver' ? 'bg-orange-500 text-white' : 'bg-white text-slate-700 border hover:bg-slate-100'" class="px-4 py-1.5 rounded-full text-xs font-bold transition">Silver Series</button>
+      <!-- Top Header & Search Box Section -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 pb-6 border-b border-slate-800">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
+            <span>⚡</span> ELECTRONICS & TECH
+          </h1>
+          <p class="text-xs text-slate-400 mt-1">Discover high-performance gadgets, audio gear, and smart devices online.</p>
         </div>
-        
-        <div class="relative w-full md:w-72">
-          <input type="text" x-model="searchQuery" placeholder="Search gadgets..." class="w-full bg-white border border-slate-300 rounded-lg py-1.5 px-3 pl-8 text-xs focus:outline-none focus:border-orange-500">
-          <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+
+        <!-- SEARCH BOX -->
+        <div class="relative w-full md:w-80">
+          <input
+            type="text"
+            x-model="searchQuery"
+            placeholder="Search title, brand, or specs..."
+            class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 pl-10 pr-10 text-xs font-semibold text-white focus:outline-none focus:border-orange-500 shadow-sm transition"
+          >
+          <span class="absolute left-3 top-2.5 text-slate-400 text-sm">🔍</span>
+          <button
+            x-show="searchQuery.length > 0"
+            @click="searchQuery = ''"
+            class="absolute right-3 top-2.5 text-slate-400 hover:text-red-500 text-xs font-bold bg-slate-800 rounded-full w-5 h-5 flex items-center justify-center transition"
+          >✕</button>
         </div>
       </div>
 
-      <!-- Electronics Cards -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6">
-        <template x-for="(product, idx) in filteredProducts" :key="product.id || product._id || idx">
+      <!-- Product Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5" x-show="filteredProducts.length > 0">
+        <template x-for="item in filteredProducts" :key="item.id">
           
-          <div @click="openModal(idx)" class="bg-white border border-slate-200 rounded-xl p-4 flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer relative group">
-            
-            <div class="flex justify-between items-start z-10">
-              <span x-show="product.badge" x-text="product.badge" class="bg-slate-900 text-orange-400 border border-orange-500/30 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider"></span>
-              <span x-show="!product.badge"></span>
-
-              <form :action="'/wishlist/add/' + (product.id || product._id)" method="POST" @click.stop>
-                <input type="hidden" name="title" :value="product.title">
-                <input type="hidden" name="price" :value="product.price">
-                <input type="hidden" name="image" :value="product.image">
-                <button type="submit" class="text-slate-300 hover:text-red-500 transition text-base">❤️</button>
-              </form>
-            </div>
-
-            <div class="h-44 flex items-center justify-center my-3 overflow-hidden bg-slate-50 rounded-lg p-2">
-              <img :src="product.image || '/images/default.jpg'" :alt="product.title" class="max-h-full object-contain group-hover:scale-105 transition duration-300">
-            </div>
-
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-orange-500/50 hover:-translate-y-1 transition duration-300 shadow-xl">
             <div>
-              <div class="flex items-center justify-between text-[9px] text-slate-400 font-bold uppercase mb-1">
-                <span x-text="product.category || 'Electronics'"></span>
-                <span class="text-slate-500 font-semibold" x-text="product.color || ''"></span>
+              <!-- Product Image -->
+              <div class="h-56 bg-slate-800 rounded-lg overflow-hidden flex items-center justify-center mb-3 relative">
+                <img 
+                  :src="item.image || item.cover || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500'" 
+                  :alt="item.title" 
+                  class="h-full w-full object-cover"
+                  @error="$el.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500'"
+                >
+                <span 
+                  class="absolute top-2 left-2 bg-slate-950/80 text-orange-400 text-[9px] font-bold px-2 py-0.5 rounded border border-orange-500/30" 
+                  x-text="item.badge || item.brand || 'TECH'"
+                ></span>
               </div>
-              <h3 class="font-bold text-xs text-slate-900 line-clamp-1" x-text="product.title"></h3>
+
+              <!-- Details -->
+              <h3 class="font-bold text-xs text-white line-clamp-1" x-text="item.title"></h3>
+              <p class="text-[10px] text-slate-400 mt-0.5" x-text="'Brand: ' + (item.brand || 'Generic Tech')"></p>
               
-              <div class="flex items-baseline gap-2 mt-2">
-                <span class="text-orange-500 font-black text-sm" x-text="'$' + product.price"></span>
-                <span class="text-slate-400 line-through text-xs" x-show="product.oldPrice" x-text="'$' + product.oldPrice"></span>
-              </div>
+              <div class="mt-2 font-black text-orange-400 text-sm" x-text="'$' + item.price"></div>
             </div>
 
-            <button @click.stop="openModal(idx)" class="mt-4 w-full bg-slate-900 text-white font-bold py-2 rounded-lg text-xs hover:bg-orange-500 transition duration-200">
-              ⚡ VIEW DETAILS & BUY
-            </button>
+            <!-- BUTTONS: VIEW & BUY NOW -->
+            <div class="mt-4 grid grid-cols-2 gap-2">
+              <a :href="'/electronics/detail/' + item.id" class="text-center bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-2 rounded-lg text-[10px] transition uppercase tracking-wider flex items-center justify-center gap-1">
+                ⚡ Details
+              </a>
+              <a :href="'/eslip/' + item.id" class="text-center bg-orange-500 hover:bg-orange-600 text-white font-black py-2 rounded-lg text-[10px] transition uppercase tracking-wider shadow-md flex items-center justify-center gap-1">
+                🛒 Buy
+              </a>
+            </div>
+
           </div>
 
         </template>
       </div>
 
+      <!-- Empty State -->
+      <div x-show="filteredProducts.length === 0" class="text-center py-20 text-slate-500">
+        <p class="text-sm font-semibold">No electronics found matching your search.</p>
+      </div>
+
     </main>
-
-    <!-- 1. Electronics Details Modal -->
-    <div x-show="isModalOpen" x-cloak class="fixed inset-0 bg-slate-950/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm" @click.self="closeModal()">
-      <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col md:flex-row relative overflow-hidden" x-transition>
-        <button @click="closeModal()" class="absolute top-3 right-3 z-10 w-8 h-8 bg-slate-100 hover:bg-red-100 text-slate-600 hover:text-red-500 rounded-full flex items-center justify-center font-bold text-xs">✕</button>
-
-        <div class="w-full md:w-1/2 bg-slate-100 flex items-center justify-center p-6">
-          <img :src="currentProduct.image || '/images/default.jpg'" :alt="currentProduct.title" class="max-h-72 object-contain drop-shadow-lg">
-        </div>
-
-        <div class="w-full md:w-1/2 p-6 flex flex-col justify-between">
-          <div>
-            <span class="text-[9px] bg-slate-900 text-orange-400 px-2.5 py-1 rounded-md font-bold uppercase tracking-wider" x-text="currentProduct.category || 'Electronics'"></span>
-            <h2 class="text-xl font-black text-slate-900 mt-3" x-text="currentProduct.title"></h2>
-            
-            <div class="flex items-end gap-3 my-3">
-              <span class="text-2xl font-black text-orange-500" x-text="'$' + currentProduct.price"></span>
-              <span class="text-xs text-slate-400 line-through mb-1" x-show="currentProduct.oldPrice" x-text="'$' + currentProduct.oldPrice"></span>
-            </div>
-
-            <p class="text-xs text-slate-600 leading-relaxed mb-4" x-text="currentProduct.description || 'No description available.'"></p>
-            <div class="text-xs text-slate-500 font-semibold mb-4">Color Option: <span class="text-slate-900 font-bold" x-text="currentProduct.color || 'Standard'"></span></div>
-          </div>
-
-          <!-- Buy Now Action Button -->
-          <button @click="processBuyNow()" class="w-full bg-orange-500 text-white font-black py-3 rounded-lg hover:bg-orange-600 transition text-xs shadow-lg uppercase tracking-wider">
-            ⚡ BUY THIS ITEM NOW
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. Electronics Digital E-Slip Modal -->
-    <div x-show="isSlipOpen" x-cloak class="fixed inset-0 bg-slate-950/85 z-[110] flex items-center justify-center p-4 backdrop-blur-sm" @click.self="closeSlip()">
-      <div id="e-slip-card" class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border-t-8 border-orange-500 relative overflow-hidden" x-transition>
-        
-        <div class="text-center pb-4 border-b border-dashed border-slate-300">
-          <div class="flex items-center justify-center gap-1 text-lg font-black text-slate-900 tracking-wider">
-            <span class="text-orange-500">FAM</span>SWORLD
-          </div>
-          <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-0.5">OFFICIAL E-RECEIPT / E-SLIP</p>
-        </div>
-
-        <div class="my-4 bg-emerald-50 border border-emerald-200 rounded-lg p-3 flex items-center gap-3">
-          <span class="text-emerald-500 text-xl">✅</span>
-          <div>
-            <h4 class="text-xs font-bold text-emerald-800">ELECTRONICS ORDER SUCCESSFUL!</h4>
-            <p class="text-[10px] text-emerald-600">Your gadget purchase has been confirmed.</p>
-          </div>
-        </div>
-
-        <div class="space-y-2 text-xs text-slate-700 py-2 border-b border-dashed border-slate-300">
-          <div class="flex justify-between">
-            <span class="text-slate-400">Order ID:</span>
-            <span class="font-mono font-bold text-slate-900" x-text="slipData.orderId"></span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">Date & Time:</span>
-            <span class="font-semibold" x-text="slipData.date"></span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">Product Name:</span>
-            <span class="font-bold text-slate-900" x-text="slipData.title"></span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">Color/Variant:</span>
-            <span class="font-bold text-slate-800" x-text="slipData.color"></span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">Status:</span>
-            <span class="bg-slate-900 text-white text-[9px] font-bold px-2 py-0.5 rounded">PAID & READY</span>
-          </div>
-        </div>
-
-        <div class="py-3 border-b border-dashed border-slate-300 space-y-1">
-          <div class="flex justify-between text-xs">
-            <span class="text-slate-500">Item Price</span>
-            <span class="font-bold" x-text="'$' + slipData.price"></span>
-          </div>
-          <div class="flex justify-between text-xs">
-            <span class="text-slate-500">Warranty & Support</span>
-            <span class="text-emerald-600 font-bold">1 YEAR FREE</span>
-          </div>
-          <div class="flex justify-between text-sm font-black text-slate-900 pt-2 border-t">
-            <span>TOTAL AMOUNT PAID</span>
-            <span class="text-orange-500" x-text="'$' + slipData.price"></span>
-          </div>
-        </div>
-
-        <div class="mt-5 flex gap-2 no-print">
-          <button @click="printSlip()" class="flex-1 bg-slate-900 text-white font-bold py-2 rounded-lg text-xs hover:bg-slate-800 transition">
-            🖨️ PRINT SLIP
-          </button>
-          <button @click="closeSlip()" class="flex-1 bg-orange-500 text-white font-bold py-2 rounded-lg text-xs hover:bg-orange-600 transition">
-            DONE
-          </button>
-        </div>
-
-      </div>
-    </div>
 
   </div>
 
   <script>
     document.addEventListener('alpine:init', () => {
       Alpine.data('electronicsApp', () => ({
-        products: window.SERVER_PRODUCTS || [],
-        filterColor: 'all',
         searchQuery: '',
-        isModalOpen: false,
-        isSlipOpen: false,
-        currentIndex: 0,
-        slipData: {},
-
+        productList: window.SERVER_ELECTRONICS || [],
         get filteredProducts() {
-          return this.products.filter(p => {
-            const matchesColor = this.filterColor === 'all' || p.color === this.filterColor;
-            const matchesSearch = p.title ? p.title.toLowerCase().includes(this.searchQuery.toLowerCase()) : true;
-            return matchesColor && matchesSearch;
+          if (!this.searchQuery.trim()) return this.productList;
+          const query = this.searchQuery.toLowerCase().trim();
+          return this.productList.filter(item => {
+            return (item.title && item.title.toLowerCase().includes(query)) ||
+                   (item.brand && item.brand.toLowerCase().includes(query)) ||
+                   (item.category && item.category.toLowerCase().includes(query));
           });
-        },
-        openModal(idx) {
-          this.currentIndex = idx;
-          this.isModalOpen = true;
-        },
-        closeModal() {
-          this.isModalOpen = false;
-        },
-        processBuyNow() {
-          const product = this.currentProduct;
-          const now = new Date();
-          
-          this.slipData = {
-            orderId: 'EL-ORD-' + Math.floor(100000 + Math.random() * 900000),
-            date: now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            title: product.title,
-            color: product.color || 'Standard',
-            price: product.price
-          };
-
-          this.isModalOpen = false;
-          this.isSlipOpen = true;
-        },
-        closeSlip() {
-          this.isSlipOpen = false;
-        },
-        printSlip() {
-          window.print();
-        },
-        get currentProduct() {
-          return this.filteredProducts[this.currentIndex] || {};
         }
       }));
     });

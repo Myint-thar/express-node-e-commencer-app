@@ -164,17 +164,24 @@ app.get('/products/category/comics-manga', async (req, res) => {
 });
 
 // ELECTRONICS DETAIL ROUTE
-app.get('/electronics/detail/:id', async (req, res) => {
+app.get('/products/category/electronics', async (req, res) => {
   try {
-    const item = await Product.findByPk(req.params.id);
-    if (!item) return res.status(404).send('Product Not Found');
+    const electronics = await Product.findAll({
+      where: {
+        category: {
+          [Op.or]: ['Electronics', 'electronics', 'Tech', 'Gadgets']
+        }
+      }
+    });
 
-    res.render('electronics-detail', { 
-      product: item,
+    res.render('electronics', {
+      electronicsItems: electronics, // View ထဲသို့ Data ပို့ပေးခြင်း
+      products: electronics,
       wishlistItems: req.session?.wishlist || [],
       cartItems: req.session?.cart || []
     });
   } catch (error) {
+    console.error('Error fetching electronics:', error);
     res.status(500).send('Server Error');
   }
 });
@@ -192,24 +199,6 @@ app.get('/promotion', async (req, res) => {
   }
 });
 
-app.get('/login', (req, res) => {
-  res.render('login', { error: null });
-});
-
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-  if (email === "admin@gmail.com" && password === "123456") {
-    req.session.user = { name: "Admin", email };
-    return res.redirect('/');
-  }
-  res.render('login', { error: 'Invalid Email or Password!' });
-});
-
-app.get('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/');
-  });
-});
 
 app.post('/contact/send', (req, res) => {
   const { name, contact, message } = req.body;
