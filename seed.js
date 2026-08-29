@@ -1,5 +1,5 @@
-const sequelize = require('./config/db'); // မိမိ၏ db path သို့ ပြင်ပါ
-const Product = require('./schema/products'); // မိမိ၏ schema path သို့ ပြင်ပါ
+const sequelize = require('./config/db');
+const Product = require('./schema/products'); // Folder name စာလုံး အကြီး/အသေး Linux ပေါ်တွင် ကိုက်ညီပါစေ
 
 // 1. COMICS GENERATOR (120 ITEMS)
 const seriesList = [
@@ -14,7 +14,6 @@ const seriesList = [
 ];
 
 const comicsList = [];
-let cId = 1;
 
 seriesList.forEach((s) => {
   for (let vol = 1; vol <= 15; vol++) {
@@ -23,7 +22,6 @@ seriesList.forEach((s) => {
       title: titleText,
       category: 'Comics & Manga',
       price: parseFloat((8.99 + vol * 0.2).toFixed(2)),
-      // သေချာပေါက် ပုံပေါ်မည့် Placeholder Image Link
       image: `https://placehold.co/300x420/1e293b/ffffff?text=${encodeURIComponent(titleText)}`,
       badge: vol === 1 ? 'HOT' : 'NEW',
       author: s.author,
@@ -31,7 +29,6 @@ seriesList.forEach((s) => {
       totalPages: 180 + vol * 5,
       description: `Official Chapter volume ${vol} of ${s.name}. Read the full story line with high definition manga panels and story content.`
     });
-    cId++;
   }
 });
 
