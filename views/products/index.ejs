@@ -3,152 +3,216 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FAMSWORLD - Home</title>
+  <title>Stuffsus - Shop</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font (Inter) for Clean Minimalist Look -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
+<body class="bg-[#fcfcfc] text-black">
 
-  <!-- TOP NAVBAR -->
-  <%- include('../partials/navbar') %>
-
-  <!-- MAIN CONTENT AREA -->
-  <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-8">
-
-    <!-- 1. WEBSITE HERO / ABOUT BANNER SECTION -->
-    <section class="bg-gradient-to-r from-slate-900 via-slate-900 to-orange-950/40 border border-slate-800 rounded-3xl p-8 mb-12 shadow-2xl relative overflow-hidden">
-      <div class="max-w-3xl relative z-10">
-        <span class="bg-orange-500/10 text-orange-400 border border-orange-500/30 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest inline-block mb-3">
-          Welcome to FAMSWORLD
-        </span>
-        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight mb-4">
-          All-In-One Digital Manga Reader & Tech Store
+  <%- include('../partials/navbar', { activePage: 'shop' }) %>
+  
+  <!-- 1. Hero Section -->
+  <div class="w-full max-w-[1400px] mx-auto px-6 mt-2">
+    <div class="relative w-full h-[250px] md:h-[350px] rounded-3xl overflow-hidden bg-gray-900 flex items-center justify-center group cursor-pointer">
+      <!-- Background Image -->
+      <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=2000" alt="Interior" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-50 transition-all duration-700 ease-out group-hover:scale-105">
+      <!-- Text Container -->
+      <div class="relative z-10 flex flex-col items-center text-center -translate-y-6">
+        <h1 class="text-[100px] md:text-[80px] font-black text-white leading-none tracking-tighter drop-shadow-2xl select-none mb-8 md:mb-12 transition-transform duration-500 ease-out group-hover:scale-110 group-active:scale-125">
+          Explore Tech
         </h1>
-        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6">
-          FAMSWORLD သည် သင်နှစ်သက်သော <span class="text-orange-400 font-bold">Comics & Manga</span> များကို အွန်လိုင်းမှ တိုက်ရိုက်ဖတ်ရှုနိုင်ပြီး၊ အရည်အသွေးမြင့် <span class="text-orange-400 font-bold">Electronics</span> နည်းပညာပစ္စည်းများကို သိုလှောင်ဝယ်ယူနိုင်သော E-Commerce Platform ဖြစ်ပါသည်။
+        <!-- Complementary Text -->
+        <p class="text-white text-sm md:text-base font-semibold max-w-md px-4 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out delay-100">
+         Discover the latest technology, gadgets, and accessories. <br class="hidden md:block"> Built for the way you live and work.
         </p>
-
-        <!-- Feature Badges -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800/80">
-          <div class="flex items-center gap-2">
-            <span class="text-base">📖</span>
-            <span class="text-[11px] font-bold text-slate-300">Instant Reader</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-base">⚡</span>
-            <span class="text-[11px] font-bold text-slate-300">Fast Tech Delivery</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-base">🧾</span>
-            <span class="text-[11px] font-bold text-slate-300">Instant E-Slip</span>
-          </div>
-        </div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- 2. COMICS & MANGA SECTION (10 ITEMS) -->
-    <section class="mb-14">
-      <div class="flex justify-between items-end mb-6 pb-3 border-b border-slate-800">
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-2">
-            <span>📚</span> POPULAR COMICS & MANGA
-          </h2>
-          <p class="text-xs text-slate-400 mt-1">Read top manga chapters online or buy digital copies.</p>
-        </div>
-        <a href="/products/category/comics-manga" class="text-xs font-bold text-orange-400 hover:text-orange-300 transition flex items-center gap-1">
-          View All Manga →
-        </a>
-      </div>
+  <!-- 2. Search & Filter Header -->
+  <div class="max-w-[1400px] mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <h2 class="text-2xl font-black">Give All You Need</h2>
+    <div class="relative w-full max-w-md">
+      <input type="text" placeholder="A Good Item Bluetooth..." class="w-full bg-white border border-gray-200 rounded-full py-3 pl-5 pr-24 text-sm font-medium focus:outline-none focus:border-gray-400 shadow-sm">
+      <button class="absolute right-1.5 top-1.5 bottom-1.5 bg-black text-white text-xs font-bold px-5 rounded-full hover:bg-gray-800 transition">Search</button>
+    </div>
+  </div>
 
-      <!-- Manga Grid (10 Cards) -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-        <% if (comics && comics.length > 0) { %>
-          <% comics.slice(0, 10).forEach(item => { %>
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-orange-500/50 hover:-translate-y-1 transition duration-300 shadow-xl">
-              <div>
-                <!-- Cover Image -->
-                <div class="h-52 bg-slate-800 rounded-lg overflow-hidden flex items-center justify-center mb-3 relative">
-                  <img src="<%= item.image %>" alt="<%= item.title %>" class="h-full w-full object-cover">
-                  <span class="absolute top-2 left-2 bg-slate-950/80 text-orange-400 text-[9px] font-bold px-2 py-0.5 rounded border border-orange-500/30">
-                    <%= item.badge || 'HOT' %>
-                  </span>
-                </div>
+  <main class="max-w-[1400px] mx-auto px-6 pb-20 flex flex-col lg:flex-row gap-10">
+    
+    <!-- 3. LEFT SIDEBAR (Category) -->
+    <aside class="w-full lg:w-[220px] shrink-0">
+      <h3 class="text-base font-bold text-black mb-5">Category</h3>
+      <ul class="space-y-4 text-sm font-medium text-gray-500">
+        
+        <!-- Active Item -->
+        <li>
+          <a href="#" class="flex items-center justify-between text-black font-bold">
+            <span class="flex items-center gap-3">
+              <span class="text-red-500">☁️</span> All Product
+            </span>
+            <span class="bg-red-100 text-red-500 text-[10px] px-2 py-0.5 rounded-full">24</span>
+          </a>
+        </li>
+        
+        <!-- Inactive Items -->
+        <li><a href="#" class="flex items-center gap-3 hover:text-black transition"><input type="checkbox" class="w-4 h-4 rounded text-black focus:ring-black"> For Home</a></li>
+        <li><a href="#" class="flex items-center gap-3 hover:text-black transition"><input type="checkbox" class="w-4 h-4 rounded text-black focus:ring-black"> For Music</a></li>
+        <li><a href="#" class="flex items-center gap-3 hover:text-black transition"><input type="checkbox" class="w-4 h-4 rounded text-black focus:ring-black"> For Phone</a></li>
+        <li><a href="#" class="flex items-center gap-3 hover:text-black transition"><input type="checkbox" class="w-4 h-4 rounded text-black focus:ring-black"> For Storage</a></li>
+      </ul>
 
-                <!-- Title & Price -->
-                <h3 class="font-bold text-xs text-white line-clamp-1"><%= item.title %></h3>
-                <p class="text-[10px] text-slate-400 mt-0.5">Author: Eiichiro Oda</p>
-                <div class="mt-2 font-black text-orange-400 text-sm">$<%= item.price %></div>
-              </div>
+      <!-- Divider -->
+      <div class="h-px bg-gray-200 my-6"></div>
 
-              <!-- Buttons: Read & Buy -->
-              <div class="mt-4 grid grid-cols-2 gap-2">
-                <a href="/manga/read/<%= item._id || item.id %>" class="text-center bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-1.5 rounded-lg text-[10px] transition uppercase flex items-center justify-center gap-1">
-                  📖 Read
-                </a>
-                <a href="/eslip/<%= item._id || item.id %>" class="text-center bg-orange-500 hover:bg-orange-600 text-white font-black py-1.5 rounded-lg text-[10px] transition uppercase shadow-md flex items-center justify-center gap-1">
-                  🛒 Buy
-                </a>
-              </div>
+      <ul class="space-y-4 text-sm font-medium text-gray-500">
+        <li><a href="#" class="flex items-center gap-3 hover:text-black"><span class="text-lg">✨</span> New Arrival</a></li>
+        <li><a href="#" class="flex items-center gap-3 hover:text-black"><span class="text-lg">🔥</span> Best Seller</a></li>
+        <li><a href="#" class="flex items-center gap-3 hover:text-black"><span class="text-lg">🏷️</span> On Discount</a></li>
+      </ul>
+    </aside>
+
+    <!-- 4. RIGHT PRODUCT GRID -->
+    <section class="flex-grow">
+      
+      <!-- Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        
+        <!-- Product Card 1 -->
+        <div class="bg-transparent group">
+          <div class="bg-gray-100 rounded-3xl p-5 mb-4 relative h-[250px] flex items-center justify-center">
+            <span class="absolute top-4 right-4 bg-white text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full shadow-sm">Other</span>
+            <img src="/images/phone-stand.png" alt="Product" class="w-32 h-32 object-contain group-hover:scale-110 transition duration-300">
+          </div>
+          <h3 class="font-bold text-sm text-black mb-1">Phone Holder Sakti</h3>
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-1 text-[11px]">
+              <span class="text-amber-500">★</span> <span class="font-bold">5.0</span> <span class="text-gray-400">(1.2k Review)</span>
             </div>
-          <% }); %>
-        <% } %>
-      </div>
-    </section>
-
-    <!-- 3. ELECTRONICS SECTION (10 ITEMS) -->
-    <section class="mb-14">
-      <div class="flex justify-between items-end mb-6 pb-3 border-b border-slate-800">
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-2">
-            <span>🔌</span> TOP ELECTRONICS & TECH
-          </h2>
-          <p class="text-xs text-slate-400 mt-1">High quality gadgets and gaming equipment.</p>
+            <span class="font-black text-sm">$29.90</span>
+          </div>
+          
+          <div class="flex gap-2">
+            <!-- Add to Cart (POST Request Form) -->
+            <form action="/add-to-cart" method="POST" class="w-1/2">
+              <input type="hidden" name="productId" value="1">
+              <button type="submit" class="w-full border border-gray-300 text-black text-xs font-bold py-2.5 rounded-full hover:bg-gray-50 transition">Add to Cart</button>
+            </form>
+            <button class="w-1/2 bg-black text-white text-xs font-bold py-2.5 rounded-full hover:bg-gray-800 transition">Buy Now</button>
+          </div>
         </div>
-        <a href="/products/category/electronics" class="text-xs font-bold text-orange-400 hover:text-orange-300 transition flex items-center gap-1">
-          View All Tech →
-        </a>
+
+        <!-- Product Card 2 -->
+        <div class="bg-transparent group">
+          <div class="bg-gray-100 rounded-3xl p-5 mb-4 relative h-[250px] flex items-center justify-center">
+            <span class="absolute top-4 right-4 bg-white text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full shadow-sm">Music</span>
+            <img src="/images/headphone.png" alt="Product" class="w-32 h-32 object-contain group-hover:scale-110 transition duration-300">
+          </div>
+          <h3 class="font-bold text-sm text-black mb-1">Headsound</h3>
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-1 text-[11px]">
+              <span class="text-amber-500">★</span> <span class="font-bold">5.0</span> <span class="text-gray-400">(2.4k Review)</span>
+            </div>
+            <span class="font-black text-sm">$12.00</span>
+          </div>
+          
+          <div class="flex gap-2">
+            <form action="/add-to-cart" method="POST" class="w-1/2">
+              <input type="hidden" name="productId" value="2">
+              <button type="submit" class="w-full border border-gray-300 text-black text-xs font-bold py-2.5 rounded-full hover:bg-gray-50 transition">Add to Cart</button>
+            </form>
+            <button class="w-1/2 bg-black text-white text-xs font-bold py-2.5 rounded-full hover:bg-gray-800 transition">Buy Now</button>
+          </div>
+        </div>
+
+        <!-- ထပ်မံ၍ Card များကို လိုသလို ပွားယူနိုင်ပါသည် ... -->
+
       </div>
 
-      <!-- Electronics Grid (10 Cards) -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-        <% if (electronics && electronics.length > 0) { %>
-          <% electronics.slice(0, 10).forEach(item => { %>
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-orange-500/50 hover:-translate-y-1 transition duration-300 shadow-xl">
-              <div>
-                <!-- Image -->
-                <div class="h-44 bg-slate-800 rounded-lg overflow-hidden flex items-center justify-center mb-3 relative">
-                  <img src="<%= item.image %>" alt="<%= item.title %>" class="h-full w-full object-cover">
-                  <% if (item.badge) { %>
-                    <span class="absolute top-2 left-2 bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded">
-                      <%= item.badge %>
-                    </span>
-                  <% } %>
-                </div>
-
-                <!-- Title & Price -->
-                <h3 class="font-bold text-xs text-white line-clamp-1"><%= item.title %></h3>
-                <p class="text-[10px] text-slate-400 mt-0.5">Category: Gadgets</p>
-                <div class="mt-2 font-black text-orange-400 text-sm">$<%= item.price %></div>
-              </div>
-
-              <!-- Add to Cart Action -->
-              <form action="/cart/add/<%= item._id || item.id %>" method="POST" class="mt-4">
-                <input type="hidden" name="title" value="<%= item.title %>">
-                <input type="hidden" name="price" value="<%= item.price %>">
-                <input type="hidden" name="image" value="<%= item.image %>">
-                <button type="submit" class="w-full bg-slate-800 hover:bg-orange-500 border border-slate-700 hover:border-orange-500 text-white font-bold py-2 rounded-lg text-[10px] transition uppercase tracking-wider flex items-center justify-center gap-1">
-                  🛒 Add to Cart
-                </button>
-              </form>
-            </div>
-          <% }); %>
-        <% } %>
+      <!-- Pagination -->
+      <div class="flex items-center justify-center gap-3 mt-16 text-sm font-semibold text-gray-500">
+        <button class="hover:text-black">❮ Previous</button>
+        <button class="w-8 h-8 rounded-full bg-black text-white">1</button>
+        <button class="w-8 h-8 rounded-full hover:bg-gray-100">2</button>
+        <button class="w-8 h-8 rounded-full hover:bg-gray-100">3</button>
+        <span>...</span>
+        <button class="w-8 h-8 rounded-full hover:bg-gray-100">10</button>
+        <button class="hover:text-black">Next ❯</button>
       </div>
     </section>
-
   </main>
 
-  <!-- BOTTOM FOOTER -->
-  <%- include('../partials/footer') %>
+  <!-- 5. Explore Recommendations Section -->
+  <section class="max-w-[1400px] mx-auto px-6 pb-20">
+    <div class="flex justify-between items-end mb-8">
+      <h2 class="text-2xl font-black text-black">Explore our recommendations</h2>
+      <div class="flex gap-2 text-gray-400">
+        <button class="hover:text-black">←</button>
+        <button class="hover:text-black">→</button>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+       <!-- Recommedation Card Example -->
+       <div class="bg-gray-100 rounded-3xl p-6 flex items-center gap-4">
+         <img src="/images/tws.png" class="w-20 h-20 object-contain">
+         <div>
+           <span class="text-[10px] text-gray-400 font-bold mb-1 block">Other</span>
+           <h4 class="font-bold text-sm">TWS Bujug</h4>
+           <div class="font-black mt-2">$29.90</div>
+         </div>
+       </div>
+    </div>
+  </section>
+
+  <!-- 6. Newsletter Banner -->
+  <section class="max-w-[1400px] mx-auto px-6 pb-20">
+    <div class="bg-[#1c1c1c] rounded-[40px] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10">
+      <div class="text-white">
+        <h2 class="text-4xl font-black mb-4">Ready to Get<br>Our New Stuff?</h2>
+      </div>
+      <div class="max-w-md w-full">
+        <p class="text-gray-400 text-xs leading-relaxed mb-6">Well listen to your needs. Identify the best approach, and then create a bespoke modern UI charging solution that's right for you.</p>
+        <div class="flex bg-white/10 rounded-full p-2">
+          <input type="email" placeholder="Your Email" class="bg-transparent border-none text-white px-4 text-sm w-full focus:outline-none">
+          <button class="bg-white text-black text-xs font-bold px-6 py-2.5 rounded-full hover:bg-gray-200">Send</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Footer -->
+  <footer class="max-w-[1400px] mx-auto px-6 py-10 border-t border-gray-200 text-sm font-semibold text-gray-500">
+    <div class="flex flex-col md:flex-row justify-between mb-10">
+      <div class="flex gap-16">
+        <div class="flex flex-col gap-3">
+          <span class="text-black mb-2">About</span>
+          <a href="#">Blog</a><a href="#">Meet The Team</a><a href="#">Contact Us</a>
+        </div>
+        <div class="flex flex-col gap-3">
+          <span class="text-black mb-2">Support</span>
+          <a href="#">Contact Us</a><a href="#">Shipping</a><a href="#">Return</a><a href="#">FAQ</a>
+        </div>
+      </div>
+      <!-- Social Icons placeholder -->
+      <div class="flex items-end gap-3 text-black">
+        <span class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">X</span>
+        <span class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">f</span>
+        <span class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">in</span>
+      </div>
+    </div>
+    <div class="flex justify-between items-center text-xs text-gray-400 border-t border-gray-100 pt-6">
+      <p>Copyright © 2026 Stuffsus. All Rights Reserved.</p>
+      <div class="flex gap-4">
+        <a href="#">Terms of Service</a>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
 
 </body>
 </html>

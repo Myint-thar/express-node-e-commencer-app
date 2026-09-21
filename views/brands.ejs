@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stuffsus - Brands</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-[#fcfcfc] text-black min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <%- include('partials/navbar', { activePage: 'brands' }) %>
+
+  <% 
+    const brandCategories = [
+      {
+        categoryName: "Mobile, Tablets & Wearables",
+        brands: [
+          { name: "Apple", desc: "iPhone, iPad, Watch", slug: "apple" },
+          { name: "Samsung", desc: "Galaxy Series", slug: "samsung" },
+          { name: "Xiaomi", desc: "Smartphones & Ecosystem", slug: "xiaomi" },
+          { name: "Google", desc: "Pixel & Nest", slug: "google" },
+          { name: "OnePlus", desc: "Never Settle", slug: "oneplus" },
+          { name: "Nothing", desc: "Phone & Ear", slug: "nothing" }
+        ]
+      },
+      {
+        categoryName: "Computers & Laptops",
+        brands: [
+          { name: "Asus", desc: "ZenBook & ROG", slug: "asus" },
+          { name: "Dell", desc: "XPS & Alienware", slug: "dell" },
+          { name: "Lenovo", desc: "ThinkPad & Legion", slug: "lenovo" },
+          { name: "Microsoft", desc: "Surface Series", slug: "microsoft" },
+          { name: "HP", desc: "Spectre & Omen", slug: "hp" },
+          { name: "MSI", desc: "Gaming Laptops", slug: "msi" }
+        ]
+      }
+    ];
+  %>
+
+  <!-- Main Brands Content -->
+  <main class="flex-grow max-w-[1400px] w-full mx-auto px-6 py-16">
+    
+    <!-- Hero Header -->
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <h1 class="text-5xl md:text-6xl font-black text-black tracking-tight">Featured Brands</h1>
+      <p class="mt-4 text-gray-500 font-medium text-base">
+        Discover products from the world's leading technology creators, all in one place.
+      </p>
+    </div>
+
+    <!-- Category Filter & Brand List -->
+    <% brandCategories.forEach(category => { %>
+      <section class="mb-14">
+        <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">
+          <%= category.categoryName %>
+        </h2>
+        
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <% category.brands.forEach(brand => { %>
+            <!-- href="/brands/slug" ဖြင့် Link အလုပ်လုပ်အောင် ပြင်ဆင်ထားပါသည် -->
+            <a href="/brands/<%= brand.slug %>" class="bg-white border border-gray-100 rounded-3xl p-6 flex flex-col items-center justify-center hover:shadow-xl transition-all duration-300 group cursor-pointer hover:-translate-y-1 block text-center">
+              <h3 class="text-lg font-bold text-gray-800 group-hover:text-black">
+                <%= brand.name %>
+              </h3>
+              <p class="text-[11px] text-gray-400 mt-1">
+                <%= brand.desc %>
+              </p>
+            </a>
+          <% }); %>
+        </div>
+      </section>
+    <% }); %>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-200 py-6 text-center text-xs text-gray-400 mt-auto">
+    <p>Copyright © 2026 Stuffsus. All Rights Reserved.</p>
+  </footer>
+
+</body>
+</html>
