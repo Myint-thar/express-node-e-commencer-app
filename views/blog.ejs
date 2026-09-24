@@ -1,68 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stuffsus - Blog</title>
-  <!-- Tailwind CSS မဖြစ်မနေ ထည့်ပေးရပါမယ် -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stuffsus - Tech Stories & Insights</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; color: #111111; }
+        .card-hover { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.07); }
+        .img-zoom { transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .group:hover .img-zoom { transform: scale(1.05); }
+    </style>
 </head>
-<body class="bg-[#fcfcfc] text-black min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col justify-between">
 
-  <!-- Navbar -->
-  <%- include('partials/navbar', { activePage: 'blog' }) %>
+    <!-- Navbar -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 px-6 py-4">
+        <div class="max-w-[1200px] mx-auto flex items-center justify-between">
+            <a href="/" class="text-2xl font-black tracking-tighter text-black">Stuffsus</a>
+            
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="/brands" class="text-xs font-bold text-gray-600 hover:text-black transition">Brands</a>
+                <a href="/" class="text-xs font-bold text-gray-600 hover:text-black transition">Tech Hub</a>
+                <a href="/blog" class="text-xs font-bold text-black border-b-2 border-black pb-0.5">Blog</a>
+            </nav>
 
-  <!-- Blog Page Content -->
-  <main class="flex-grow max-w-[1400px] w-full mx-auto px-6 py-20">
-    <div class="text-center mb-16">
-      <h1 class="text-5xl md:text-7xl font-black text-black tracking-tight">Tech Blog</h1>
-      <p class="mt-4 text-gray-500 font-medium">Read our latest news, reviews, and tips.</p>
-    </div>
-
-    <!-- Sample Blog Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      
-      <!-- Card 1 -->
-      <div class="bg-white border border-gray-100 rounded-3xl p-6 hover:shadow-xl transition-shadow cursor-pointer group">
-        <div class="w-full h-48 bg-gray-200 rounded-2xl mb-4 overflow-hidden">
-           <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=600" alt="Tech" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+            <div class="flex items-center gap-4">
+                <button type="button" class="relative p-2.5 bg-gray-100 hover:bg-gray-200 rounded-full transition">
+                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                </button>
+                <div class="w-8 h-8 rounded-full bg-gray-200 border border-gray-300 overflow-hidden cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80" alt="User Avatar" class="w-full h-full object-cover">
+                </div>
+            </div>
         </div>
-        <span class="text-xs font-bold text-red-500 mb-2 block">Tech News</span>
-        <h2 class="text-lg font-bold text-black mb-2 group-hover:text-gray-600 transition">The Future of Minimalist Tech</h2>
-        <p class="text-sm text-gray-500">Discover how modern design is shaping the way we use everyday gadgets.</p>
-      </div>
-      
-      <!-- Card 2 -->
-      <div class="bg-white border border-gray-100 rounded-3xl p-6 hover:shadow-xl transition-shadow cursor-pointer group">
-        <div class="w-full h-48 bg-gray-200 rounded-2xl mb-4 overflow-hidden">
-           <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=600" alt="Audio" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+    </header>
+
+    <main class="max-w-[1200px] w-full mx-auto px-6 py-10 flex-grow">
+
+        <!-- 1. Hero Section -->
+        <section class="text-center max-w-2xl mx-auto mb-12">
+            <span class="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3 block">Editorial Publications</span>
+            <h1 class="text-4xl md:text-5xl font-black tracking-tight text-black mb-4">Tech Stories & Insights</h1>
+            <p class="text-gray-500 text-sm font-medium mb-8 leading-relaxed">Latest technology news, honest reviews, useful guides, and future insights curated for modern enthusiasts.</p>
+            
+            <!-- Search Bar -->
+            <div class="relative max-w-md mx-auto">
+                <input type="text" id="blog-search" onkeyup="searchArticles()" placeholder="Search articles..." 
+                       class="w-full bg-white border border-gray-200 rounded-2xl py-3.5 pl-12 pr-4 text-xs font-semibold placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition shadow-xs">
+                <svg class="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 2. Blog Categories Filter -->
+        <section class="flex items-center justify-center gap-2 overflow-x-auto pb-4 mb-12">
+            <% const categories = ["All", "Tech News", "Reviews", "Tips & Tricks", "Buying Guides", "How-To", "AI & Future Tech"]; %>
+            <% categories.forEach((cat, index) => { %>
+                <button type="button" onclick="filterCategory('<%= cat %>', this)" 
+                        class="category-btn px-5 py-2.5 rounded-full text-xs font-bold transition whitespace-nowrap <%= index === 0 ? 'bg-black text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
+                    <%= cat %>
+                </button>
+            <% }); %>
+        </section>
+
+        <!-- 3. Featured Article -->
+        <section class="mb-16">
+            <a href="/blog/apple-vision-pro-2-preview" class="group block bg-white border border-gray-100 rounded-[28px] overflow-hidden p-4 md:p-6 card-hover shadow-xs">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-7 overflow-hidden rounded-2xl bg-gray-50 h-[300px] md:h-[380px]">
+                        <img src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=1200&q=80" alt="Featured Tech" class="w-full h-full object-cover img-zoom">
+                    </div>
+                    <div class="lg:col-span-5 flex flex-col justify-between py-2 pr-4">
+                        <div>
+                            <span class="inline-block px-3 py-1 bg-black text-white text-[10px] font-extrabold uppercase tracking-wider rounded-full mb-4">Featured Story</span>
+                            <h2 class="text-2xl md:text-3xl font-black text-black leading-tight mb-3 group-hover:text-gray-700 transition">
+                                The Future of Minimalist Spatial Computing
+                            </h2>
+                            <p class="text-gray-500 text-xs leading-relaxed mb-6">
+                                How next-generation spatial hardware is redesigning our daily digital workflows without cluttering our physical personal spaces.
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-between pt-6 border-t border-gray-100">
+                            <div class="flex items-center gap-3">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80" alt="Author" class="w-8 h-8 rounded-full object-cover">
+                                <div>
+                                    <div class="text-xs font-bold text-black">Alex Rivera</div>
+                                    <div class="text-[10px] font-semibold text-gray-400">Sep 20, 2026 • 6 min read</div>
+                                </div>
+                            </div>
+                            <span class="text-xs font-black text-black group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Read Article →</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </section>
+
+        <!-- 4. Latest Articles Grid -->
+        <section class="mb-16">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-xl font-black text-black tracking-tight">Latest Articles</h3>
+                <span class="text-xs font-bold text-gray-400">Showing 6 articles</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="articles-grid">
+                
+                <!-- Article Card 1 -->
+                <article class="article-card group bg-white border border-gray-100 rounded-[24px] overflow-hidden p-4 card-hover flex flex-col justify-between shadow-xs" data-category="Tips & Tricks">
+                    <div>
+                        <div class="overflow-hidden rounded-xl bg-gray-50 h-48 mb-4">
+                            <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600&q=80" alt="Minimalist Tech" class="w-full h-full object-cover img-zoom">
+                        </div>
+                        <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-2">Tips & Tricks</span>
+                        <h4 class="text-base font-bold text-black group-hover:text-gray-600 transition mb-2 line-clamp-2">The Future of Minimalist Tech</h4>
+                        <p class="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">Why stripping down digital distractions leads to higher productivity and focus.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-400">Sep 18, 2026 • 4 min</span>
+                        <a href="/blog/minimalist-tech" class="text-xs font-extrabold text-black group-hover:translate-x-1 transition-transform">Read Article →</a>
+                    </div>
+                </article>
+
+                <!-- Article Card 2 -->
+                <article class="article-card group bg-white border border-gray-100 rounded-[24px] overflow-hidden p-4 card-hover flex flex-col justify-between shadow-xs" data-category="Reviews">
+                    <div>
+                        <div class="overflow-hidden rounded-xl bg-gray-50 h-48 mb-4">
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80" alt="Headphones" class="w-full h-full object-cover img-zoom">
+                        </div>
+                        <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-2">Reviews</span>
+                        <h4 class="text-base font-bold text-black group-hover:text-gray-600 transition mb-2 line-clamp-2">Top 5 Headphones for 2026</h4>
+                        <p class="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">In-depth audiophile test of flagship noise-canceling headphones.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-400">Sep 15, 2026 • 7 min</span>
+                        <a href="/blog/top-headphones-2026" class="text-xs font-extrabold text-black group-hover:translate-x-1 transition-transform">Read Article →</a>
+                    </div>
+                </article>
+
+                <!-- Article Card 3 -->
+                <article class="article-card group bg-white border border-gray-100 rounded-[24px] overflow-hidden p-4 card-hover flex flex-col justify-between shadow-xs" data-category="How-To">
+                    <div>
+                        <div class="overflow-hidden rounded-xl bg-gray-50 h-48 mb-4">
+                            <img src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80" alt="Workspace" class="w-full h-full object-cover img-zoom">
+                        </div>
+                        <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-2">How-To</span>
+                        <h4 class="text-base font-bold text-black group-hover:text-gray-600 transition mb-2 line-clamp-2">Organize Your Workspace</h4>
+                        <p class="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">Cable management techniques and desk setup essentials for remote engineers.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-400">Sep 12, 2026 • 5 min</span>
+                        <a href="/blog/organize-workspace" class="text-xs font-extrabold text-black group-hover:translate-x-1 transition-transform">Read Article →</a>
+                    </div>
+                </article>
+
+                <!-- Article Card 4 -->
+                <article class="article-card group bg-white border border-gray-100 rounded-[24px] overflow-hidden p-4 card-hover flex flex-col justify-between shadow-xs" data-category="Buying Guides">
+                    <div>
+                        <div class="overflow-hidden rounded-xl bg-gray-50 h-48 mb-4">
+                            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80" alt="Smartphones" class="w-full h-full object-cover img-zoom">
+                        </div>
+                        <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-2">Buying Guides</span>
+                        <h4 class="text-base font-bold text-black group-hover:text-gray-600 transition mb-2 line-clamp-2">Best Budget Smartphones in 2026</h4>
+                        <p class="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">High-end camera features and flagship performance under $400.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-400">Sep 10, 2026 • 8 min</span>
+                        <a href="/blog/best-budget-smartphones" class="text-xs font-extrabold text-black group-hover:translate-x-1 transition-transform">Read Article →</a>
+                    </div>
+                </article>
+
+                <!-- Article Card 5 -->
+                <article class="article-card group bg-white border border-gray-100 rounded-[24px] overflow-hidden p-4 card-hover flex flex-col justify-between shadow-xs" data-category="AI & Future Tech">
+                    <div>
+                        <div class="overflow-hidden rounded-xl bg-gray-50 h-48 mb-4">
+                            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&q=80" alt="AI Tools" class="w-full h-full object-cover img-zoom">
+                        </div>
+                        <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-2">AI & Future Tech</span>
+                        <h4 class="text-base font-bold text-black group-hover:text-gray-600 transition mb-2 line-clamp-2">AI Tools Every Developer Should Know</h4>
+                        <p class="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">Accelerate coding speed, automated debugging, and architectural planning.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-400">Sep 05, 2026 • 6 min</span>
+                        <a href="/blog/ai-tools-developers" class="text-xs font-extrabold text-black group-hover:translate-x-1 transition-transform">Read Article →</a>
+                    </div>
+                </article>
+
+                <!-- Article Card 6 -->
+                <article class="article-card group bg-white border border-gray-100 rounded-[24px] overflow-hidden p-4 card-hover flex flex-col justify-between shadow-xs" data-category="Tech News">
+                    <div>
+                        <div class="overflow-hidden rounded-xl bg-gray-50 h-48 mb-4">
+                            <img src="https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=600&q=80" alt="SSD Storage" class="w-full h-full object-cover img-zoom">
+                        </div>
+                        <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-2">Tech News</span>
+                        <h4 class="text-base font-bold text-black group-hover:text-gray-600 transition mb-2 line-clamp-2">SSD vs HDD: Which One Should You Choose?</h4>
+                        <p class="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">Speed, durability, and storage costs breakdown for creator backups.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-400">Sep 01, 2026 • 5 min</span>
+                        <a href="/blog/ssd-vs-hdd" class="text-xs font-extrabold text-black group-hover:translate-x-1 transition-transform">Read Article →</a>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- 5. Trending Articles Section -->
+        <section class="mb-16 bg-white border border-gray-100 rounded-[28px] p-8 shadow-xs">
+            <h3 class="text-xl font-black text-black tracking-tight mb-6">Trending Now</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <div class="flex gap-4 items-start group cursor-pointer">
+                    <span class="text-2xl font-black text-gray-200 group-hover:text-black transition">01</span>
+                    <div>
+                        <span class="text-[9px] font-extrabold uppercase text-gray-400 block mb-1">AI & Future Tech</span>
+                        <h5 class="text-xs font-bold text-black group-hover:text-gray-600 transition leading-snug line-clamp-2">How Neural Engines Redefine Mobile Gaming</h5>
+                        <span class="text-[10px] font-medium text-gray-400 mt-1 block">3 min read</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 items-start group cursor-pointer">
+                    <span class="text-2xl font-black text-gray-200 group-hover:text-black transition">02</span>
+                    <div>
+                        <span class="text-[9px] font-extrabold uppercase text-gray-400 block mb-1">Reviews</span>
+                        <h5 class="text-xs font-bold text-black group-hover:text-gray-600 transition leading-snug line-clamp-2">MacBook Air M3 Long-Term Review</h5>
+                        <span class="text-[10px] font-medium text-gray-400 mt-1 block">9 min read</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 items-start group cursor-pointer">
+                    <span class="text-2xl font-black text-gray-200 group-hover:text-black transition">03</span>
+                    <div>
+                        <span class="text-[9px] font-extrabold uppercase text-gray-400 block mb-1">Buying Guides</span>
+                        <h5 class="text-xs font-bold text-black group-hover:text-gray-600 transition leading-snug line-clamp-2">Which Apple Watch Fits Your Lifestyle?</h5>
+                        <span class="text-[10px] font-medium text-gray-400 mt-1 block">5 min read</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 items-start group cursor-pointer">
+                    <span class="text-2xl font-black text-gray-200 group-hover:text-black transition">04</span>
+                    <div>
+                        <span class="text-[9px] font-extrabold uppercase text-gray-400 block mb-1">Tips & Tricks</span>
+                        <h5 class="text-xs font-bold text-black group-hover:text-gray-600 transition leading-snug line-clamp-2">10 Battery Saving Settings for iOS 18</h5>
+                        <span class="text-[10px] font-medium text-gray-400 mt-1 block">4 min read</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 6. Newsletter Section -->
+        <section class="bg-black text-white rounded-[28px] p-8 md:p-12 text-center relative overflow-hidden mb-12">
+            <div class="max-w-xl mx-auto relative z-10">
+                <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-2">Weekly Tech Digest</span>
+                <h3 class="text-2xl md:text-3xl font-black tracking-tight mb-3">Stay Ahead of Tech</h3>
+                <p class="text-gray-400 text-xs leading-relaxed mb-6">Get the latest technology news, honest reviews, and useful editorial guides delivered straight to your inbox every Sunday.</p>
+                
+                <form onsubmit="event.preventDefault(); alert('Subscribed successfully!');" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                    <input type="email" placeholder="Enter your email address" required 
+                           class="flex-grow bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white">
+                    <button type="submit" class="bg-white text-black text-xs font-extrabold px-6 py-3 rounded-xl hover:bg-gray-200 transition">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 7. Minimal Footer -->
+    <footer class="border-t border-gray-100 py-8 bg-white">
+        <div class="max-w-[1200px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400 font-medium">
+            <div class="flex items-center gap-2">
+                <span class="font-black text-black text-base">Stuffsus</span>
+                <span>© 2026 Stuffsus Inc. All rights reserved.</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="#" class="hover:text-black transition">Privacy Policy</a>
+                <a href="#" class="hover:text-black transition">Terms of Service</a>
+                <a href="#" class="hover:text-black transition">Editorial Guidelines</a>
+            </div>
         </div>
-        <span class="text-xs font-bold text-blue-500 mb-2 block">Reviews</span>
-        <h2 class="text-lg font-bold text-black mb-2 group-hover:text-gray-600 transition">Top 5 Headphones for 2026</h2>
-        <p class="text-sm text-gray-500">We tested the best audio gear on the market. Here is our final verdict.</p>
-      </div>
+    </footer>
 
-      <!-- Card 3 -->
-      <div class="bg-white border border-gray-100 rounded-3xl p-6 hover:shadow-xl transition-shadow cursor-pointer group">
-        <div class="w-full h-48 bg-gray-200 rounded-2xl mb-4 overflow-hidden">
-           <img src="https://images.unsplash.com/photo-1526406915894-7bcd65f60845?auto=format&fit=crop&q=80&w=600" alt="Workspace" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-        </div>
-        <span class="text-xs font-bold text-amber-500 mb-2 block">Tips & Tricks</span>
-        <h2 class="text-lg font-bold text-black mb-2 group-hover:text-gray-600 transition">Organize Your Workspace</h2>
-        <p class="text-sm text-gray-500">Simple tips to keep your desk clean, minimal, and highly productive.</p>
-      </div>
+    <!-- Category Filter Script -->
+    <script>
+        function filterCategory(catName, btnElement) {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-black', 'text-white', 'shadow-xs');
+                btn.classList.add('bg-gray-100', 'text-gray-600');
+            });
+            btnElement.classList.remove('bg-gray-100', 'text-gray-600');
+            btnElement.classList.add('bg-black', 'text-white', 'shadow-xs');
 
-    </div>
-  </main>
+            const cards = document.querySelectorAll('.article-card');
+            cards.forEach(card => {
+                if (catName === 'All' || card.dataset.category === catName) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
 
-  <!-- Footer -->
-  <footer class="border-t border-gray-200 py-6 text-center text-xs text-gray-400">
-    <p>Copyright © 2026 Stuffsus.</p>
-  </footer>
-
+        function searchArticles() {
+            const query = document.getElementById('blog-search').value.toLowerCase();
+            const cards = document.querySelectorAll('.article-card');
+            cards.forEach(card => {
+                const title = card.querySelector('h4').innerText.toLowerCase();
+                const desc = card.querySelector('p').innerText.toLowerCase();
+                if (title.includes(query) || desc.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
 </body>
 </html>

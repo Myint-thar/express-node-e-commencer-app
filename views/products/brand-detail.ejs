@@ -1,360 +1,359 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stuffsus - <%= (typeof brandSlug !=='undefined' ? brandSlug : 'Brand' ).toUpperCase() %>
-    </title>
+    <title>Stuffsus - <%= (typeof brandSlug !== 'undefined' ? brandSlug : 'Brand').toUpperCase() %></title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; }
+        .product-card { transition: all 0.2s ease-in-out; }
+        .product-card:hover { transform: translateY(-3px); }
     </style>
 </head>
-
-<body class="bg-[#fcfcfc] text-black min-h-screen flex flex-col relative">
+<body class="bg-[#fcfcfc] text-black min-h-screen flex flex-col justify-between">
 
     <!-- Header / Navigation Bar -->
-    <header
-        class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30 px-6 py-4 flex items-center justify-between max-w-[1400px] w-full mx-auto">
-        <a href="/" class="text-2xl font-black tracking-tighter">Stuffsus</a>
-
-        <div class="flex items-center gap-6">
-            <a href="/brands" class="text-xs font-bold hover:text-gray-600 transition">Brands</a>
-            <a href="/blog" class="text-xs font-bold hover:text-gray-600 transition">Blog</a>
-
-            <button onclick="toggleCartModal()"
-                class="relative p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition">
-                <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <span id="cart-badge"
-                    class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center animate-bounce">
-                    0
-                </span>
-            </button>
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-30 px-6 py-4">
+        <div class="max-w-[1200px] mx-auto flex items-center justify-between">
+            <a href="/" class="text-2xl font-black tracking-tighter">Stuffsus</a>
+            <div class="flex items-center gap-6">
+                <a href="/brands" class="text-xs font-bold hover:text-gray-600 transition">Brands</a>
+                <a href="/blog" class="text-xs font-bold hover:text-gray-600 transition">Blog</a>
+                <button onclick="toggleCartModal()" class="relative p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition">
+                    <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <span id="cart-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <% const currentSlug=(typeof brandSlug !=='undefined' ? brandSlug : 'apple' ).toLowerCase(); const brandDataMap={
-        apple: { name: "Apple" , seriesList: ["All", "iPhone" , "MacBook" , "iPad" , "Apple Watch" ], products: [ { id:
-        101, title: "iPhone 15 Pro Max" , series: "iPhone" , price: 1199, tag: "Flagship" ,
-        img: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500&q=80" }, { id: 102,
-        title: "iPhone 15 Plus" , series: "iPhone" , price: 899, tag: "Popular" ,
-        img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=500&q=80" }, { id: 103,
-        title: "MacBook Pro 16 M3 Max" , series: "MacBook" , price: 2499, tag: "Pro Performance" ,
-        img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80" }, { id: 104,
-        title: "MacBook Air 15 M2" , series: "MacBook" , price: 1299, tag: "Ultra Slim" ,
-        img: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=500&q=80" }, { id: 105,
-        title: "iPad Pro 13 M4 OLED" , series: "iPad" , price: 1299, tag: "New" ,
-        img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80" }, { id: 106,
-        title: "Apple Watch Ultra 2" , series: "Apple Watch" , price: 799, tag: "Titanium" ,
-        img: "https://images.unsplash.com/photo-1510017803434-a899398421b3?w=500&q=80" } ] }, samsung: { name: "Samsung"
-        , seriesList: ["All", "Galaxy S Series" , "Galaxy Z Series" , "Galaxy A Series" , "Galaxy Tab" ], products: [ {
-        id: 201, title: "Galaxy S24 Ultra" , series: "Galaxy S Series" , price: 1299, tag: "AI Phone" ,
-        img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500&q=80" }, { id: 202,
-        title: "Galaxy S24+" , series: "Galaxy S Series" , price: 999, tag: "Flagship" ,
-        img: "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80" }, { id: 203,
-        title: "Galaxy Z Fold 5" , series: "Galaxy Z Series" , price: 1799, tag: "Foldable" ,
-        img: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500&q=80" }, { id: 204,
-        title: "Galaxy Z Flip 5" , series: "Galaxy Z Series" , price: 999, tag: "Compact Fold" ,
-        img: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=500&q=80" }, { id: 205, title: "Galaxy A55 5G"
-        , series: "Galaxy A Series" , price: 449, tag: "Best Value" ,
-        img: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=500&q=80" }, { id: 206,
-        title: "Galaxy Tab S9 Ultra" , series: "Galaxy Tab" , price: 1199, tag: "AMOLED Screen" ,
-        img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80" } ] } }; const
-        currentBrand=brandDataMap[currentSlug] || { name: currentSlug.charAt(0).toUpperCase() + currentSlug.slice(1),
-        seriesList: ["All", "Devices" , "Accessories" ], products: [ { id: 901, title: `${currentSlug.toUpperCase()}
-        Official Device`, series: "Devices" , price: 799, tag: "Popular" ,
-        img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80" } ] }; %>
+    <% 
+      const currentSlug = (typeof brandSlug !== 'undefined' ? brandSlug : 'apple').toLowerCase();
+      
+      // ပုံထဲပါ Brands (၁၂) ခုလုံး၏ Data Map
+      const brandDataMap = {
+        apple: {
+          name: "Apple",
+          seriesList: ["All", "iPhone", "MacBook", "iPad", "Apple Watch"],
+          products: [
+            { id: 101, title: "iPhone 15 Pro Max", series: "iPhone", price: 1199, tag: "Flagship", img: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500&q=80" },
+            { id: 102, title: "iPhone 15 Plus", series: "iPhone", price: 899, tag: "Popular", img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=500&q=80" },
+            { id: 103, title: "MacBook Pro 16 M3 Max", series: "MacBook", price: 2499, tag: "Pro Performance", img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80" },
+            { id: 104, title: "MacBook Air 15 M2", series: "MacBook", price: 1299, tag: "Ultra Slim", img: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=500&q=80" },
+            { id: 105, title: "iPad Pro 13 M4 OLED", series: "iPad", price: 1299, tag: "New", img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80" },
+            { id: 106, title: "Apple Watch Ultra 2", series: "Apple Watch", price: 799, tag: "Titanium", img: "https://images.unsplash.com/photo-1510017803434-a899398421b3?w=500&q=80" }
+          ]
+        },
+        samsung: {
+          name: "Samsung",
+          seriesList: ["All", "Galaxy S Series", "Galaxy Z Series", "Galaxy Tab", "Galaxy Watch"],
+          products: [
+            { id: 201, title: "Galaxy S24 Ultra", series: "Galaxy S Series", price: 1299, tag: "AI Phone", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500&q=80" },
+            { id: 202, title: "Galaxy Z Fold 5", series: "Galaxy Z Series", price: 1799, tag: "Foldable", img: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500&q=80" },
+            { id: 203, title: "Galaxy Tab S9 Ultra", series: "Galaxy Tab", price: 1199, tag: "AMOLED", img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80" },
+            { id: 204, title: "Galaxy Watch 6 Classic", series: "Galaxy Watch", price: 399, tag: "Smartwatch", img: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500&q=80" }
+          ]
+        },
+        xiaomi: {
+          name: "Xiaomi",
+          seriesList: ["All", "Xiaomi Series", "Redmi", "POCO", "Ecosystem"],
+          products: [
+            { id: 301, title: "Xiaomi 14 Ultra", series: "Xiaomi Series", price: 999, tag: "Leica Camera", img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80" },
+            { id: 302, title: "Redmi Note 13 Pro+", series: "Redmi", price: 399, tag: "Best Value", img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&q=80" },
+            { id: 303, title: "POCO F6 Pro", series: "POCO", price: 499, tag: "Gaming", img: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=500&q=80" },
+            { id: 304, title: "Xiaomi Smart Band 8", series: "Ecosystem", price: 49, tag: "Fitness", img: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500&q=80" }
+          ]
+        },
+        google: {
+          name: "Google",
+          seriesList: ["All", "Pixel Phone", "Pixel Watch", "Pixel Buds", "Nest"],
+          products: [
+            { id: 401, title: "Google Pixel 8 Pro", series: "Pixel Phone", price: 999, tag: "Pure Android", img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&q=80" },
+            { id: 402, title: "Google Pixel Watch 2", series: "Pixel Watch", price: 349, tag: "Fitbit Tech", img: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500&q=80" },
+            { id: 403, title: "Pixel Buds Pro", series: "Pixel Buds", price: 199, tag: "ANC", img: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80" },
+            { id: 404, title: "Google Nest Audio", series: "Nest", price: 99, tag: "Smart Speaker", img: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=500&q=80" }
+          ]
+        },
+        oneplus: {
+          name: "OnePlus",
+          seriesList: ["All", "Flagship", "Nord Series", "OnePlus Pad"],
+          products: [
+            { id: 501, title: "OnePlus 12", series: "Flagship", price: 799, tag: "Fast Charge", img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80" },
+            { id: 502, title: "OnePlus Nord 4", series: "Nord Series", price: 399, tag: "Mid-Ranger", img: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=500&q=80" },
+            { id: 503, title: "OnePlus Pad 2", series: "OnePlus Pad", price: 479, tag: "Tablet", img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80" }
+          ]
+        },
+        nothing: {
+          name: "Nothing",
+          seriesList: ["All", "Phone", "Ear", "CMF"],
+          products: [
+            { id: 601, title: "Nothing Phone (2)", series: "Phone", price: 599, tag: "Glyph Matrix", img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&q=80" },
+            { id: 602, title: "Nothing Ear (a)", series: "Ear", price: 99, tag: "Transparent", img: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80" },
+            { id: 603, title: "CMF Phone 1", series: "CMF", price: 239, tag: "Modular", img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80" }
+          ]
+        },
+        asus: {
+          name: "Asus",
+          seriesList: ["All", "ROG Series", "ZenBook", "Vivobook"],
+          products: [
+            { id: 701, title: "ROG Zephyrus G16", series: "ROG Series", price: 1999, tag: "OLED Gaming", img: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500&q=80" },
+            { id: 702, title: "ZenBook 14 OLED", series: "ZenBook", price: 1099, tag: "Ultraportable", img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&q=80" },
+            { id: 703, title: "ROG Phone 8 Pro", series: "ROG Series", price: 1199, tag: "Gaming Phone", img: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=500&q=80" }
+          ]
+        },
+        dell: {
+          name: "Dell",
+          seriesList: ["All", "XPS Series", "Alienware", "Inspiron"],
+          products: [
+            { id: 801, title: "Dell XPS 16", series: "XPS Series", price: 2199, tag: "Premium", img: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&q=80" },
+            { id: 802, title: "Alienware m18 R2", series: "Alienware", price: 2899, tag: "Extreme Gaming", img: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500&q=80" },
+            { id: 803, title: "Dell Inspiron 15", series: "Inspiron", price: 649, tag: "Everyday", img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&q=80" }
+          ]
+        },
+        lenovo: {
+          name: "Lenovo",
+          seriesList: ["All", "ThinkPad", "Legion", "Yoga"],
+          products: [
+            { id: 901, title: "ThinkPad X1 Carbon Gen 12", series: "ThinkPad", price: 1849, tag: "Business King", img: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&q=80" },
+            { id: 902, title: "Legion Pro 7i", series: "Legion", price: 2299, tag: "RTX 4080", img: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500&q=80" },
+            { id: 903, title: "Yoga Slim 7i Aura", series: "Yoga", price: 1299, tag: "2-in-1 Touch", img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&q=80" }
+          ]
+        },
+        microsoft: {
+          name: "Microsoft",
+          seriesList: ["All", "Surface Pro", "Surface Laptop", "Surface Studio"],
+          products: [
+            { id: 1001, title: "Surface Pro 11 Copilot+", series: "Surface Pro", price: 999, tag: "Snapdragon X", img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80" },
+            { id: 1002, title: "Surface Laptop 7th Edition", series: "Surface Laptop", price: 1199, tag: "Copilot+ PC", img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&q=80" },
+            { id: 1003, title: "Surface Laptop Studio 2", series: "Surface Studio", price: 1999, tag: "Creator Studio", img: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&q=80" }
+          ]
+        },
+        hp: {
+          name: "HP",
+          seriesList: ["All", "Spectre", "Omen", "Envy"],
+          products: [
+            { id: 1101, title: "HP Spectre x360 14", series: "Spectre", price: 1449, tag: "OLED Touch", img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&q=80" },
+            { id: 1102, title: "HP Omen Transcend 14", series: "Omen", price: 1599, tag: "Gaming Laptop", img: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500&q=80" },
+            { id: 1103, title: "HP Envy x360", series: "Envy", price: 899, tag: "Convertible", img: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&q=80" }
+          ]
+        },
+        msi: {
+          name: "MSI",
+          seriesList: ["All", "Titan Series", "Stealth", "Raider"],
+          products: [
+            { id: 1201, title: "MSI Titan 18 HX", series: "Titan Series", price: 4999, tag: "Desktop Replacement", img: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500&q=80" },
+            { id: 1202, title: "MSI Stealth 16 AI Studio", series: "Stealth", price: 1899, tag: "Slim Gaming", img: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&q=80" },
+            { id: 1203, title: "MSI Raider GE78 HX", series: "Raider", price: 2599, tag: "RGB Monster", img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&q=80" }
+          ]
+        }
+      };
 
-        <main class="flex-grow max-w-[1400px] w-full mx-auto px-6 py-10">
+      const currentBrand = brandDataMap[currentSlug] || {
+        name: currentSlug.toUpperCase(),
+        seriesList: ["All", "Devices"],
+        products: [
+          { id: 999, title: `${currentSlug.toUpperCase()} Official Device`, series: "Devices", price: 799, tag: "Popular", img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80" }
+        ]
+      };
+    %>
 
-            <!-- Header -->
-            <div class="mb-10">
-                <a href="/brands"
-                    class="inline-flex items-center text-xs font-bold text-gray-400 hover:text-black mb-4 transition">
-                    ← Back to Brands
-                </a>
+    <!-- Main Content Container -->
+    <main class="max-w-[1200px] w-full mx-auto px-6 py-8 flex-grow">
+        <!-- Back Link -->
+        <a href="/brands" class="inline-flex items-center text-xs font-bold text-gray-400 hover:text-black mb-6 transition">
+            ← Back to Brands
+        </a>
 
-                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div>
-                        <h1 class="text-4xl md:text-5xl font-black text-black tracking-tight">
-                            <%= currentBrand.name %> Collection
-                        </h1>
-                        <p class="mt-2 text-gray-500 text-sm font-medium">
-                            Explore genuine <%= currentBrand.name %> devices and official accessories.
-                        </p>
-                    </div>
-
-                    <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-                        <% currentBrand.seriesList.forEach((series, index)=> { %>
-                            <button onclick="filterSeries('<%= series %>', this)"
-                                class="series-btn px-4 py-2 text-xs font-bold rounded-full transition whitespace-nowrap <%= index === 0 ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
-                                <%= series %>
-                            </button>
-                            <% }); %>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Products Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-                <% currentBrand.products.forEach(product=> { %>
-                    <div class="product-card bg-white border border-gray-100 rounded-3xl p-5 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
-                        data-series="<%= product.series %>">
-
-                        <div
-                            class="relative bg-[#f4f4f4] rounded-2xl h-56 w-full flex items-center justify-center p-4 overflow-hidden mb-4">
-                            <span
-                                class="absolute top-3 right-3 text-[10px] font-bold bg-white text-black px-2.5 py-1 rounded-full shadow-sm">
-                                <%= product.tag %>
-                            </span>
-                            <img src="<%= product.img %>" alt="<%= product.title %>"
-                                class="h-40 object-contain group-hover:scale-105 transition duration-300 mix-blend-multiply">
-                        </div>
-
-                        <div>
-                            <div class="text-xs text-gray-400 font-medium mb-1">
-                                <%= product.series %>
-                            </div>
-                            <h3 class="text-base font-bold text-gray-900 line-clamp-1 mb-2">
-                                <%= product.title %>
-                            </h3>
-                            <div class="text-lg font-black text-black mb-4">$<%= product.price %>.00</div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2 mt-auto">
-                            <button onclick="addToCart('<%= product.title %>', <%= product.price %>)"
-                                class="py-2.5 px-3 text-xs font-bold border border-gray-200 rounded-xl hover:bg-gray-100 active:scale-95 transition">
-                                Add to Cart
-                            </button>
-                            <button onclick="directBuy('<%= product.title %>', <%= product.price %>)"
-                                class="py-2.5 px-3 text-xs font-bold bg-black text-white rounded-xl hover:bg-gray-800 active:scale-95 transition">
-                                Buy Now
-                            </button>
-                        </div>
-
-                    </div>
-                    <% }); %>
-            </div>
-
-        </main>
-
-        <!-- CART MODAL -->
-        <div id="cart-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex justify-end">
-            <div class="bg-white w-full max-w-md h-full p-6 flex flex-col justify-between shadow-2xl transition-all">
-                <div>
-                    <div class="flex items-center justify-between border-b pb-4 mb-4">
-                        <h2 class="text-xl font-black">Your Cart</h2>
-                        <button onclick="toggleCartModal()"
-                            class="text-gray-400 hover:text-black text-xl font-bold">✕</button>
-                    </div>
-
-                    <div id="cart-items-container" class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-                        <p id="empty-cart-msg" class="text-gray-400 text-sm text-center py-10">Your cart is currently
-                            empty.</p>
-                    </div>
-                </div>
-
-                <div class="border-t pt-4">
-                    <div class="flex justify-between items-center text-lg font-black mb-4">
-                        <span>Total:</span>
-                        <span id="cart-total-price">$0.00</span>
-                    </div>
-                    <button onclick="checkoutCart()"
-                        class="w-full py-3 bg-black text-white font-bold rounded-2xl hover:bg-gray-800 transition">
-                        Proceed to Pay
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- PAYMENT QR MODAL -->
-        <div id="payment-modal"
-            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-            <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl relative">
-                <button onclick="closeModal('payment-modal')"
-                    class="absolute top-4 right-4 text-gray-400 hover:text-black font-bold">✕</button>
-
-                <h3 class="text-xl font-black text-black">Scan to Pay</h3>
-                <p class="text-xs text-gray-500 mt-1 mb-4">Scan QR code using KPay, WavePay or Mobile Banking</p>
-
-                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 inline-block mb-4">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=STUFFSUS-PAYMENT-DEMO"
-                        alt="Payment QR" class="w-44 h-44 mx-auto rounded-lg">
-                </div>
-
-                <div class="bg-gray-100 p-3 rounded-xl mb-4">
-                    <span class="text-xs text-gray-500 block">Total Payable Amount</span>
-                    <span id="payment-amount" class="text-2xl font-black text-black">$0.00</span>
-                </div>
-
-                <button onclick="simulateScanPayment()"
-                    class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl transition">
-                    Simulate QR Scan Completed
-                </button>
-            </div>
-        </div>
-
-        <!-- PAYMENT RECEIPT SLIP MODAL -->
-        <div id="slip-modal"
-            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-            <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl relative">
-                <div
-                    class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">
-                    ✓
-                </div>
-
-                <h3 class="text-xl font-black text-gray-900">Payment Successful!</h3>
-                <p class="text-xs text-emerald-600 font-semibold mb-6">Official Purchase Receipt</p>
-
-                <div class="bg-gray-50 rounded-2xl p-4 text-left text-xs space-y-2 mb-6 border border-gray-100">
-                    <div class="flex justify-between text-gray-400">
-                        <span>Transaction ID</span>
-                        <span id="slip-txid" class="font-bold text-gray-800">#STF-982341</span>
-                    </div>
-                    <div class="flex justify-between text-gray-400">
-                        <span>Date</span>
-                        <span id="slip-date" class="font-bold text-gray-800">Today</span>
-                    </div>
-                    <div class="border-t border-gray-200 my-2"></div>
-                    <div class="flex justify-between text-gray-600 font-semibold">
-                        <span>Items Purchased</span>
-                        <span id="slip-items-count">1 Item</span>
-                    </div>
-                    <div class="flex justify-between text-black font-black text-sm pt-1">
-                        <span>Amount Paid</span>
-                        <span id="slip-total">$0.00</span>
-                    </div>
-                </div>
-
-                <button onclick="closeModal('slip-modal')"
-                    class="w-full py-3 bg-black text-white font-bold rounded-2xl hover:bg-gray-800 transition">
-                    Done & Close
-                </button>
-            </div>
-        </div>
-
-        <footer class="border-t border-gray-200 py-6 text-center text-xs text-gray-400 mt-auto">
-            <p>Copyright © 2026 Stuffsus. All Rights Reserved.</p>
-        </footer>
-
-        <script>
-            let cart = [];
-            let currentPayAmount = 0;
-
-            function filterSeries(seriesName, btnElement) {
-                document.querySelectorAll('.series-btn').forEach(btn => {
-                    btn.classList.remove('bg-black', 'text-white');
-                    btn.classList.add('bg-gray-100', 'text-gray-600');
-                });
-                btnElement.classList.remove('bg-gray-100', 'text-gray-600');
-                btnElement.classList.add('bg-black', 'text-white');
-
-                document.querySelectorAll('.product-card').forEach(card => {
-                    if (seriesName === 'All' || card.dataset.series === seriesName) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            }
-
-            function addToCart(title, price) {
-                cart.push({ title, price });
-                updateCartUI();
-            }
-
-            function updateCartUI() {
-                const badge = document.getElementById('cart-badge');
-                const container = document.getElementById('cart-items-container');
-                const totalPriceEl = document.getElementById('cart-total-price');
-
-                if (cart.length > 0) {
-                    badge.innerText = cart.length;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
-                }
-
-                if (cart.length === 0) {
-                    container.innerHTML = `<p class="text-gray-400 text-sm text-center py-10">Your cart is currently empty.</p>`;
-                    totalPriceEl.innerText = `$0.00`;
-                    return;
-                }
-
-                let total = 0;
-                container.innerHTML = '';
-                cart.forEach((item, index) => {
-                    total += item.price;
-                    container.innerHTML += `
-          <div class="flex items-center justify-between bg-gray-50 p-3 rounded-2xl border border-gray-100">
+        <!-- Title & Series Filters -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
             <div>
-              <h4 class="text-xs font-bold text-gray-900">${item.title}</h4>
-              <span class="text-xs font-extrabold text-black">$${item.price}.00</span>
+                <h1 class="text-3xl md:text-4xl font-black text-black tracking-tight">
+                    <%= currentBrand.name %> Collection
+                </h1>
+                <p class="mt-1 text-gray-500 text-xs font-medium">
+                    Explore genuine <%= currentBrand.name %> devices and official accessories.
+                </p>
             </div>
-            <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700 text-xs font-bold">Remove</button>
-          </div>
-        `;
-                });
 
-                totalPriceEl.innerText = `$${total}.00`;
-                currentPayAmount = total;
+            <!-- Series Filter Buttons -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2">
+                <% currentBrand.seriesList.forEach((series, index) => { %>
+                    <button onclick="filterSeries('<%= series %>', this)" 
+                            class="series-btn px-4 py-2 text-xs font-bold rounded-full transition whitespace-nowrap <%= index === 0 ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
+                        <%= series %>
+                    </button>
+                <% }); %>
+            </div>
+        </div>
+
+        <!-- Products Grid (3 Columns) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% currentBrand.products.forEach(product => { %>
+                <div class="product-card bg-white border border-gray-100 rounded-2xl p-4 flex flex-col justify-between shadow-xs" data-series="<%= product.series %>">
+                    
+                    <!-- Image Container -->
+                    <div class="relative bg-gray-50 rounded-xl h-48 w-full flex items-center justify-center p-4 mb-4 overflow-hidden">
+                        <span class="absolute top-3 right-3 text-[10px] font-bold bg-white text-black px-2.5 py-1 rounded-full border border-gray-100 shadow-xs z-10">
+                            <%= product.tag %>
+                        </span>
+                        <img src="<%= product.img %>" alt="<%= product.title %>" class="h-36 object-contain">
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="mb-4">
+                        <div class="text-[11px] text-gray-400 font-semibold mb-1"><%= product.series %></div>
+                        <h3 class="text-sm font-bold text-gray-900 line-clamp-1 mb-1"><%= product.title %></h3>
+                        <div class="text-base font-extrabold text-black">$<%= product.price %>.00</div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="addToCart('<%= product.id %>', '<%= product.title %>', '<%= product.series %>', <%= product.price %>, '<%= product.img %>')" class="w-full py-2 px-3 text-xs font-bold border border-gray-200 rounded-xl hover:bg-gray-50 active:scale-95 transition text-center">
+                            Add to Cart
+                        </button>
+                        <button type="button" onclick="buyNow('<%= product.id %>', '<%= product.title %>', '<%= product.series %>', <%= product.price %>, '<%= product.img %>')" class="w-full py-2 px-3 text-xs font-bold bg-black text-white rounded-xl hover:bg-gray-800 active:scale-95 transition text-center">
+                            Buy Now
+                        </button>
+                    </div>
+
+                </div>
+            <% }); %>
+        </div>
+    </main>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex justify-end">
+        <div class="bg-white w-full max-w-md h-full p-6 flex flex-col justify-between shadow-2xl">
+            <div>
+                <div class="flex items-center justify-between border-b pb-4 mb-4">
+                    <h2 class="text-lg font-black">Your Cart</h2>
+                    <button onclick="toggleCartModal()" class="text-gray-400 hover:text-black text-lg font-bold">✕</button>
+                </div>
+                <div id="cart-items-container" class="space-y-3 max-h-[60vh] overflow-y-auto">
+                    <p class="text-gray-400 text-xs text-center py-10">Your cart is empty.</p>
+                </div>
+            </div>
+            <div class="border-t pt-4">
+                <div class="flex justify-between items-center text-base font-black mb-4">
+                    <span>Total:</span>
+                    <span id="cart-total-price">$0.00</span>
+                </div>
+                <button onclick="checkoutCart()" class="w-full py-3 bg-black text-white text-xs font-bold rounded-xl hover:bg-gray-800 transition">
+                    Proceed to Pay
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-100 py-6 text-center text-xs text-gray-400 mt-auto">
+        <p>© 2026 Stuffsus. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let cart = [];
+
+        // Buy Now ကိုနှိပ်ပါက Checkout စာမျက်နှာသို့ တိုက်ရိုက် သွားရောက်စေခြင်း
+        function buyNow(id, title, series, price, img) {
+            const selectedProduct = [{
+                id: String(id),
+                title: title,
+                variant: series,
+                price: Number(price),
+                qty: 1,
+                img: img
+            }];
+            localStorage.setItem('selected_checkout_item', JSON.stringify(selectedProduct));
+            window.location.href = '/checkout';
+        }
+
+        function filterSeries(seriesName, btnElement) {
+            document.querySelectorAll('.series-btn').forEach(btn => {
+                btn.classList.remove('bg-black', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-600');
+            });
+            btnElement.classList.remove('bg-gray-100', 'text-gray-600');
+            btnElement.classList.add('bg-black', 'text-white');
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                if (seriesName === 'All' || card.dataset.series === seriesName) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function addToCart(id, title, series, price, img) {
+            cart.push({ id, title, series, price, img });
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const badge = document.getElementById('cart-badge');
+            const container = document.getElementById('cart-items-container');
+            const totalPriceEl = document.getElementById('cart-total-price');
+
+            if (cart.length > 0) {
+                badge.innerText = cart.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
             }
 
-            function removeFromCart(index) {
-                cart.splice(index, 1);
-                updateCartUI();
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-gray-400 text-xs text-center py-10">Your cart is empty.</p>`;
+                totalPriceEl.innerText = `$0.00`;
+                return;
             }
 
-            function toggleCartModal() {
-                document.getElementById('cart-modal').classList.toggle('hidden');
-            }
+            let total = 0;
+            container.innerHTML = '';
+            cart.forEach((item, index) => {
+                total += item.price;
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100 text-xs">
+                        <div>
+                            <h4 class="font-bold text-gray-900">${item.title}</h4>
+                            <span class="font-extrabold text-black">$${item.price}.00</span>
+                        </div>
+                        <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700 font-bold">Remove</button>
+                    </div>
+                `;
+            });
 
-            function directBuy(title, price) {
-                currentPayAmount = price;
-                cart = [{ title, price }];
-                updateCartUI();
-                openPaymentQR(price);
-            }
+            totalPriceEl.innerText = `$${total}.00`;
+        }
 
-            function checkoutCart() {
-                if (cart.length === 0) return alert("Your cart is empty!");
-                toggleCartModal();
-                openPaymentQR(currentPayAmount);
-            }
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
 
-            function openPaymentQR(amount) {
-                document.getElementById('payment-amount').innerText = `$${amount}.00`;
-                document.getElementById('payment-modal').classList.remove('hidden');
-            }
+        function toggleCartModal() {
+            document.getElementById('cart-modal').classList.toggle('hidden');
+        }
 
-            function simulateScanPayment() {
-                closeModal('payment-modal');
-
-                document.getElementById('slip-txid').innerText = '#STF-' + Math.floor(100000 + Math.random() * 900000);
-                document.getElementById('slip-date').innerText = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                document.getElementById('slip-items-count').innerText = `${cart.length} Item(s)`;
-                document.getElementById('slip-total').innerText = `$${currentPayAmount}.00`;
-
-                cart = [];
-                updateCartUI();
-
-                document.getElementById('slip-modal').classList.remove('hidden');
-            }
-
-            function closeModal(modalId) {
-                document.getElementById(modalId).classList.add('hidden');
-            }
-        </script>
-
+        // Cart Modal ထဲမှ Proceed to Pay နှိပ်ပါက Checkout သို့ သွားခြင်း
+        function checkoutCart() {
+            if (cart.length === 0) return alert("Your cart is empty!");
+            const checkoutItems = cart.map((item) => ({
+                id: item.id,
+                title: item.title,
+                variant: item.series,
+                price: item.price,
+                qty: 1,
+                img: item.img
+            }));
+            localStorage.setItem('selected_checkout_item', JSON.stringify(checkoutItems));
+            window.location.href = '/checkout';
+        }
+    </script>
 </body>
-
 </html>

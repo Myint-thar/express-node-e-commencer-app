@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stuffsus - Secure Checkout</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+  </style>
+</head>
+<body class="bg-[#f8f9fa] text-gray-900 min-h-screen flex flex-col antialiased">
+
+  <!-- Minimal Header -->
+  <header class="bg-white border-b border-gray-100 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
+      <a href="/" class="text-xl font-extrabold tracking-tight">Stuffsus<span class="text-emerald-500">.</span></a>
+      <div class="flex items-center gap-2 text-xs font-semibold text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        <span>256-Bit SSL Encrypted Checkout</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CHECKOUT SECTION -->
+  <main id="checkout-view" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-8 py-8">
+    
+    <div class="mb-6">
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">Checkout</h1>
+      <p class="text-xs sm:text-sm text-gray-500 mt-1">Please review your order and select a payment method.</p>
+    </div>
+
+    <form id="checkout-form" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- LEFT COLUMN: Steps 1 to 4 -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- STEP 1: Cart Review -->
+        <section class="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-xs">
+          <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+            <h2 class="text-base font-bold flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-black text-white text-xs flex items-center justify-center font-extrabold">1</span>
+              <span>Cart Review</span>
+            </h2>
+            <span id="cart-count-badge" class="text-xs text-gray-500 font-medium">1 Item</span>
+          </div>
+
+          <div id="cart-items-list" class="space-y-4">
+            <!-- Dynamic Cart Items Injected by JS -->
+          </div>
+        </section>
+
+        <!-- STEP 2: Customer Information -->
+        <section class="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-xs">
+          <h2 class="text-base font-bold flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
+            <span class="w-6 h-6 rounded-full bg-black text-white text-xs flex items-center justify-center font-extrabold">2</span>
+            <span>Shipping Information</span>
+          </h2>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Full Name *</label>
+              <input type="text" id="cust-name" required placeholder="Aung Aung" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-black transition">
+            </div>
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Phone Number *</label>
+              <input type="tel" id="cust-phone" required placeholder="09xxxxxxxxx" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-black transition">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-bold text-gray-700 mb-1">Email Address *</label>
+              <input type="email" id="cust-email" required placeholder="aungaung@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-black transition">
+            </div>
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">City / Township *</label>
+              <select id="cust-city" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-black transition bg-white">
+                <option value="Yangon">Yangon</option>
+                <option value="Mandalay">Mandalay</option>
+                <option value="Naypyidaw">Naypyidaw</option>
+                <option value="Other">Other Township</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-bold text-gray-700 mb-1">Detailed Shipping Address *</label>
+              <input type="text" id="cust-address" required placeholder="Building, Street, Ward, Township" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-black transition">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-bold text-gray-700 mb-1">Delivery Notes (Optional)</label>
+              <textarea id="cust-notes" rows="2" placeholder="Special delivery instructions, gate code, etc." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-black transition"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 3: Shipping Method -->
+        <section class="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-xs">
+          <h2 class="text-base font-bold flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
+            <span class="w-6 h-6 rounded-full bg-black text-white text-xs flex items-center justify-center font-extrabold">3</span>
+            <span>Shipping Method</span>
+          </h2>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <label class="shipping-option flex items-center justify-between p-3.5 border-2 border-black rounded-xl cursor-pointer bg-gray-50/50 transition">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="shipping" value="standard" checked class="accent-black">
+                <div>
+                  <div class="font-bold text-gray-900">Standard Delivery</div>
+                  <div class="text-[11px] text-gray-500">3 - 5 Business Days</div>
+                </div>
+              </div>
+              <span class="font-extrabold text-black">$5.00</span>
+            </label>
+
+            <label class="shipping-option flex items-center justify-between p-3.5 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="shipping" value="express" class="accent-black">
+                <div>
+                  <div class="font-bold text-gray-900">Express Delivery</div>
+                  <div class="text-[11px] text-gray-500">1 - 2 Business Days</div>
+                </div>
+              </div>
+              <span class="font-extrabold text-black">$15.00</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- STEP 4: Payment Method -->
+        <section class="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-xs">
+          <h2 class="text-base font-bold flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
+            <span class="w-6 h-6 rounded-full bg-black text-white text-xs flex items-center justify-center font-extrabold">4</span>
+            <span>Payment Method</span>
+          </h2>
+
+          <!-- Payment Options Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5 text-xs">
+            <button type="button" data-method="cod" class="pay-tab border-2 border-black bg-gray-50 py-3 px-2 rounded-xl font-bold text-center flex flex-col items-center gap-1.5 transition">
+              <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              <span>Cash on Delivery</span>
+            </button>
+            
+            <button type="button" data-method="wallet" class="pay-tab border border-gray-200 py-3 px-2 rounded-xl font-bold text-center flex flex-col items-center gap-1.5 transition hover:bg-gray-50">
+              <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              <span>Mobile Wallet</span>
+            </button>
+
+            <button type="button" data-method="bank" class="pay-tab border border-gray-200 py-3 px-2 rounded-xl font-bold text-center flex flex-col items-center gap-1.5 transition hover:bg-gray-50">
+              <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
+              <span>Bank Transfer</span>
+            </button>
+
+            <button type="button" data-method="card" class="pay-tab border border-gray-200 py-3 px-2 rounded-xl font-bold text-center flex flex-col items-center gap-1.5 transition hover:bg-gray-50">
+              <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <span>Card Payment</span>
+            </button>
+          </div>
+
+          <!-- Dynamic Payment Details Panel -->
+          <div id="payment-panel-container" class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs">
+            
+            <!-- COD Panel -->
+            <div id="panel-cod" class="pay-panel space-y-2">
+              <div class="font-bold text-gray-900 text-sm">Cash on Delivery (COD)</div>
+              <p class="text-gray-500">Pay with cash upon delivery. Our delivery team will contact you prior to arrival.</p>
+            </div>
+
+            <!-- Mobile Wallet Panel -->
+            <div id="panel-wallet" class="pay-panel hidden space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="font-bold text-gray-900 block">Mobile Wallet Payment</span>
+                  <span class="text-gray-500">Scan QR or Transfer to account below</span>
+                </div>
+                <div class="flex gap-2">
+                  <span class="bg-blue-100 text-blue-700 font-extrabold px-2 py-0.5 rounded text-[10px]">KPay</span>
+                  <span class="bg-yellow-100 text-yellow-800 font-extrabold px-2 py-0.5 rounded text-[10px]">WavePay</span>
+                </div>
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-4 items-center bg-white p-3 rounded-xl border border-gray-200">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=STUFFSUS-WALLET" alt="QR" class="w-28 h-28 rounded border border-gray-100">
+                <div class="space-y-1 text-gray-600">
+                  <div>Account Name: <strong class="text-black">Stuffsus Tech Ltd.</strong></div>
+                  <div>KBZPay Number: <strong class="text-black">09 987 654 321</strong></div>
+                  <div>WavePay Number: <strong class="text-black">09 987 654 321</strong></div>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <div>
+                  <label class="block font-bold text-gray-700 mb-1">Transaction ID / Reference No. *</label>
+                  <input type="text" id="wallet-txid" placeholder="e.g. 20260922883910" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-black bg-white">
+                </div>
+                <div>
+                  <label class="block font-bold text-gray-700 mb-1">Upload Payment Screenshot (Simulated)</label>
+                  <input type="file" accept="image/*" class="w-full px-2 py-1.5 text-gray-500 bg-white border border-gray-200 rounded-lg">
+                </div>
+              </div>
+            </div>
+
+            <!-- Bank Transfer Panel -->
+            <div id="panel-bank" class="pay-panel hidden space-y-4">
+              <div class="font-bold text-gray-900 text-sm">Bank Direct Transfer</div>
+              <div class="bg-white p-3 rounded-xl border border-gray-200 space-y-1 text-gray-600">
+                <div>Bank Name: <strong class="text-black">KBZ Bank / AYA Bank</strong></div>
+                <div>Account Name: <strong class="text-black">STUFFSUS COMPANY LIMITED</strong></div>
+                <div>Account Number: <strong class="text-black">012 3010 9988 7766</strong></div>
+              </div>
+              <div>
+                <label class="block font-bold text-gray-700 mb-1">Bank Slip Reference No. *</label>
+                <input type="text" id="bank-txid" placeholder="Enter bank slip reference number" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-black bg-white">
+              </div>
+            </div>
+
+            <!-- Card Payment Panel -->
+            <div id="panel-card" class="pay-panel hidden space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-gray-900">Credit / Debit Card</span>
+                <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded">🔒 256-Bit Secure</span>
+              </div>
+              <div class="space-y-2">
+                <div>
+                  <label class="block font-bold text-gray-700 mb-0.5">Cardholder Name</label>
+                  <input type="text" placeholder="Name as on card" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-black bg-white">
+                </div>
+                <div>
+                  <label class="block font-bold text-gray-700 mb-0.5">Card Number</label>
+                  <input type="text" placeholder="1234 5678 9012 3456" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-black bg-white">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block font-bold text-gray-700 mb-0.5">Expiry Date</label>
+                    <input type="text" placeholder="MM/YY" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-black bg-white">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-gray-700 mb-0.5">CVV</label>
+                    <input type="text" placeholder="123" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-black bg-white">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Steps 5 & 6 (Order Summary) -->
+      <div class="lg:col-span-5 sticky top-20">
+        <div class="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-xs space-y-4">
+          <h2 class="text-base font-bold border-b border-gray-100 pb-3">Order Summary</h2>
+
+          <!-- Coupon Input -->
+          <div class="flex gap-2">
+            <input type="text" placeholder="Discount Code (e.g. STUFF10)" class="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl focus:outline-none focus:border-black">
+            <button type="button" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-xs font-bold rounded-xl transition whitespace-nowrap">Apply</button>
+          </div>
+
+          <!-- Price Calculations -->
+          <div class="space-y-2 text-xs border-t border-b border-gray-100 py-3">
+            <div class="flex justify-between text-gray-500">
+              <span>Subtotal</span>
+              <span id="summary-subtotal" class="font-bold text-gray-900">$0.00</span>
+            </div>
+            <div class="flex justify-between text-gray-500">
+              <span>Estimated Shipping</span>
+              <span id="summary-shipping" class="font-bold text-gray-900">$5.00</span>
+            </div>
+            <div class="flex justify-between text-emerald-600 font-semibold">
+              <span>Discount</span>
+              <span id="summary-discount">-$0.00</span>
+            </div>
+            <div class="flex justify-between text-gray-500">
+              <span>Payment Processing Fee</span>
+              <span class="font-bold text-gray-900">$0.00</span>
+            </div>
+          </div>
+
+          <!-- Final Total -->
+          <div class="flex justify-between items-center text-base font-extrabold text-black pt-1">
+            <span>Total Payable</span>
+            <span id="summary-total" class="text-xl">$0.00</span>
+          </div>
+
+          <!-- STEP 6: Place Order Button -->
+          <button type="submit" id="place-order-btn" class="w-full py-3.5 bg-black hover:bg-gray-800 text-white font-extrabold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-md">
+            <span id="btn-text">Place Order Securely</span>
+            <span id="btn-spinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          </button>
+
+          <p class="text-[11px] text-gray-400 text-center">By placing your order, you agree to Stuffsus Terms of Service.</p>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- ORDER SUCCESS & TRACKING VIEW (Hidden by Default) -->
+  <main id="success-view" class="hidden flex-grow max-w-3xl w-full mx-auto px-4 py-12">
+    <div class="bg-white rounded-3xl border border-gray-100 p-6 sm:p-10 shadow-xl text-center relative overflow-hidden">
+      
+      <!-- Top Success Icon -->
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-2xl">
+        ✓
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Order Placed Successfully!</h1>
+      <p class="text-xs sm:text-sm text-gray-500 mt-1">Thank you for shopping with Stuffsus. Your order is being processed.</p>
+
+      <!-- Order ID & Meta Badges -->
+      <div class="my-6 bg-gray-50 border border-gray-100 rounded-2xl p-4 flex flex-wrap items-center justify-around gap-4 text-xs">
+        <div>
+          <span class="text-gray-400 block text-[10px]">ORDER ID</span>
+          <span id="order-id-val" class="font-extrabold text-black text-sm">#STF-2026-8849</span>
+        </div>
+        <div>
+          <span class="text-gray-400 block text-[10px]">ORDER STATUS</span>
+          <span id="order-status-badge" class="bg-blue-100 text-blue-700 font-extrabold px-2.5 py-1 rounded-full text-[10px]">Confirmed</span>
+        </div>
+        <div>
+          <span class="text-gray-400 block text-[10px]">PAYMENT STATUS</span>
+          <span id="pay-status-badge" class="bg-emerald-100 text-emerald-700 font-extrabold px-2.5 py-1 rounded-full text-[10px]">Paid</span>
+        </div>
+        <div>
+          <span class="text-gray-400 block text-[10px]">ESTIMATED DELIVERY</span>
+          <span id="est-delivery-date" class="font-extrabold text-gray-900">Sep 25, 2026</span>
+        </div>
+      </div>
+
+      <!-- Order Progress Stepper -->
+      <div class="my-8 text-left">
+        <h3 class="text-xs font-extrabold text-gray-400 tracking-wider uppercase mb-4">Order Progress</h3>
+        <div class="grid grid-cols-6 gap-1 text-center text-[10px] font-bold">
+          <div class="space-y-1 text-emerald-600">
+            <div class="w-full h-1.5 bg-emerald-500 rounded-full"></div>
+            <div>Pending</div>
+          </div>
+          <div class="space-y-1 text-emerald-600">
+            <div class="w-full h-1.5 bg-emerald-500 rounded-full"></div>
+            <div>Confirmed</div>
+          </div>
+          <div class="space-y-1 text-gray-300">
+            <div class="w-full h-1.5 bg-gray-200 rounded-full"></div>
+            <div>Processing</div>
+          </div>
+          <div class="space-y-1 text-gray-300">
+            <div class="w-full h-1.5 bg-gray-200 rounded-full"></div>
+            <div>Shipped</div>
+          </div>
+          <div class="space-y-1 text-gray-300">
+            <div class="w-full h-1.5 bg-gray-200 rounded-full"></div>
+            <div>Out for Delivery</div>
+          </div>
+          <div class="space-y-1 text-gray-300">
+            <div class="w-full h-1.5 bg-gray-200 rounded-full"></div>
+            <div>Delivered</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+        <a href="/" class="py-3 px-6 bg-black text-white font-bold text-xs rounded-xl hover:bg-gray-800 transition">
+          Continue Shopping
+        </a>
+        <button id="cancel-order-btn" class="py-3 px-6 bg-gray-100 hover:bg-red-50 text-red-600 font-bold text-xs rounded-xl transition">
+          Cancel Order
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="bg-white border-t border-gray-100 py-6 text-center text-xs text-gray-400 mt-auto">
+    <p>© 2026 Stuffsus Tech E-Commerce Inc. All rights reserved.</p>
+  </footer>
+
+  <!-- CHECKOUT LOGIC JS -->
+  <script>
+    // Brand Page မှ ရောက်လာပါက သိမ်းထားသော ပစ္စည်းကို ယူမည်။ မရှိပါက Default MacBook ကို သုံးမည်။
+    let savedItem = JSON.parse(localStorage.getItem('selected_checkout_item'));
+
+    let cart = (savedItem && savedItem.length > 0) ? savedItem : [
+      { id: 103, title: "MacBook Pro 16 M3", variant: "36GB RAM / 1TB SSD", price: 2499, qty: 1, img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300&q=80" }
+    ];
+
+    let selectedShippingFee = 5.00;
+    let currentPaymentMethod = 'cod';
+
+    // Render Cart Items
+    function renderCart() {
+      const container = document.getElementById('cart-items-list');
+      const badge = document.getElementById('cart-count-badge');
+      
+      if (cart.length === 0) {
+        container.innerHTML = `<p class="text-center text-gray-400 py-6 text-xs">Your cart is empty.</p>`;
+        badge.innerText = `0 Items`;
+        calculateTotals();
+        return;
+      }
+
+      badge.innerText = `${cart.length} Item(s)`;
+      container.innerHTML = '';
+
+      cart.forEach((item, index) => {
+        container.innerHTML += `
+          <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+            <img src="${item.img}" alt="${item.title}" class="w-14 h-14 object-contain rounded-lg bg-white p-1">
+            <div class="flex-grow text-xs">
+              <h4 class="font-bold text-gray-900">${item.title}</h4>
+              <p class="text-[11px] text-gray-400 mb-1">${item.variant}</p>
+              <div class="font-extrabold text-black">$${item.price}</div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <div class="flex items-center border border-gray-200 rounded-lg bg-white text-xs font-bold">
+                <button type="button" onclick="updateQty(${index}, -1)" class="px-2 py-1 text-gray-500 hover:text-black">-</button>
+                <span class="px-2">${item.qty}</span>
+                <button type="button" onclick="updateQty(${index}, 1)" class="px-2 py-1 text-gray-500 hover:text-black">+</button>
+              </div>
+              <button type="button" onclick="removeItem(${index})" class="text-red-500 hover:text-red-700 text-xs font-bold p-1">✕</button>
+            </div>
+          </div>
+        `;
+      });
+
+      calculateTotals();
+    }
+
+    function updateQty(index, delta) {
+      if (cart[index].qty + delta > 0) {
+        cart[index].qty += delta;
+      }
+      renderCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.removeItem('selected_checkout_item');
+      renderCart();
+    }
+
+    function calculateTotals() {
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const total = subtotal > 0 ? subtotal + selectedShippingFee : 0;
+
+      document.getElementById('summary-subtotal').innerText = `$${subtotal.toLocaleString()}.00`;
+      document.getElementById('summary-shipping').innerText = `$${selectedShippingFee.toFixed(2)}`;
+      document.getElementById('summary-total').innerText = `$${total.toLocaleString()}.00`;
+    }
+
+    // Shipping Method Toggle
+    document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        selectedShippingFee = this.value === 'express' ? 15.00 : 5.00;
+        
+        document.querySelectorAll('.shipping-option').forEach(opt => {
+          opt.classList.remove('border-2', 'border-black', 'bg-gray-50/50');
+          opt.classList.add('border-gray-200');
+        });
+        this.closest('label').classList.add('border-2', 'border-black', 'bg-gray-50/50');
+
+        calculateTotals();
+      });
+    });
+
+    // Payment Method Tab Toggle
+    document.querySelectorAll('.pay-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        selectedPayMethod = this.getAttribute('data-method');
+        currentPaymentMethod = selectedPayMethod;
+
+        document.querySelectorAll('.pay-tab').forEach(t => {
+          t.classList.remove('border-2', 'border-black', 'bg-gray-50');
+          t.classList.add('border-gray-200');
+        });
+        this.classList.add('border-2', 'border-black', 'bg-gray-50');
+
+        // Hide all panels
+        document.querySelectorAll('.pay-panel').forEach(p => p.classList.add('hidden'));
+        
+        // Show selected panel
+        document.getElementById(`panel-${selectedPayMethod}`).classList.remove('hidden');
+      });
+    });
+
+    // Handle Form Submit (Place Order)
+    document.getElementById('checkout-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      if (cart.length === 0) {
+        alert('Your cart is empty! Please select a product first.');
+        return;
+      }
+
+      const btnText = document.getElementById('btn-text');
+      const btnSpinner = document.getElementById('btn-spinner');
+      const submitBtn = document.getElementById('place-order-btn');
+
+      // Show Loading State
+      btnText.innerText = "Processing Order...";
+      btnSpinner.classList.remove('hidden');
+      submitBtn.disabled = true;
+
+      // Simulate API Delay
+      setTimeout(() => {
+        document.getElementById('checkout-view').classList.add('hidden');
+        document.getElementById('success-view').classList.remove('hidden');
+
+        const randomOrderId = '#STF-2026-' + Math.floor(1000 + Math.random() * 9000);
+        document.getElementById('order-id-val').innerText = randomOrderId;
+
+        const deliveryDate = new Date();
+        deliveryDate.setDate(deliveryDate.getDate() + (selectedShippingFee === 15.00 ? 2 : 4));
+        document.getElementById('est-delivery-date').innerText = deliveryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+        if (currentPaymentMethod === 'cod') {
+          document.getElementById('pay-status-badge').innerText = 'Pending (COD)';
+          document.getElementById('pay-status-badge').className = 'bg-yellow-100 text-yellow-800 font-extrabold px-2.5 py-1 rounded-full text-[10px]';
+        }
+
+        // Clear local storage after success
+        localStorage.removeItem('selected_checkout_item');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 2000);
+    });
+
+    // Cancel Order Option
+    document.getElementById('cancel-order-btn').addEventListener('click', function() {
+      if (confirm('Are you sure you want to cancel this order?')) {
+        alert('Order has been cancelled.');
+        window.location.href = '/';
+      }
+    });
+
+    // Init Render
+    renderCart();
+  </script>
+
+</body>
+</html>

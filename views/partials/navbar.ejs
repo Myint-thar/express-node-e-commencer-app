@@ -1,44 +1,47 @@
-<header class="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
-  <div class="max-w-[1400px] mx-auto px-6 py-4 flex items-center justify-between">
-    
-    <!-- Left: Logo (Stuffsus) -->
-    <a href="/" class="flex items-center gap-2">
-      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 22h20L12 2z"/></svg>
-      <span class="text-xl font-black text-black tracking-tight">Stuffsus</span>
-    </a>
+<!-- views/partials/navbar.ejs -->
+<header class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 px-6 py-4">
+    <div class="max-w-[1200px] mx-auto flex items-center justify-between">
+        <!-- Logo (Tech Hub / Home သို့ ချိတ်ဆက်ထားသည်) -->
+        <a href="/" class="text-2xl font-black tracking-tighter text-black">Stuffsus</a>
+        
+        <!-- Navigation Links -->
+        <nav class="hidden md:flex items-center gap-8">
+            <a href="/" 
+               class="text-xs font-bold transition <%= (typeof activePage !== 'undefined' && activePage === 'shop') ? 'text-black border-b-2 border-black pb-0.5' : 'text-gray-600 hover:text-black' %>">
+               Tech Hub
+            </a>
+            <a href="/brands" 
+               class="text-xs font-bold transition <%= (typeof activePage !== 'undefined' && activePage === 'brands') ? 'text-black border-b-2 border-black pb-0.5' : 'text-gray-600 hover:text-black' %>">
+               Brands
+            </a>
+            <a href="/blog" 
+               class="text-xs font-bold transition <%= (typeof activePage !== 'undefined' && activePage === 'blog') ? 'text-black border-b-2 border-black pb-0.5' : 'text-gray-600 hover:text-black' %>">
+               Blog
+            </a>
+        </nav>
 
-    <!-- Middle: Nav Links  -->
-  <div class="hidden md:flex items-center gap-10 text-[13px] font-bold text-gray-400">
-      
-      <a href="/brands" class="<%= (typeof activePage !== 'undefined' && activePage === 'brands') ? 'text-black font-extrabold pb-2 -mb-2 border-b-2 border-black' : 'hover:text-black transition pb-2 -mb-2' %>">
-        Brands
-      </a>
+        <!-- Right Side Actions (Cart & Profile) -->
+        <div class="flex items-center gap-4">
+            <!-- Cart Button -->
+            <button type="button" 
+                    onclick="typeof toggleCartModal === 'function' ? toggleCartModal() : window.location.href='/checkout'" 
+                    class="relative p-2.5 bg-gray-100 hover:bg-gray-200 rounded-full transition">
+                <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                <!-- Cart Count Badge -->
+                <span id="cart-badge" 
+                      class="<%= (typeof cartCount !== 'undefined' && cartCount > 0) ? '' : 'hidden' %> absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center">
+                    <%= typeof cartCount !== 'undefined' ? cartCount : 0 %>
+                </span>
+            </button>
 
-      <a href="/" class="<%= (typeof activePage !== 'undefined' && activePage === 'shop') ? 'text-black font-extrabold pb-2 -mb-2 border-b-2 border-black' : 'hover:text-black transition pb-2 -mb-2' %>">
-        Tech Hub
-      </a>
-
-      <a href="/blog" class="<%= (typeof activePage !== 'undefined' && activePage === 'blog') ? 'text-black font-extrabold pb-2 -mb-2 border-b-2 border-black' : 'hover:text-black transition pb-2 -mb-2' %>">
-        Blog
-      </a>
-
+            <!-- User Profile Avatar -->
+            <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden border border-gray-100">
+                <img src="<%= (typeof currentUser !== 'undefined' && currentUser && currentUser.avatar) ? currentUser.avatar : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80' %>" 
+                     alt="User" 
+                     class="w-full h-full object-cover">
+            </div>
+        </div>
     </div>
-
-    <!-- Right: Icons -->
-    <div class="flex items-center gap-6 text-black">
-      <a href="/cart" class="relative hover:text-gray-600 transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-        <% if (locals.cartCount > 0) { %>
-          <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-            <%= cartCount %>
-          </span>
-        <% } %>
-      </a>
-
-      <!-- User Avatar -->
-      <a href="/login" class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden border border-gray-300">
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" class="w-full h-full object-cover">
-      </a>
-    </div>
-  </div>
 </header>
