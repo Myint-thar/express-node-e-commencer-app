@@ -1,19 +1,22 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const path = require('path');
-const { Op } = require('sequelize');
+const bcrypt = require('bcrypt'); // Password Hashing အတွက် ထည့်သွင်းထားပါသည်
 
 // Database & Model Imports
 const sequelize = require('./config/db');
 const Product = require('./schema/products');
+const User = require('./schema/user');
+require('./models/EmailVerification');
 
 const app = express();
 
-// DATABASE SYNC & CONNECTION
-sequelize.sync()
-  .then(() => console.log('MySQL Database Connected & Synced with Sequelize!'))
-  .catch((err) => console.error('Database Sync Error:', err));
+// DATABASE CONNECTION & SYNC
+sequelize.sync({ alter: true })
+  .then(() => console.log('MySQL Database Connected & Synced!'))
+  .catch((err) => console.error('Database sync error:', err));
 
 // VIEW ENGINE & STATIC SETUP
 app.set('view engine', 'ejs');
@@ -23,165 +26,139 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // SESSION SETUP
+const sessionStore = new SequelizeStore({ db: sequelize });
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'famsworld_secret_key',
+  secret: process.env.SESSION_SECRET || 'super_secure_secret_key',
+  store: sessionStore,
   resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 }
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 1000 * 60 * 60 * 24 // 1 Day
+  }
 }));
 
-// GLOBAL MIDDLEWARES (Locals Setup)
-app.use((req, res, next) => {
-  res.locals.currentUser = req.session ? req.session.user : null;
-  res.locals.user = req.session ? req.session.user : null;
-  res.locals.isLoggedIn = !!(req.session && req.session.user);
-  res.locals.wishlistItems = (req.session && req.session.wishlist) ? req.session.wishlist : [];
-  res.locals.cartItems = (req.session && req.session.cart) ? req.session.cart : [];
-  res.locals.cartCount = (req.session && req.session.cart) ? req.session.cart.length : 0;
+sessionStore.sync();
+
+// GLOBAL MIDDLEWARE (Auth State)
+app.use(async (req, res, next) => {
+  const pathSegment = req.path.split('/')[1];
+  res.locals.activePage = pathSegment || 'home';
+
+  if (req.session && req.session.userId) {
+    try {
+      const user = await User.findByPk(req.session.userId, { 
+        attributes: { exclude: ['password_hash'] } 
+      });
+      res.locals.currentUser = user ? user.toJSON() : null;
+      res.locals.isLoggedIn = !!user;
+    } catch (err) {
+      res.locals.currentUser = null;
+      res.locals.isLoggedIn = false;
+    }
+  } else {
+    res.locals.currentUser = null;
+    res.locals.isLoggedIn = false;
+  }
   next();
 });
 
 // -------------------------------------------------------------
-// BLOG DATA (Categories & Articles)
-// -------------------------------------------------------------
-const categoriesMap = {
-    'tech-news': { name: 'Tech News', description: 'Stay updated with the latest developments in technology.' },
-    'reviews': { name: 'Reviews', description: 'Honest reviews and comparisons of the latest tech products.' },
-    'tips-tricks': { name: 'Tips & Tricks', description: 'Useful technology tips to improve your everyday workflow.' },
-    'buying-guides': { name: 'Buying Guides', description: 'Helpful guides to choose the right technology products.' },
-    'how-to': { name: 'How-To', description: 'Step-by-step tutorials and practical technology guides.' },
-    'ai-future-tech': { name: 'AI & Future Tech', description: 'Explore artificial intelligence and emerging technologies.' }
-};
-
-const articles = [
-    {
-        slug: 'future-of-minimalist-tech',
-        title: 'The Future of Minimalist Tech',
-        category: 'Tips & Tricks',
-        categorySlug: 'tips-tricks',
-        description: 'Why stripping down digital distractions leads to higher productivity and focus.',
-        date: 'Sep 18, 2026',
-        readTime: '4 min read',
-        author: 'Alex Rivera',
-        authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
-        image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1200&q=80',
-        contentImage: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=1000&q=80',
-        tags: ['Minimalism', 'Productivity', 'DeskSetup']
-    },
-    {
-        slug: 'top-5-headphones-2026',
-        title: 'Top 5 Headphones for 2026',
-        category: 'Reviews',
-        categorySlug: 'reviews',
-        description: 'In-depth audiophile test of flagship noise-canceling headphones.',
-        date: 'Sep 15, 2026',
-        readTime: '7 min read',
-        author: 'Sarah Chen',
-        authorAvatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&q=80',
-        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&q=80',
-        contentImage: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=1000&q=80',
-        tags: ['Audio', 'Headphones', 'TechReview']
-    },
-    {
-        slug: 'organize-your-workspace',
-        title: 'Organize Your Workspace',
-        category: 'How-To',
-        categorySlug: 'how-to',
-        description: 'Cable management techniques and desk setup essentials for remote engineers.',
-        date: 'Sep 12, 2026',
-        readTime: '5 min read',
-        author: 'Alex Rivera',
-        authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
-        image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=1200&q=80',
-        contentImage: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1000&q=80',
-        tags: ['DeskSetup', 'Workspace', 'HowTo']
-    }
-];
-
-// -------------------------------------------------------------
-// EXISTING CORE ROUTES
+// AUTHENTICATION API ROUTES (FIXED DB INTEGRATION)
 // -------------------------------------------------------------
 
-// Home Page
+// Render Auth Page
 app.get('/', (req, res) => {
-  res.render('products/index');
+    // layout: false ထည့်ထား၍ Navbar ဟောင်း ပါမလာတော့ပါ
+    res.render('auth-l', { layout: false }); 
 });
 
-// Tech Hub Page (Redirects to Home)
-app.get('/tech-hub', (req, res) => {
-  res.redirect('/');
-});
+// API: Sign In (Check DB & Verify Password)
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "အချက်အလက်များ အပြည့်အစုံ ဖြည့်စွက်ပါ" });
+    }
 
-// Add to Cart Route
-app.post('/add-to-cart', (req, res) => {
-  const { productId } = req.body;
-  if (!req.session.cart) {
-    req.session.cart = [];
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည်။" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: "အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည်။" });
+    }
+
+    // Assign userId to Session correctly
+    req.session.userId = user.id;
+    req.session.isLoggedIn = true;
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Server အမှားအယွင်း ဖြစ်ပေါ်နေပါသည်။" });
   }
-  req.session.cart.push(productId);
-  res.redirect('back'); 
 });
 
-// Brands Routes
-app.get('/brands', (req, res) => {
-  res.render('brands'); 
-});
-
-app.get('/brands/:slug', (req, res) => {
-  const brandSlug = req.params.slug; 
-  res.render('./products/brand-detail', { 
-    brandSlug: brandSlug 
-  });
-});
-
-// Checkout Route
-app.get('/checkout', (req, res) => {
-  res.render('checkout');
-});
-
-// -------------------------------------------------------------
-// BLOG ROUTES
-// -------------------------------------------------------------
-
-// Blog Main Page (/blog)
-app.get('/blog', (req, res) => {
-  res.render('blog', { articles, categoriesMap });
-});
-
-// Dynamic Blog Category & Article Detail Router (/blog/:slug)
-app.get('/blog/:slug', (req, res) => {
-  const slug = req.params.slug;
-
-  // 1. Check Category
-  if (categoriesMap[slug]) {
-    const category = categoriesMap[slug];
-    const categoryArticles = articles.filter(a => a.categorySlug === slug);
-    return res.render('blog-category', { 
-      category, 
-      categorySlug: slug, 
-      articles: categoryArticles, 
-      categoriesMap 
-    });
+// API: Send OTP (Sign Up)
+app.post('/api/auth/send-otp', async (req, res) => {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).json({ success: false, message: "အချက်အလက်များ အပြည့်အစုံ ဖြည့်စွက်ပါ" });
   }
 
-  // 2. Check Article Detail
-  const article = articles.find(a => a.slug === slug);
-  if (article) {
-    const relatedArticles = articles.filter(a => a.slug !== slug).slice(0, 3);
-    const articleIndex = articles.findIndex(a => a.slug === slug);
-    const prevArticle = articles[articleIndex - 1] || null;
-    const nextArticle = articles[articleIndex + 1] || null;
-    return res.render('blog-detail', { 
-      article, 
-      relatedArticles, 
-      prevArticle, 
-      nextArticle 
-    });
+  const existingUser = await User.findOne({ where: { email } });
+  if (existingUser) {
+    return res.status(400).json({ success: false, message: "ဤ အီးမေးလ်ဖြင့် အကောင့်ပြုလုပ်ပြီးသား ဖြစ်နေပါသည်။" });
   }
 
-  res.status(404).send("Page Not Found");
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  req.session.tempUser = { name, email, password, otp };
+
+  console.log(`[OTP Sent to ${email}]: ${otp}`);
+  return res.json({ success: true });
 });
 
-// SERVER START
+// API: Verify OTP & Complete Registration (Save User to DB)
+app.post('/api/auth/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const temp = req.session.tempUser;
+
+    if (temp && temp.email === email && temp.otp === otp) {
+      if (temp.isReset) {
+        delete req.session.tempUser;
+        return res.json({ success: true });
+      }
+
+      // Hash Password & Save User to MySQL Database
+      const hashedPassword = await bcrypt.hash(temp.password, 10);
+      const newUser = await User.create({
+        name: temp.name,
+        email: temp.email,
+        password_hash: hashedPassword
+      });
+
+      // Set Session
+      req.session.userId = newUser.id;
+      req.session.isLoggedIn = true;
+      delete req.session.tempUser;
+
+      return res.json({ success: true });
+    }
+
+    return res.status(400).json({ success: false, message: "OTP လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "အကောင့်ဖွင့်ရာတွင် အမှားအယွင်းရှိနေပါသည်။" });
+  }
+});
+
+// Server Start
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

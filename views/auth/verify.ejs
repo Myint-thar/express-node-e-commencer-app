@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Email - Stuffsus</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-[#fcfcfc] text-black h-screen flex flex-col justify-between">
+  <div class="flex-grow flex items-center justify-center px-4">
+    <!-- Compact Main Card -->
+    <div class="w-full max-w-sm bg-white border border-gray-100 rounded-[28px] p-6 shadow-sm">
+      
+      <div class="text-center mb-5">
+        <div class="w-12 h-12 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+          ✉️
+        </div>
+        <h1 class="text-xl font-black tracking-tight mb-1">Verify Email</h1>
+        <p class="text-xs text-gray-500 font-medium">
+          Enter code sent to <br>
+          <span class="text-black font-bold" id="userEmail"><%= email %></span>
+          <a href="/signup" class="text-[11px] text-blue-600 hover:underline block mt-0.5 font-semibold">Change email</a>
+        </p>
+      </div>
+
+      <!-- Alert Box -->
+      <div id="alertBox" class="hidden text-xs font-bold px-3 py-2.5 rounded-xl mb-4 text-center"></div>
+
+      <!-- Compact Form -->
+      <form id="otpForm" class="space-y-4">
+        <div class="flex flex-col items-center">
+          <label class="block text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">6-Digit Code</label>
+          <input 
+            type="text" 
+            id="otpInput" 
+            maxlength="6" 
+            required 
+            autocomplete="off" 
+            placeholder="······"
+            class="w-44 bg-gray-50 border border-gray-200 rounded-xl py-2.5 px-3 text-center text-xl font-black tracking-[0.4em] focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition shadow-inner"
+          >
+        </div>
+
+        <button 
+          type="submit" 
+          id="verifyBtn" 
+          class="w-full bg-black text-white text-xs font-bold py-3 rounded-xl hover:bg-gray-800 transition shadow-sm"
+        >
+          Verify Code
+        </button>
+      </form>
+
+      <!-- Resend & Timer Footer -->
+      <div class="text-center mt-5 pt-4 border-t border-gray-100">
+        <p class="text-xs text-gray-400 font-medium mb-1">Didn't receive the code?</p>
+        <button 
+          id="resendBtn" 
+          disabled 
+          class="text-xs font-bold text-gray-400 cursor-not-allowed transition"
+        >
+          Resend OTP (<span id="timer">60</span>s)
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="py-4"></div>
+
+  <!-- Interactive Script -->
+  <script>
+    const email = "<%= email %>";
+    let timeLeft = 60;
+    let timerInterval;
+
+    const resendBtn = document.getElementById('resendBtn');
+    const timerSpan = document.getElementById('timer');
+    const alertBox = document.getElementById('alertBox');
+    const otpInput = document.getElementById('otpInput');
+
+    function showAlert(msg, isError = true) {
+      alertBox.classList.remove('hidden', 'bg-red-50', 'text-red-500', 'bg-emerald-50', 'text-emerald-600');
+      alertBox.classList.add(isError ? 'bg-red-50' : 'bg-emerald-50', isError ? 'text-red-500' : 'text-emerald-600');
+      alertBox.innerText = msg;
+    }
+
+    function startTimer() {
+      timeLeft = 60;
+      resendBtn.disabled = true;
+      resendBtn.className = "text-xs font-bold text-gray-400 cursor-not-allowed transition";
+      
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerSpan.innerText = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          resendBtn.disabled = false;
+          resendBtn.innerText = "Resend OTP";
+          resendBtn.className = "text-xs font-bold text-black hover:underline transition cursor-pointer";
+        }
+      }, 1000);
+    }
+
+    // Auto-start Timer
+    startTimer();
+
+    // Verify OTP Action
+    document.getElementById('otpForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const otp = otpInput.value.trim();
+
+      if (otp.length !== 6) {
+        showAlert('Please enter a valid 6-digit code');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showAlert(data.message, false);
+          setTimeout(() => { window.location.href = '/login'; }, 1200);
+        } else {
+          showAlert(data.message, true);
+        }
+      } catch (err) {
+        showAlert('Network error. Please try again.');
+      }
+    });
+
+    // Resend OTP Action
+    resendBtn.addEventListener('click', async () => {
+      if (resendBtn.disabled) return;
+
+      try {
+        const res = await fetch('/api/auth/resend-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showAlert('New OTP code sent to your email!', false);
+          startTimer();
+        } else {
+          showAlert(data.message, true);
+        }
+      } catch (err) {
+        showAlert('Failed to resend OTP.');
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stuffsus - Authentication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .auth-view {
+            display: none;
+        }
+        .auth-view.active {
+            display: flex;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#fafafa] text-gray-900 font-sans min-h-screen flex flex-col selection:bg-black selection:text-white overflow-x-hidden">
+
+    <!-- Minimal Header -->
+    <header class="w-full flex items-center justify-between px-8 py-6 max-w-7xl mx-auto z-50">
+        <a href="/" class="text-2xl font-black tracking-tight text-black flex items-center gap-2">
+            <svg class="w-6 h-6" fill="black" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Stuffsus
+        </a>
+        <div>
+            <button type="button" onclick="switchView('signin-view')" class="text-sm font-bold text-gray-600 hover:text-black transition">Sign In</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 w-full max-w-5xl mx-auto px-4 flex items-center justify-center relative pb-20">
+        
+        <!-- 1. Hero View (Default Active) -->
+        <section id="hero-view" class="auth-view active flex-col items-center text-center w-full max-w-3xl">
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-gray-900">
+                Technology, brands <br> <span class="text-gray-400">& ideas in one place.</span>
+            </h1>
+            <p class="mt-6 text-lg md:text-xl text-gray-500 max-w-2xl leading-relaxed">
+                Discover technology brands, explore products, and stay updated with the latest tech.
+            </p>
+            <div class="mt-10 flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto">
+                <button type="button" onclick="switchView('signin-view')" class="w-full sm:w-auto px-8 py-4 bg-black text-white rounded-full font-bold text-sm shadow-xl hover:shadow-2xl transition-all">
+                    Sign in here
+                </button>
+                <button type="button" onclick="switchView('signup-view')" class="w-full sm:w-auto px-8 py-4 bg-white text-black border border-gray-200 rounded-full font-bold text-sm hover:border-black transition-all">
+                    Create account
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. Sign In View -->
+        <section id="signin-view" class="auth-view flex-col w-full max-w-md">
+            <button type="button" onclick="switchView('hero-view')" class="mb-6 flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-black transition self-start">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back
+            </button>
+            <div class="bg-white p-8 md:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 w-full">
+                <h2 class="text-3xl font-black text-gray-900 mb-2">Welcome Back</h2>
+                <p class="text-sm text-gray-500 mb-8">Sign in to your Stuffsus account</p>
+                
+                <form id="signin-form" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase">Email Address</label>
+                        <input type="email" id="signin-email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-black transition" placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="block text-xs font-bold text-gray-700 uppercase">Password</label>
+                            <button type="button" onclick="switchView('forgot-view')" class="text-xs font-bold text-gray-500 hover:text-black transition">Forgot Password?</button>
+                        </div>
+                        <input type="password" id="signin-password" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-black transition" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full py-3.5 mt-2 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition">Sign In</button>
+                </form>
+                <div class="mt-8 text-center text-sm font-semibold text-gray-500">
+                    Don't have an account? <button type="button" onclick="switchView('signup-view')" class="text-black hover:underline font-bold">Sign Up</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Sign Up View -->
+        <section id="signup-view" class="auth-view flex-col w-full max-w-md">
+            <button type="button" onclick="switchView('hero-view')" class="mb-6 flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-black transition self-start">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back
+            </button>
+            <div class="bg-white p-8 md:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 w-full">
+                <h2 class="text-3xl font-black text-gray-900 mb-2">Create Account</h2>
+                <p class="text-sm text-gray-500 mb-8">Join Stuffsus today</p>
+                
+                <form id="signup-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase">Full Name</label>
+                        <input type="text" id="signup-name" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-black transition" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase">Gmail Address</label>
+                        <input type="email" id="signup-email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-black transition" placeholder="john@gmail.com">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase">Password</label>
+                        <input type="password" id="signup-password" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-black transition" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full py-3.5 mt-4 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition">Create Account</button>
+                </form>
+                <div class="mt-8 text-center text-sm font-semibold text-gray-500">
+                    Already have an account? <button type="button" onclick="switchView('signin-view')" class="text-black hover:underline font-bold">Sign In</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Forgot Password View -->
+        <section id="forgot-view" class="auth-view flex-col w-full max-w-md">
+            <button type="button" onclick="switchView('signin-view')" class="mb-6 flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-black transition self-start">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to Sign In
+            </button>
+            <div class="bg-white p-8 md:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 w-full">
+                <h2 class="text-3xl font-black text-gray-900 mb-2">Reset Password</h2>
+                <p class="text-sm text-gray-500 mb-8">Enter your Gmail address to receive OTP code</p>
+                
+                <form id="forgot-form" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase">Email Address</label>
+                        <input type="email" id="forgot-email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-black transition" placeholder="you@example.com">
+                    </div>
+                    <button type="submit" class="w-full py-3.5 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition">Send OTP</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 5. OTP Verification View -->
+        <section id="otp-view" class="auth-view flex-col w-full max-w-md text-center">
+            <button type="button" onclick="switchView('hero-view')" class="mb-6 flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-black transition self-start">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Cancel
+            </button>
+            <div class="bg-white p-8 md:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 w-full">
+                <h2 class="text-2xl font-black text-gray-900 mb-2">Verify Your Email</h2>
+                <p class="text-sm text-gray-500 mb-8">We've sent a verification code to <br><span id="display-email" class="font-bold text-black"></span></p>
+                
+                <form id="otp-form">
+                    <div class="flex justify-center gap-2 mb-8" id="otp-inputs">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="w-12 h-14 text-center text-xl font-bold bg-gray-50 border border-gray-200 rounded-xl focus:border-black outline-none" autofocus>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="w-12 h-14 text-center text-xl font-bold bg-gray-50 border border-gray-200 rounded-xl focus:border-black outline-none">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="w-12 h-14 text-center text-xl font-bold bg-gray-50 border border-gray-200 rounded-xl focus:border-black outline-none">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="w-12 h-14 text-center text-xl font-bold bg-gray-50 border border-gray-200 rounded-xl focus:border-black outline-none">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="w-12 h-14 text-center text-xl font-bold bg-gray-50 border border-gray-200 rounded-xl focus:border-black outline-none">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="w-12 h-14 text-center text-xl font-bold bg-gray-50 border border-gray-200 rounded-xl focus:border-black outline-none">
+                    </div>
+                    <button type="submit" class="w-full py-3.5 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition">Verify Code</button>
+                </form>
+
+                <div class="mt-6 text-sm text-gray-500">
+                    Didn't receive the code? <br>
+                    <button type="button" id="resend-btn" disabled class="mt-2 text-gray-400">Resend Code (<span id="timer">60</span>s)</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function switchView(targetId) {
+            document.querySelectorAll('.auth-view').forEach(view => {
+                if (view.id === targetId) {
+                    view.classList.add('active');
+                } else {
+                    view.classList.remove('active');
+                }
+            });
+        }
+
+        // Sign In
+        document.getElementById('signin-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (res.ok) window.location.href = '/';
+                else alert(data.message || 'Error Logging In');
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // Sign Up (Send OTP)
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            try {
+                const res = await fetch('/api/auth/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('display-email').innerText = email;
+                    switchView('otp-view');
+                    startTimer();
+                } else alert(data.message || 'Error Sending OTP');
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // Forgot Password
+        document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+
+            try {
+                const res = await fetch('/api/auth/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('display-email').innerText = email;
+                    switchView('otp-view');
+                    startTimer();
+                } else alert(data.message || 'Error Sending Reset Code');
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // OTP Verify Submit
+        document.getElementById('otp-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            let otp = '';
+            document.querySelectorAll('#otp-inputs input').forEach(input => otp += input.value);
+            const email = document.getElementById('display-email').innerText;
+
+            try {
+                const res = await fetch('/api/auth/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('အကောင့်ဝင်ရောက်ခြင်း အောင်မြင်ပါသည်!');
+                    window.location.href = '/';
+                } else alert(data.message || 'Invalid OTP');
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // OTP Auto Focus Inputs Logic
+        const otpInputs = document.querySelectorAll('#otp-inputs input');
+        otpInputs.forEach((input, i) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length > 1) e.target.value = e.target.value.slice(0, 1);
+                if (e.target.value && i < otpInputs.length - 1) otpInputs[i + 1].focus();
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && i > 0) otpInputs[i - 1].focus();
+            });
+        });
+
+        // Resend Button Click Action
+        document.getElementById('resend-btn').addEventListener('click', async () => {
+            const email = document.getElementById('display-email').innerText;
+            try {
+                const res = await fetch('/api/auth/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                if (res.ok) {
+                    alert('OTP လျှို့ဝှက်နံပါတ် အသစ် ပြန်လည်ပေးပို့လိုက်ပါပြီ။');
+                    startTimer();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // Resend Timer Logic
+        let timerInterval;
+        function startTimer() {
+            clearInterval(timerInterval);
+            let timeLeft = 60;
+            const resendBtn = document.getElementById('resend-btn');
+            resendBtn.disabled = true;
+            resendBtn.innerText = `Resend Code (${timeLeft}s)`;
+            resendBtn.className = "mt-2 text-gray-400 cursor-not-allowed";
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    resendBtn.disabled = false;
+                    resendBtn.innerText = 'Resend Code';
+                    resendBtn.className = "mt-2 text-black font-bold hover:underline cursor-pointer";
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

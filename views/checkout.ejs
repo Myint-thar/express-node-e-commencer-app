@@ -380,7 +380,6 @@
 
   <!-- CHECKOUT LOGIC JS -->
   <script>
-    // Brand Page မှ ရောက်လာပါက သိမ်းထားသော ပစ္စည်းကို ယူမည်။ မရှိပါက Default MacBook ကို သုံးမည်။
     let savedItem = JSON.parse(localStorage.getItem('selected_checkout_item'));
 
     let cart = (savedItem && savedItem.length > 0) ? savedItem : [
@@ -468,24 +467,25 @@
     });
 
     // Payment Method Tab Toggle
-    document.querySelectorAll('.pay-tab').forEach(tab => {
-      tab.addEventListener('click', function() {
-        selectedPayMethod = this.getAttribute('data-method');
-        currentPaymentMethod = selectedPayMethod;
+    // checkout.ejs ထဲမှ Line 315 ပတ်ဝန်းကျင်အား ပြင်ဆင်ရန်
+document.querySelectorAll('.pay-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    const selectedPayMethod = this.getAttribute('data-method'); // 'const' သို့ 'let' ထည့်သွင်းပေးပါ
+    currentPaymentMethod = selectedPayMethod;
 
-        document.querySelectorAll('.pay-tab').forEach(t => {
-          t.classList.remove('border-2', 'border-black', 'bg-gray-50');
-          t.classList.add('border-gray-200');
-        });
-        this.classList.add('border-2', 'border-black', 'bg-gray-50');
-
-        // Hide all panels
-        document.querySelectorAll('.pay-panel').forEach(p => p.classList.add('hidden'));
-        
-        // Show selected panel
-        document.getElementById(`panel-${selectedPayMethod}`).classList.remove('hidden');
-      });
+    document.querySelectorAll('.pay-tab').forEach(t => {
+      t.classList.remove('border-2', 'border-black', 'bg-gray-50');
+      t.classList.add('border-gray-200');
     });
+    this.classList.add('border-2', 'border-black', 'bg-gray-50');
+
+    // Hide all panels
+    document.querySelectorAll('.pay-panel').forEach(p => p.classList.add('hidden'));
+    
+    // Show selected panel
+    document.getElementById(`panel-${selectedPayMethod}`).classList.remove('hidden');
+  });
+});
 
     // Handle Form Submit (Place Order)
     document.getElementById('checkout-form').addEventListener('submit', function(e) {

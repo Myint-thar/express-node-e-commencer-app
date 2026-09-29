@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders - Stuffsus</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-[#fcfcfc] text-black min-h-screen flex flex-col">
+
+  <!-- Navbar Component -->
+  <%- include('../partials/navbar') %>
+
+  <!-- Main Container -->
+  <div class="flex-grow max-w-5xl w-full mx-auto py-10 px-6">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+      <div>
+        <h1 class="text-3xl font-black tracking-tight">My Orders</h1>
+        <p class="text-xs text-gray-500 font-medium mt-1">Track and manage your recent tech orders</p>
+      </div>
+      <a href="/" class="self-start md:self-auto text-xs font-bold bg-black text-white px-5 py-2.5 rounded-full hover:bg-gray-800 transition shadow-sm">
+        + Explore Products
+      </a>
+    </div>
+
+    <% if (typeof orders !== 'undefined' && orders && orders.length > 0) { %>
+      <!-- Order List Container -->
+      <div class="space-y-6">
+        <% orders.forEach(order => { %>
+          <div class="bg-white border border-gray-100 rounded-[24px] p-6 shadow-sm hover:shadow-md transition">
+            
+            <!-- Order Card Header -->
+            <div class="flex flex-wrap items-center justify-between pb-4 border-b border-gray-100 gap-3">
+              <div>
+                <p class="text-[10px] uppercase font-bold tracking-wider text-gray-400">Order ID</p>
+                <p class="text-sm font-black text-gray-900">#<%= order.id %></p>
+              </div>
+              <div>
+                <p class="text-[10px] uppercase font-bold tracking-wider text-gray-400">Date Placed</p>
+                <p class="text-xs font-bold text-gray-700"><%= order.createdAt %></p>
+              </div>
+              <div>
+                <p class="text-[10px] uppercase font-bold tracking-wider text-gray-400">Total Amount</p>
+                <p class="text-sm font-black text-black">$<%= order.totalAmount %></p>
+              </div>
+              <div>
+                <!-- Status Badges -->
+                <% if (order.status === 'Delivered') { %>
+                  <span class="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-100 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Delivered
+                  </span>
+                <% } else if (order.status === 'Processing') { %>
+                  <span class="bg-amber-50 text-amber-600 text-xs font-bold px-3 py-1.5 rounded-full border border-amber-100 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Processing
+                  </span>
+                <% } else { %>
+                  <span class="bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> <%= order.status %>
+                  </span>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Items List -->
+            <div class="py-4 space-y-3">
+              <% order.items.forEach(item => { %>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-1 flex-shrink-0">
+                      <% if (item.image) { %>
+                        <img src="<%= item.image %>" class="max-h-full object-contain" alt="Product">
+                      <% } else { %>
+                        <span class="text-lg">📦</span>
+                      <% } %>
+                    </div>
+                    <div>
+                      <p class="text-xs font-bold text-gray-900"><%= item.title %></p>
+                      <p class="text-[11px] text-gray-400 font-medium">Qty: <%= item.quantity %> × $<%= item.price %></p>
+                    </div>
+                  </div>
+                  <p class="text-xs font-bold text-gray-800">$<%= (item.quantity * item.price).toFixed(2) %></p>
+                </div>
+              <% }); %>
+            </div>
+
+            <!-- Card Actions -->
+            <div class="pt-3 border-t border-gray-100 flex justify-end gap-3">
+              <a href="/orders/<%= order.id %>" class="text-xs font-bold text-gray-600 hover:text-black bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-xl transition">
+                View Details
+              </a>
+            </div>
+
+          </div>
+        <% }); %>
+      </div>
+
+    <% } else { %>
+      <!-- Empty State -->
+      <div class="bg-white border border-gray-100 rounded-[30px] p-12 text-center shadow-sm max-w-lg mx-auto my-8">
+        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+          <span class="text-3xl">📦</span>
+        </div>
+        <h2 class="text-xl font-black text-gray-900 mb-1">No orders yet</h2>
+        <p class="text-xs text-gray-500 font-medium mb-6">Looks like you haven't bought any tech gear yet. Explore our latest items!</p>
+        <a href="/" class="inline-block bg-black text-white text-xs font-bold px-6 py-3 rounded-xl hover:bg-gray-800 transition shadow-sm">
+          Browse Products
+        </a>
+      </div>
+    <% } %>
+
+  </div>
+
+</body>
+</html>
