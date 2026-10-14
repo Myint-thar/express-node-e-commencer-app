@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const productRoutes = require('./routes/products'); 
+app.use('/products', productRoutes);
 
 router.get('/', async (req, res) => {
   const categories = getCategoriesData();

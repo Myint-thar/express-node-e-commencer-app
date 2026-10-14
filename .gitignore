@@ -1,2 +1,12 @@
-node-modules
-.env
+NODE_ENV=development
+PORT=3000
+
+# Database Config
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=e_comic_w
+
+# Session Secret
+SESSION_SECRET=stuffsus_super_secure_random_key_2026_tech_hub
+

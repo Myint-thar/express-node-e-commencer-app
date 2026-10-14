@@ -5,214 +5,262 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stuffsus - Tech</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Font (Inter) for Clean Minimalist Look -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
   </style>
 </head>
-<body class="bg-[#fcfcfc] text-black">
+<body class="bg-[#fcfcfc] text-black flex flex-col min-h-screen">
 
   <%- include('../partials/navbar', { activePage: 'shop' }) %>
   
-  <!-- 1. Hero Section -->
-  <div class="w-full max-w-[1400px] mx-auto px-6 mt-2">
-    <div class="relative w-full h-[250px] md:h-[350px] rounded-3xl overflow-hidden bg-gray-900 flex items-center justify-center group cursor-pointer">
-      <!-- Background Image -->
-      <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=2000" alt="Interior" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-50 transition-all duration-700 ease-out group-hover:scale-105">
-      <!-- Text Container -->
-      <div class="relative z-10 flex flex-col items-center text-center -translate-y-6">
-        <h1 class="text-[100px] md:text-[80px] font-black text-white leading-none tracking-tighter drop-shadow-2xl select-none mb-8 md:mb-12 transition-transform duration-500 ease-out group-hover:scale-110 group-active:scale-125">
-          Explore Tech
+  <!-- Hero Section -->
+  <div class="w-full max-w-[1400px] mx-auto px-6 mt-6">
+    <div class="relative w-full h-[240px] md:h-[320px] rounded-3xl overflow-hidden bg-gray-900 flex items-center justify-center group cursor-pointer shadow-lg">
+      <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=2000" alt="Tech" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-all duration-700 ease-out group-hover:scale-105">
+      <div class="relative z-10 flex flex-col items-center text-center px-4">
+        <h1 class="text-4xl md:text-7xl font-black text-white leading-tight tracking-tight drop-shadow-md mb-4">
+          Explore Tech Products
         </h1>
-        <!-- Complementary Text -->
-        <p class="text-white text-sm md:text-base font-semibold max-w-md px-4 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out delay-100">
-         Discover the latest technology, gadgets, and accessories. <br class="hidden md:block"> Built for the way you live and work.
+        <p class="text-gray-200 text-xs md:text-sm font-medium max-w-md">
+         Discover the latest technology, gadgets, and accessories built for your everyday workflow.
         </p>
       </div>
     </div>
   </div>
 
-  <!-- 2. Search & Filter Header -->
+  <!-- Search & Filter Header -->
   <div class="max-w-[1400px] mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
-    <h2 class="text-2xl font-black">Give All You Need</h2>
-    <div class="relative w-full max-w-md">
-      <input type="text" placeholder="A Good Item Bluetooth..." class="w-full bg-white border border-gray-200 rounded-full py-3 pl-5 pr-24 text-sm font-medium focus:outline-none focus:border-gray-400 shadow-sm">
-      <button class="absolute right-1.5 top-1.5 bottom-1.5 bg-black text-white text-xs font-bold px-5 rounded-full hover:bg-gray-800 transition">Search</button>
-    </div>
+    <form action="/products" method="GET" class="relative w-full max-w-md">
+      <input type="text" name="search" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" placeholder="Search tech items..." class="w-full bg-white border border-gray-200 rounded-full py-3 pl-5 pr-24 text-sm font-medium focus:outline-none focus:border-black shadow-sm transition">
+      <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 bg-black text-white text-xs font-bold px-5 rounded-full hover:bg-gray-800 transition">Search</button>
+    </form>
   </div>
 
-  <main class="max-w-[1400px] mx-auto px-6 pb-20 flex flex-col lg:flex-row gap-10">
+  <main class="max-w-[1400px] mx-auto px-6 pb-20 flex flex-col lg:flex-row gap-10 flex-grow w-full">
     
-    <!-- 3. LEFT SIDEBAR (Category) -->
-    <aside class="w-full lg:w-[220px] shrink-0">
-      <h3 class="text-base font-bold text-black mb-5">Category</h3>
-      <ul class="space-y-4 text-sm font-medium text-gray-500">
-        
-        <!-- Active Item -->
+    <!-- LEFT SIDEBAR (Category) -->
+    <aside class="w-full lg:w-[240px] shrink-0 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm h-fit">
+      <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Categories</h3>
+      <ul class="space-y-3 text-sm font-semibold text-gray-600">
         <li>
-          <a href="#" class="flex items-center justify-between text-black font-bold">
-            <span class="flex items-center gap-3">
-              <span class="text-red-500">☁️</span> All Product
-            </span>
-            <span class="bg-red-100 text-red-500 text-[10px] px-2 py-0.5 rounded-full">24</span>
+          <a href="/products?category=All Product" class="flex items-center justify-between p-2 rounded-xl transition <%= currentCategory === 'All Product' ? 'bg-black text-white font-bold shadow' : 'hover:bg-gray-50 hover:text-black' %>">
+            <span>All Product</span>
           </a>
         </li>
-        
-        <!-- Inactive Items -->
-        <li><a href="#" class="flex items-center gap-3 hover:text-black transition"><input type="checkbox" class="w-4 h-4 rounded text-black focus:ring-black"> For Home</a></li>
-        <li><a href="#" class="flex items-center gap-3 hover:text-black transition"><input type="checkbox" class="w-4 h-4 rounded text-black focus:ring-black"> For Music</a></li>
-        <li><a href="#" class="flex items-center gap-3 hover:text-black transition"><input type="checkbox" class="w-4 h-4 rounded text-black focus:ring-black"> For Phone</a></li>
-        <li><a href="#" class="flex items-center gap-3 hover:text-black transition"><input type="checkbox" class="w-4 h-4 rounded text-black focus:ring-black"> For Storage</a></li>
-      </ul>
-
-      <!-- Divider -->
-      <div class="h-px bg-gray-200 my-6"></div>
-
-      <ul class="space-y-4 text-sm font-medium text-gray-500">
-        <li><a href="#" class="flex items-center gap-3 hover:text-black"><span class="text-lg">✨</span> New Arrival</a></li>
-        <li><a href="#" class="flex items-center gap-3 hover:text-black"><span class="text-lg">🔥</span> Best Seller</a></li>
-        <li><a href="#" class="flex items-center gap-3 hover:text-black"><span class="text-lg">🏷️</span> On Discount</a></li>
+        <li>
+          <a href="/products?category=For Home" class="flex items-center p-2 rounded-xl transition <%= currentCategory === 'For Home' ? 'bg-black text-white font-bold shadow' : 'hover:bg-gray-50 hover:text-black' %>">
+            For Home
+          </a>
+        </li>
+        <li>
+          <a href="/products?category=For Music" class="flex items-center p-2 rounded-xl transition <%= currentCategory === 'For Music' ? 'bg-black text-white font-bold shadow' : 'hover:bg-gray-50 hover:text-black' %>">
+            For Music
+          </a>
+        </li>
+        <li>
+          <a href="/products?category=For Phone" class="flex items-center p-2 rounded-xl transition <%= currentCategory === 'For Phone' ? 'bg-black text-white font-bold shadow' : 'hover:bg-gray-50 hover:text-black' %>">
+            For Phone
+          </a>
+        </li>
+        <li>
+          <a href="/products?category=For Storage" class="flex items-center p-2 rounded-xl transition <%= currentCategory === 'For Storage' ? 'bg-black text-white font-bold shadow' : 'hover:bg-gray-50 hover:text-black' %>">
+            For Storage
+          </a>
+        </li>
       </ul>
     </aside>
 
-    <!-- 4. RIGHT PRODUCT GRID -->
+    <!-- RIGHT PRODUCT GRID -->
     <section class="flex-grow">
       
-      <!-- Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        
-        <!-- Product Card 1 -->
-        <div class="bg-transparent group">
-          <div class="bg-gray-100 rounded-3xl p-5 mb-4 relative h-[250px] flex items-center justify-center">
-            <span class="absolute top-4 right-4 bg-white text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full shadow-sm">Other</span>
-            <img src="/images/phone-stand.png" alt="Product" class="w-32 h-32 object-contain group-hover:scale-110 transition duration-300">
-          </div>
-          <h3 class="font-bold text-sm text-black mb-1">Phone Holder Sakti</h3>
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-1 text-[11px]">
-              <span class="text-amber-500">★</span> <span class="font-bold">5.0</span> <span class="text-gray-400">(1.2k Review)</span>
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        <% if (products && products.length > 0) { %>
+          <% products.forEach(product => { %>
+            <div class="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition duration-300 flex flex-col justify-between">
+              <div>
+                <div class="bg-gray-50 rounded-2xl p-4 mb-4 relative h-[200px] flex items-center justify-center overflow-hidden">
+                  <span class="absolute top-3 right-3 bg-white text-gray-600 text-[10px] font-bold px-3 py-1 rounded-full shadow-sm border border-gray-100"><%= product.category || 'Tech' %></span>
+                  <img src="<%= product.image_url %>" alt="<%= product.name %>" class="w-32 h-32 object-contain product-img hover:scale-105 transition duration-300">
+                </div>
+                <h3 class="font-bold text-sm text-black mb-1 truncate product-name"><%= product.name %></h3>
+                <p class="text-xs text-gray-400 mb-3 truncate font-medium"><%= product.brand %> • High Quality</p>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-1 text-[11px]">
+                    <span class="text-amber-500">★</span> <span class="font-bold text-black">5.0</span> <span class="text-gray-400">(1.2k)</span>
+                  </div>
+                  <span class="font-black text-base text-black product-price" data-price="<%= product.price %>">$<%= product.price %></span>
+                </div>
+                
+                <div class="flex gap-2">
+                  <button type="button" onclick="addToCart('<%= product.id %>', this)" class="w-1/2 border border-gray-200 text-black text-xs font-bold py-2.5 rounded-xl hover:bg-gray-50 transition active:scale-95">Add to Cart</button>
+                  <button type="button" onclick="buyNow('<%= product.id %>', this)" class="w-1/2 bg-black text-white text-xs font-bold py-2.5 rounded-xl hover:bg-gray-800 transition active:scale-95 shadow-sm">Buy Now</button>
+                </div>
+              </div>
             </div>
-            <span class="font-black text-sm">$29.90</span>
+          <% }) %>
+        <% } else { %>
+          <div class="col-span-full text-center py-20 bg-white rounded-3xl border border-gray-100">
+            <p class="text-gray-500 font-medium">No products found.</p>
           </div>
-          
-          <div class="flex gap-2">
-            <!-- Add to Cart (POST Request Form) -->
-            <form action="/add-to-cart" method="POST" class="w-1/2">
-              <input type="hidden" name="productId" value="1">
-              <button type="submit" class="w-full border border-gray-300 text-black text-xs font-bold py-2.5 rounded-full hover:bg-gray-50 transition">Add to Cart</button>
-            </form>
-            <button class="w-1/2 bg-black text-white text-xs font-bold py-2.5 rounded-full hover:bg-gray-800 transition">Buy Now</button>
-          </div>
-        </div>
-
-        <!-- Product Card 2 -->
-        <div class="bg-transparent group">
-          <div class="bg-gray-100 rounded-3xl p-5 mb-4 relative h-[250px] flex items-center justify-center">
-            <span class="absolute top-4 right-4 bg-white text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full shadow-sm">Music</span>
-            <img src="/images/headphone.png" alt="Product" class="w-32 h-32 object-contain group-hover:scale-110 transition duration-300">
-          </div>
-          <h3 class="font-bold text-sm text-black mb-1">Headsound</h3>
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-1 text-[11px]">
-              <span class="text-amber-500">★</span> <span class="font-bold">5.0</span> <span class="text-gray-400">(2.4k Review)</span>
-            </div>
-            <span class="font-black text-sm">$12.00</span>
-          </div>
-          
-          <div class="flex gap-2">
-            <form action="/add-to-cart" method="POST" class="w-1/2">
-              <input type="hidden" name="productId" value="2">
-              <button type="submit" class="w-full border border-gray-300 text-black text-xs font-bold py-2.5 rounded-full hover:bg-gray-50 transition">Add to Cart</button>
-            </form>
-            <button class="w-1/2 bg-black text-white text-xs font-bold py-2.5 rounded-full hover:bg-gray-800 transition">Buy Now</button>
-          </div>
-        </div>
-
-        <!-- ထပ်မံ၍ Card များကို လိုသလို ပွားယူနိုင်ပါသည် ... -->
-
+        <% } %>
       </div>
 
       <!-- Pagination -->
-      <div class="flex items-center justify-center gap-3 mt-16 text-sm font-semibold text-gray-500">
-        <button class="hover:text-black">❮ Previous</button>
-        <button class="w-8 h-8 rounded-full bg-black text-white">1</button>
-        <button class="w-8 h-8 rounded-full hover:bg-gray-100">2</button>
-        <button class="w-8 h-8 rounded-full hover:bg-gray-100">3</button>
-        <span>...</span>
-        <button class="w-8 h-8 rounded-full hover:bg-gray-100">10</button>
-        <button class="hover:text-black">Next ❯</button>
-      </div>
+      <% if (totalPages > 1) { %>
+        <div class="flex items-center justify-center gap-2 mt-12 text-sm font-semibold text-gray-600 flex-wrap">
+          <% if (currentPage > 1) { %>
+            <% 
+              let prevUrl = `/products?page=${currentPage - 1}`;
+              if (searchQuery) prevUrl += `&search=${encodeURIComponent(searchQuery)}`;
+              if (currentCategory) prevUrl += `&category=${encodeURIComponent(currentCategory)}`;
+            %>
+            <a href="<%= prevUrl %>" class="px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition">❮ Previous</a>
+          <% } %>
+          
+          <% for(let i = 1; i <= totalPages; i++) { %>
+            <% 
+              let pageUrl = `/products?page=${i}`;
+              if (searchQuery) pageUrl += `&search=${encodeURIComponent(searchQuery)}`;
+              if (currentCategory) pageUrl += `&category=${encodeURIComponent(currentCategory)}`;
+              let activeClass = (currentPage === i) ? 'bg-black text-white font-bold shadow' : 'border border-gray-200 hover:bg-gray-50';
+            %>
+            <a href="<%= pageUrl %>" class="w-10 h-10 rounded-xl flex items-center justify-center transition <%= activeClass %>"><%= i %></a>
+          <% } %>
+
+          <% if (currentPage < totalPages) { %>
+            <% 
+              let nextUrl = `/products?page=${currentPage + 1}`;
+              if (searchQuery) nextUrl += `&search=${encodeURIComponent(searchQuery)}`;
+              if (currentCategory) nextUrl += `&category=${encodeURIComponent(currentCategory)}`;
+            %>
+            <a href="<%= nextUrl %>" class="px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition">Next ❯</a>
+          <% } %>
+        </div>
+      <% } %>
     </section>
   </main>
 
-  <!-- 5. Explore Recommendations Section -->
-  <section class="max-w-[1400px] mx-auto px-6 pb-20">
-    <div class="flex justify-between items-end mb-8">
-      <h2 class="text-2xl font-black text-black">Explore our recommendations</h2>
-      <div class="flex gap-2 text-gray-400">
-        <button class="hover:text-black">←</button>
-        <button class="hover:text-black">→</button>
-      </div>
-    </div>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-       <!-- Recommedation Card Example -->
-       <div class="bg-gray-100 rounded-3xl p-6 flex items-center gap-4">
-         <img src="/images/tws.png" class="w-20 h-20 object-contain">
-         <div>
-           <span class="text-[10px] text-gray-400 font-bold mb-1 block">Other</span>
-           <h4 class="font-bold text-sm">TWS Bujug</h4>
-           <div class="font-black mt-2">$29.90</div>
-         </div>
-       </div>
-    </div>
-  </section>
-
-  <!-- 6. Newsletter Banner -->
-  <section class="max-w-[1400px] mx-auto px-6 pb-20">
-    <div class="bg-[#1c1c1c] rounded-[40px] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10">
-      <div class="text-white">
-        <h2 class="text-4xl font-black mb-4">Ready to Get<br>Our New Stuff?</h2>
-      </div>
-      <div class="max-w-md w-full">
-        <p class="text-gray-400 text-xs leading-relaxed mb-6">Well listen to your needs. Identify the best approach, and then create a bespoke modern UI charging solution that's right for you.</p>
-        <div class="flex bg-white/10 rounded-full p-2">
-          <input type="email" placeholder="Your Email" class="bg-transparent border-none text-white px-4 text-sm w-full focus:outline-none">
-          <button class="bg-white text-black text-xs font-bold px-6 py-2.5 rounded-full hover:bg-gray-200">Send</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7. Footer -->
-  <footer class="max-w-[1400px] mx-auto px-6 py-10 border-t border-gray-200 text-sm font-semibold text-gray-500">
-    <div class="flex flex-col md:flex-row justify-between mb-10">
+  <!-- Footer -->
+  <footer class="w-full max-w-[1400px] mx-auto px-6 py-10 border-t border-gray-200 text-sm font-semibold text-gray-500 mt-auto">
+    <div class="flex flex-col md:flex-row justify-between mb-10 gap-8">
       <div class="flex gap-16">
         <div class="flex flex-col gap-3">
-          <span class="text-black mb-2">About</span>
-          <a href="#">Blog</a><a href="#">Meet The Team</a><a href="#">Contact Us</a>
+          <span class="text-black font-bold mb-1">About</span>
+          <a href="/blog" class="hover:text-black transition">Blog</a>
+          <a href="#" class="hover:text-black transition">Meet The Team</a>
+          <a href="#" class="hover:text-black transition">Contact Us</a>
         </div>
         <div class="flex flex-col gap-3">
-          <span class="text-black mb-2">Support</span>
-          <a href="#">Contact Us</a><a href="#">Shipping</a><a href="#">Return</a><a href="#">FAQ</a>
+          <span class="text-black font-bold mb-1">Support</span>
+          <a href="#" class="hover:text-black transition">Help Center</a>
+          <a href="#" class="hover:text-black transition">Shipping</a>
+          <a href="#" class="hover:text-black transition">Return</a>
+          <a href="#" class="hover:text-black transition">FAQ</a>
         </div>
       </div>
-      <!-- Social Icons placeholder -->
-      <div class="flex items-end gap-3 text-black">
-        <span class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">X</span>
-        <span class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">f</span>
-        <span class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">in</span>
+      <div class="flex items-start md:items-end gap-3 text-black">
+        <span class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition cursor-pointer">𝕏</span>
+        <span class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition cursor-pointer">f</span>
+        <span class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition cursor-pointer">in</span>
       </div>
     </div>
-    <div class="flex justify-between items-center text-xs text-gray-400 border-t border-gray-100 pt-6">
+    <div class="flex flex-col md:flex-row justify-between items-center text-xs text-gray-400 border-t border-gray-100 pt-6 gap-4">
       <p>Copyright © 2026 Stuffsus. All Rights Reserved.</p>
-      <div class="flex gap-4">
-        <a href="#">Terms of Service</a>
-        <a href="#">Privacy Policy</a>
+      <div class="flex gap-6">
+        <a href="#" class="hover:text-gray-600 transition">Terms of Service</a>
+        <a href="#" class="hover:text-gray-600 transition">Privacy Policy</a>
       </div>
     </div>
   </footer>
+
+  <!-- JS for Add to Cart & Buy Now -->
+ <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Navbar cart badge update function
+    function updateNavCartBadge() {
+      const cart = JSON.parse(localStorage.getItem('selected_checkout_item')) || [];
+      const totalQty = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+      const badge = document.getElementById('nav-cart-count');
+
+      if (badge) {
+        if (totalQty > 0) {
+          badge.innerText = totalQty;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+    }
+
+    // Initial badge check on load
+    updateNavCartBadge();
+
+    // Intercept Add to Cart forms or buttons without changing UI
+    document.querySelectorAll('form[action="/add-to-cart"], button').forEach(el => {
+      const form = el.tagName === 'FORM' ? el : el.closest('form');
+      
+      if (form && (form.getAttribute('action') === '/add-to-cart' || form.querySelector('button[type="submit"]'))) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault(); // Page ကို refresh မဖြစ်စေဘဲ နောက်ကွယ်မှ သိမ်းမည်
+
+          const card = this.closest('.bg-white') || this.closest('div');
+          if (!card) return;
+
+          const titleEl = card.querySelector('h3') || card.querySelector('h4');
+          const priceEl = card.querySelector('.font-black') || card.querySelector('span');
+          const imgEl = card.querySelector('img');
+          const idInput = form.querySelector('input[name="productId"]');
+
+          const title = titleEl ? titleEl.innerText.trim() : "Tech Product";
+          let price = 29.90;
+          if (priceEl) {
+            const priceVal = priceEl.innerText.replace('$', '').trim();
+            if (!isNaN(priceVal)) price = parseFloat(priceVal);
+          }
+          const img = imgEl ? imgEl.getAttribute('src') : "https://placehold.co/400";
+          const productId = idInput ? idInput.value : Date.now().toString();
+
+          let cart = JSON.parse(localStorage.getItem('selected_checkout_item')) || [];
+          let existingItem = cart.find(item => item.id === productId);
+
+          if (existingItem) {
+            existingItem.qty += 1;
+          } else {
+            cart.push({
+              id: productId,
+              title: title,
+              variant: "Standard Edition",
+              price: price,
+              qty: 1,
+              img: img
+            });
+          }
+
+          localStorage.setItem('selected_checkout_item', JSON.stringify(cart));
+          updateNavCartBadge();
+
+          // Visual feedback on button without changing UI design
+          const submitBtn = form.querySelector('button[type="submit"]');
+          if (submitBtn) {
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = "Added! ✓";
+            submitBtn.style.backgroundColor = "#10b981";
+            submitBtn.style.color = "#fff";
+            setTimeout(() => {
+              submitBtn.innerText = originalText;
+              submitBtn.style.backgroundColor = "";
+              submitBtn.style.color = "";
+            }, 1000);
+          }
+        });
+      }
+    });
+  });
+</script>
 
 </body>
 </html>

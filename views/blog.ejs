@@ -1,26 +1,42 @@
-<!-- blog.ejs ထဲမှ 4. Latest Articles Grid အပိုင်းအား ပြင်ဆင်ရန် -->
-<section class="mb-16">
+<!-- Tailwind CSS CDN နှင့် Header Include -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<% if (typeof include !== 'undefined') { %>
+  <%- include('partials/navbar') %>
+<% } %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <section class="mb-16">
     <div class="flex items-center justify-between mb-8">
         <h3 class="text-xl font-black text-black tracking-tight">Latest Articles</h3>
-        <span class="text-xs font-bold text-gray-400">Showing <%= articles.length %> articles</span>
+        <span class="text-xs font-bold text-gray-400">
+            Showing <%= (typeof articles !== 'undefined' && Array.isArray(articles)) ? articles.length : 0 %> articles
+        </span>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="articles-grid">
-        <% articles.forEach(article => { %>
-            <article class="article-card group bg-white border border-gray-100 rounded-[24px] overflow-hidden p-4 card-hover flex flex-col justify-between shadow-xs" data-category="<%= article.category %>">
-                <div>
-                    <div class="overflow-hidden rounded-xl bg-gray-50 h-48 mb-4">
-                        <img src="<%= article.image %>" alt="<%= article.title %>" class="w-full h-full object-cover img-zoom">
+        <% if (typeof articles !== 'undefined' && Array.isArray(articles) && articles.length > 0) { %>
+            <% articles.forEach(article => { %>
+                <article class="article-card group bg-white border border-gray-100 rounded-[24px] overflow-hidden p-4 card-hover flex flex-col justify-between shadow-xs" data-category="<%= article.category %>">
+                    <div>
+                        <div class="overflow-hidden rounded-xl bg-gray-50 h-48 mb-4">
+                            <img src="<%= article.image %>" alt="<%= article.title %>" class="w-full h-full object-cover img-zoom">
+                        </div>
+                        <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-2"><%= article.category %></span>
+                        <h4 class="text-base font-bold text-black group-hover:text-gray-600 transition mb-2 line-clamp-2"><%= article.title %></h4>
+                        <p class="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2"><%= article.description %></p>
                     </div>
-                    <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-2"><%= article.category %></span>
-                    <h4 class="text-base font-bold text-black group-hover:text-gray-600 transition mb-2 line-clamp-2"><%= article.title %></h4>
-                    <p class="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2"><%= article.description %></p>
-                </div>
-                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <span class="text-[11px] font-semibold text-gray-400"><%= article.date %> • <%= article.readTime %></span>
-                    <a href="/blog/<%= article.slug %>" class="text-xs font-extrabold text-black group-hover:translate-x-1 transition-transform">Read Article →</a>
-                </div>
-            </article>
-        <% }); %>
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <span class="text-[11px] font-semibold text-gray-400"><%= article.date %> • <%= article.readTime %></span>
+                        <a href="/blog/<%= article.slug %>" class="text-xs font-extrabold text-black group-hover:translate-x-1 transition-transform">Read Article →</a>
+                    </div>
+                </article>
+            <% }); %>
+        <% } else { %>
+            <div class="col-span-full text-center py-12 bg-gray-50 rounded-[24px] border border-dashed border-gray-200">
+                <p class="text-gray-400 text-sm font-medium">No articles found.</p>
+            </div>
+        <% } %>
     </div>
 </section>
+</div>

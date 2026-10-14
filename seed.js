@@ -1,70 +1,64 @@
+const { Sequelize } = require('sequelize');
 const sequelize = require('./config/db');
-const Product = require('./schema/products'); // Folder name စာလုံး အကြီး/အသေး Linux ပေါ်တွင် ကိုက်ညီပါစေ
+require('dotenv').config();
 
-// 1. COMICS GENERATOR (120 ITEMS)
-const seriesList = [
-  { name: 'One Piece', author: 'Eiichiro Oda', genre: 'Action / Adventure' },
-  { name: 'Naruto', author: 'Masashi Kishimoto', genre: 'Ninja / Action' },
-  { name: 'Attack on Titan', author: 'Hajime Isayama', genre: 'Dark Fantasy' },
-  { name: 'Jujutsu Kaisen', author: 'Gege Akutami', genre: 'Action / Supernatural' },
-  { name: 'Demon Slayer', author: 'Koyoharu Gotouge', genre: 'Adventure' },
-  { name: 'Dragon Ball Super', author: 'Akira Toriyama', genre: 'Martial Arts' },
-  { name: 'My Hero Academia', author: 'Kohei Horikoshi', genre: 'Superhero' },
-  { name: 'Bleach', author: 'Tite Kubo', genre: 'Action / Fantasy' }
-];
-
-const comicsList = [];
-
-seriesList.forEach((s) => {
-  for (let vol = 1; vol <= 15; vol++) {
-    const titleText = `${s.name} Vol.${vol}`;
-    comicsList.push({
-      title: titleText,
-      category: 'Comics & Manga',
-      price: parseFloat((8.99 + vol * 0.2).toFixed(2)),
-      image: `https://placehold.co/300x420/1e293b/ffffff?text=${encodeURIComponent(titleText)}`,
-      badge: vol === 1 ? 'HOT' : 'NEW',
-      author: s.author,
-      genre: s.genre,
-      totalPages: 180 + vol * 5,
-      description: `Official Chapter volume ${vol} of ${s.name}. Read the full story line with high definition manga panels and story content.`
-    });
-  }
-});
-
-// 2. ELECTRONICS GENERATOR (120 ITEMS)
-const techBrands = ['Sony', 'Apple', 'Samsung', 'Logitech', 'Razer', 'Asus', 'JBL', 'Anker'];
-const techItems = ['Gaming Headset', 'Mechanical Keyboard', '4K Monitor', 'Wireless Mouse', 'Smart Watch', 'Bluetooth Speaker'];
-
-const electronicsList = [];
-for (let i = 1; i <= 120; i++) {
-  const brand = techBrands[i % techBrands.length];
-  const item = techItems[i % techItems.length];
-  const titleText = `${brand} ${item} Pro`;
-
-  electronicsList.push({
-    title: `${titleText} #${i}`,
-    category: 'Electronics',
-    price: parseFloat((29.99 + i * 2.5).toFixed(2)),
-    image: `https://placehold.co/400x400/0f172a/6366f1?text=${encodeURIComponent(titleText)}`,
-    badge: i % 4 === 0 ? 'SALE' : 'NEW',
-    brand: brand,
-    color: 'Space Black',
-    description: `High performance ${brand} ${item}. Built with high quality durability and sleek design.`
-  });
-}
-
-// 3. EXECUTE SEEDING
 const seedDB = async () => {
   try {
-    console.log('🔄 Re-syncing DB and Seeding Data...');
+    console.log('🔄 Checking and creating database...');
+
+    const tempSeq = new Sequelize(
+      '', 
+      process.env.DB_USER || 'root', 
+      process.env.DB_PASSWORD || '', 
+      {
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 3306,
+        dialect: 'mysql',
+        logging: false
+      }
+    );
+
+    const dbName = process.env.DB_NAME || 'ecommerce_db';
+    await tempSeq.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
+    await tempSeq.close();
+    console.log(`✅ Database '${dbName}' is ready!`);
+
+    const sequelize = require('./config/db');
+    const Product = require('./schema/products');
+
+    console.log('🔄 Re-syncing Tables...');
     await sequelize.sync({ force: true });
+
+    // TECH & ELECTRONICS GENERATOR (240 ITEMS WITH CATEGORIES)
+    const techBrands = ['Sony', 'Apple', 'Samsung', 'Logitech', 'Razer', 'Asus', 'JBL', 'Anker', 'Dell', 'HP', 'MSI', 'Corsair'];
+    const techItems = ['Gaming Headset', 'Mechanical Keyboard', '4K Monitor', 'Wireless Mouse', 'Smart Watch', 'Bluetooth Speaker', 'Gaming Laptop', 'Graphics Card', 'Webcam', 'Microphone'];
+    const categories = ['For Home', 'For Music', 'For Phone', 'For Storage'];
     
-    await Product.bulkCreate([...comicsList, ...electronicsList]);
-    console.log('✅ SEED COMPLETED SUCCESSFULLY! (240 Items Added)');
+    const electronicsList = [];
+    for (let i = 1; i <= 240; i++) {
+      const brand = techBrands[i % techBrands.length];
+      const item = techItems[i % techItems.length];
+      const category = categories[i % categories.length];
+      const titleText = `${brand} ${item} Pro`;
+
+      electronicsList.push({
+        name: `${titleText} #${i}`,
+        slug: `${brand.toLowerCase()}-${item.toLowerCase().replace(/\s+/g, '-')}-${i}`,
+        brand: brand,
+        category: category,
+        price: parseFloat((29.99 + i * 2.5).toFixed(2)),
+        image_url: `https://placehold.co/400x400/0f172a/6366f1?text=${encodeURIComponent(titleText)}`,
+        description: `High performance ${brand} ${item}. Built with high quality durability.`
+      });
+    }
+
+    console.log('📥 Inserting Tech Seed Data...');
+    await Product.bulkCreate(electronicsList);
+    console.log('✅ SEED COMPLETED SUCCESSFULLY! (240 Tech Items Added)');
     process.exit(0);
+
   } catch (err) {
-    console.error('❌ Error:', err);
+    console.error('❌ Error during seeding:', err);
     process.exit(1);
   }
 };

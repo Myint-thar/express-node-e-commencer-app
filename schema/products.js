@@ -3,67 +3,37 @@ const sequelize = require('../config/db');
 
 const Product = sequelize.define('Product', {
   id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
+    type: DataTypes.BIGINT,
+    autoIncrement: true,
+    primaryKey: true
   },
-  title: {
-    type: DataTypes.STRING,
+  name: {
+    type: DataTypes.STRING(255),
+    allowNull: false
+  },
+  slug: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    unique: true
+  },
+  brand: {
+    type: DataTypes.STRING(255),
     allowNull: false
   },
   category: {
-    type: DataTypes.STRING, 
-    allowNull: false
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    defaultValue: 'For Phone' // for sitebar
   },
   price: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false
   },
-  image: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
-  badge: {
-    type: DataTypes.STRING,
-    defaultValue: ''
+  image_url: {
+    type: DataTypes.STRING(255)
   },
   description: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  // Comics သီးသန့် Columns
-  author: {
-    type: DataTypes.STRING,
-    defaultValue: 'Unknown Author'
-  },
-  genre: {
-    type: DataTypes.STRING,
-    defaultValue: 'General'
-  },
-  totalPages: {
-    type: DataTypes.INTEGER,
-    defaultValue: 200
-  },
-  // Electronics သီးသန့် Columns
-  brand: {
-    type: DataTypes.STRING,
-    defaultValue: 'Generic'
-  },
-  color: {
-    type: DataTypes.STRING,
-    defaultValue: 'Standard Black'
-  },
-  warranty: {
-    type: DataTypes.STRING,
-    defaultValue: '1 Year Warranty'
-  },
-  stock: {
-    type: DataTypes.INTEGER,
-    defaultValue: 50
-  },
-  rating: {
-    type: DataTypes.FLOAT,
-    defaultValue: 4.8
+    type: DataTypes.TEXT
   }
 }, {
   tableName: 'products',

@@ -1,88 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stuffsus - Brands</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-  </style>
-</head>
-<body class="bg-[#fcfcfc] text-black min-h-screen flex flex-col">
+<script src="https://cdn.tailwindcss.com"></script>
+<%- include('./partials/navbar') %>
+<div class="container mx-auto px-6 py-8">
 
-  <!-- Navbar -->
-  <%- include('partials/navbar', { activePage: 'brands' }) %>
+    <h1 class="text-3xl font-black text-black mb-2">Brands</h1>
+    <p class="text-sm text-gray-500 mb-6">Explore the best tech
+    brands and their products.</p>
 
-  <% 
-    const brandCategories = [
-      {
-        categoryName: "Mobile, Tablets & Wearables",
-        brands: [
-          { name: "Apple", desc: "iPhone, iPad, Watch", slug: "apple" },
-          { name: "Samsung", desc: "Galaxy Series", slug: "samsung" },
-          { name: "Xiaomi", desc: "Smartphones & Ecosystem", slug: "xiaomi" },
-          { name: "Google", desc: "Pixel & Nest", slug: "google" },
-          { name: "OnePlus", desc: "Never Settle", slug: "oneplus" },
-          { name: "Nothing", desc: "Phone & Ear", slug: "nothing" }
-        ]
-      },
-      {
-        categoryName: "Computers & Laptops",
-        brands: [
-          { name: "Asus", desc: "ZenBook & ROG", slug: "asus" },
-          { name: "Dell", desc: "XPS & Alienware", slug: "dell" },
-          { name: "Lenovo", desc: "ThinkPad & Legion", slug: "lenovo" },
-          { name: "Microsoft", desc: "Surface Series", slug: "microsoft" },
-          { name: "HP", desc: "Spectre & Omen", slug: "hp" },
-          { name: "MSI", desc: "Gaming Laptops", slug: "msi" }
-        ]
-      }
-    ];
-  %>
+    <!-- MOBILE, TABLETS & WEARABLES -->
 
-  <!-- Main Brands Content -->
-  <main class="flex-grow max-w-[1400px] w-full mx-auto px-6 py-16">
-    
-    <!-- Hero Header -->
-    <div class="text-center max-w-2xl mx-auto mb-16">
-      <h1 class="text-5xl md:text-6xl font-black text-black tracking-tight">Featured Brands</h1>
-      <p class="mt-4 text-gray-500 font-medium text-base">
-        Discover products from the world's leading technology creators, all in one place.
-      </p>
+    <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase mb-4">Mobile, Tablets & Wearables</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
+        
+        <a href="/brand-detail?brand=Apple" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">Apple</h3>
+            <p class="text-xs text-gray-400 mt-1">iPhone, iPad, Watch</p>
+        </a>
+
+        <a href="/brand-detail?brand=Samsung" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">Samsung</h3>
+            <p class="text-xs text-gray-400 mt-1">Galaxy Series</p>
+        </a>
+
+        <a href="/brand-detail?brand=Xiaomi" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">Xiaomi</h3>
+            <p class="text-xs text-gray-400 mt-1">Smartphones & Ecosystem</p>
+        </a>
+
+        <a href="/brand-detail?brand=Google" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">Google</h3>
+            <p class="text-xs text-gray-400 mt-1">Pixel & Nest</p>
+        </a>
+
+        <a href="/brand-detail?brand=OnePlus" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">OnePlus</h3>
+            <p class="text-xs text-gray-400 mt-1">Never Settle</p>
+        </a>
+
+        <a href="/brand-detail?brand=Nothing" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">Nothing</h3>
+            <p class="text-xs text-gray-400 mt-1">Phone & Ear</p>
+        </a>
+
     </div>
 
-    <!-- Category Filter & Brand List -->
-    <% brandCategories.forEach(category => { %>
-      <section class="mb-14">
-        <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">
-          <%= category.categoryName %>
-        </h2>
+    <!-- COMPUTERS & LAPTOPS -->
+    <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase mb-4">Computers & Laptops</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <% category.brands.forEach(brand => { %>
-            <!-- href="/brands/slug" ဖြင့် Link အလုပ်လုပ်အောင် ပြင်ဆင်ထားပါသည် -->
-            <a href="/brands/<%= brand.slug %>" class="bg-white border border-gray-100 rounded-3xl p-6 flex flex-col items-center justify-center hover:shadow-xl transition-all duration-300 group cursor-pointer hover:-translate-y-1 block text-center">
-              <h3 class="text-lg font-bold text-gray-800 group-hover:text-black">
-                <%= brand.name %>
-              </h3>
-              <p class="text-[11px] text-gray-400 mt-1">
-                <%= brand.desc %>
-              </p>
-            </a>
-          <% }); %>
-        </div>
-      </section>
-    <% }); %>
+        <a href="/brand-detail?brand=Asus" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">Asus</h3>
+            <p class="text-xs text-gray-400 mt-1">ZenBook & ROG</p>
+        </a>
 
-  </main>
+        <a href="/brand-detail?brand=Dell" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">Dell</h3>
+            <p class="text-xs text-gray-400 mt-1">XPS & Alienware</p>
+        </a>
 
-  <!-- Footer -->
-  <footer class="border-t border-gray-200 py-6 text-center text-xs text-gray-400 mt-auto">
-    <p>Copyright © 2026 Stuffsus. All Rights Reserved.</p>
-  </footer>
+        <a href="/brand-detail?brand=Lenovo" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">Lenovo</h3>
+            <p class="text-xs text-gray-400 mt-1">ThinkPad & Legion</p>
+        </a>
 
-</body>
-</html>
+        <a href="/brand-detail?brand=Microsoft" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">Microsoft</h3>
+            <p class="text-xs text-gray-400 mt-1">Surface Series</p>
+        </a>
+
+        <a href="/brand-detail?brand=HP" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">HP</h3>
+            <p class="text-xs text-gray-400 mt-1">Spectre & Omen</p>
+        </a>
+
+        <a href="/brand-detail?brand=MSI" class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition text-center block">
+            <h3 class="font-bold text-lg text-black">MSI</h3>
+            <p class="text-xs text-gray-400 mt-1">Gaming Laptops</p>
+        </a>
+
+    </div>
+</div>
